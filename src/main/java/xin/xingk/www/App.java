@@ -1,15 +1,14 @@
 package xin.xingk.www;
 
-import cn.hutool.cron.CronUtil;
-
 /**
  * 微信备份程序
  *
  */
 public class App {
     public static void main( String[] args ) {
-        CronUtil.start();
-        System.out.println("ok");
+        AliYunPan aliYunPan = new AliYunPan();
+//        CronUtil.start();
+//        System.out.println("ok");
         /*AliYunPanUtil.getAliYunPanInfo();//登录阿里云
         String wxFileId=AliYunPanUtil.getFileId(CommonConstants.ROOT, "微信备份");//备份目录ID
         List<String> folderList = FileUtil.fileFolderList(CommonConstants.ROOT,FileUtil.FOLDER);
