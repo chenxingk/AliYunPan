@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import xin.xingk.www.common.CommonConstants;
+import xin.xingk.www.common.MyConsole;
 
 import java.util.List;
 import java.util.Map;
@@ -14,21 +15,70 @@ import java.util.Map;
  * Author: 陈靖杰
  * Date: 2021/05/10
  */
-public class AliYunPanUtil {
+public class AliYunPanUtil{
+
+    // 日志界面
+    MyConsole console = CommonConstants.console;
+
+    //请求工具类
+    OkHttpUtil okHttpUtil=new OkHttpUtil();
+
+    public void startBackup() {
+        this.getAliYunPanInfo();//登录阿里云
+        String wxFileId=this.getFileId(CommonConstants.ROOT, CommonConstants.BACK_NAME);//备份目录ID
+        if (CommonConstants.BACK_TYPE==0){//普通备份
+            this.scanFolders(CommonConstants.PATH,wxFileId,true);
+        }else {
+            List<String> folderList = FileUtil.fileFolderList(CommonConstants.PATH,FileUtil.FOLDER);//获取用户目录下所有目录
+            if (ObjectUtil.isNotNull(folderList) && folderList.size()>0){
+                for (String folderName :  folderList) {
+                    String path = CommonConstants.PATH + FileUtil.FILE_SEPARATOR + folderName;//路径
+                    console.append("开始获取："+path+"\n");
+                    List<String> fileList = FileUtil.fileFolderList(path,FileUtil.FILE);//本地文件夹下文件
+                    console.append("获取："+path+" 下所有文件成功\n");
+                    for (String filePath :  fileList) {
+                        Map<String, Object> map = FileUtil.getFileInfo(filePath);
+                        String type = map.get("type").toString();
+                        String typeFileId=this.getFileId(wxFileId,type);//微信备份-类型
+                        String dateFileId=this.getFileId(typeFileId,folderName);//微信备份-类型-日期
+                        this.doUploadFile(dateFileId,map);
+                    }
+                    String folderFileId = this.getFileId(wxFileId, "文件夹");//微信备份-文件夹
+                    String dateFileId = this.getFileId(folderFileId, folderName);//微信备份-文件夹-日期
+                    this.scanFolders(path,dateFileId,false);
+                }
+            }else {
+                console.append("开始获取："+CommonConstants.PATH+"\n");
+                List<String> fileList = FileUtil.fileFolderList(CommonConstants.PATH,FileUtil.FILE);//本地文件夹下文件
+                console.append("获取："+CommonConstants.PATH+" 下所有文件成功"+"\n");
+                for (String filePath :  fileList) {
+                    Map<String, Object> map = FileUtil.getFileInfo(filePath);
+                    String type = map.get("type").toString();
+                    String typeFileId=this.getFileId(wxFileId,type);//微信备份-类型
+                    this.doUploadFile(typeFileId,map);
+                }
+            }
+
+        }
+    }
 
     /**
      * 获取阿里云用户信息
      * @return
      * @throws Exception
      */
-    public static void getAliYunPanInfo(){
+    public void getAliYunPanInfo(){
+        console.append("开始登录阿里云盘...\n");
         CommonConstants.TOKEN="";
         JSONObject data = new JSONObject();
         data.set("refresh_token",CommonConstants.REFRESH_TOKEN);
-        JSONObject aliYunPanInfo = OkHttpUtil.doPost(CommonConstants.TOKEN_URL, data);
+        JSONObject aliYunPanInfo = okHttpUtil.doPost(CommonConstants.TOKEN_URL, data);
         CommonConstants.TOKEN = aliYunPanInfo.getStr("token_type") + " " + aliYunPanInfo.getStr("access_token");
         CommonConstants.DriveId = aliYunPanInfo.getStr("default_drive_id");
         CommonConstants.REFRESH_TOKEN = aliYunPanInfo.getStr("refresh_token");
+        if (StrUtil.isNotEmpty(CommonConstants.TOKEN)){
+            console.append("登录阿里云盘成功...\n");
+        }
     }
 
     /**
@@ -37,7 +87,7 @@ public class AliYunPanUtil {
      * @return
      * @throws Exception
      */
-    public static JSONObject getFileList(String fileId){
+    public JSONObject getFileList(String fileId){
         JSONObject data = new JSONObject();
         data.set("drive_id",CommonConstants.DriveId);
         data.set("parent_file_id",fileId);
@@ -49,7 +99,7 @@ public class AliYunPanUtil {
         data.set("fields","*");
         data.set("order_by","updated_at");
         data.set("order_direction","DESC");
-        return OkHttpUtil.doPost(CommonConstants.FILE_LIST_URL,data);
+        return okHttpUtil.doPost(CommonConstants.FILE_LIST_URL,data);
     }
 
     /**
@@ -59,7 +109,7 @@ public class AliYunPanUtil {
      * @return
      * @throws Exception
      */
-    public static JSONObject createFolder(String fileId,String name){
+    public JSONObject createFolder(String fileId,String name){
         //创建文件夹
         JSONObject data = new JSONObject();
         data.set("drive_id",CommonConstants.DriveId);
@@ -67,7 +117,7 @@ public class AliYunPanUtil {
         data.set("name",name);
         data.set("type","folder");
         data.set("check_name_mode","refuse");
-        return OkHttpUtil.doPost(CommonConstants.CREATE_FILE_URL,data);
+        return okHttpUtil.doPost(CommonConstants.CREATE_FILE_URL,data);
     }
 
     /**
@@ -75,7 +125,7 @@ public class AliYunPanUtil {
      * @return
      * @throws Exception
      */
-    public static JSONObject uploadFile(String fileId, Map<String, Object> fileInfo){
+    public JSONObject uploadFile(String fileId, Map<String, Object> fileInfo){
         JSONObject data = new JSONObject();
         JSONObject list = new JSONObject();
         JSONArray array = new JSONArray();
@@ -92,7 +142,7 @@ public class AliYunPanUtil {
         data.set("content_hash",fileInfo.get("content_hash"));
         data.set("ignoreError",false);
         data.set("check_name_mode","refuse");
-        return OkHttpUtil.doFilePost(CommonConstants.CREATE_FILE_URL,data);
+        return okHttpUtil.doFilePost(CommonConstants.CREATE_FILE_URL,data);
     }
 
     /**
@@ -102,7 +152,7 @@ public class AliYunPanUtil {
      * @return
      * @throws Exception
      */
-    public static JSONObject completeFile(String fileId,String uploadId){
+    public JSONObject completeFile(String fileId,String uploadId){
         JSONObject data = new JSONObject();
         JSONArray array = new JSONArray();
         data.set("drive_id",CommonConstants.DriveId);
@@ -110,7 +160,7 @@ public class AliYunPanUtil {
         data.set("ignoreError",true);
         data.set("part_info_list",array);
         data.set("upload_id",uploadId);
-        return OkHttpUtil.doPost(CommonConstants.COMPLETE_FILE_URL,data);
+        return okHttpUtil.doPost(CommonConstants.COMPLETE_FILE_URL,data);
     }
 
     /**
@@ -119,11 +169,11 @@ public class AliYunPanUtil {
      * @return
      * @throws Exception
      */
-    public static JSONObject deleteFile(String fileId){
+    public JSONObject deleteFile(String fileId){
         JSONObject data = new JSONObject();
         data.set("drive_id",CommonConstants.DriveId);
         data.set("file_id",fileId);
-        return OkHttpUtil.doPost(CommonConstants.DELETE_FILE_URL,data);
+        return okHttpUtil.doPost(CommonConstants.DELETE_FILE_URL,data);
     }
 
     /**
@@ -133,11 +183,11 @@ public class AliYunPanUtil {
      * @return
      * @throws Exception
      */
-    public static String getFileId(String parentFileId,String folderName){
+    public String getFileId(String parentFileId,String folderName){
         String fileId="";
         JSONObject fileList = getFileList(parentFileId);//获取文件目录
         JSONArray fileArray = fileList.getJSONArray("items");
-        if (ObjectUtil.isNotNull(fileArray)){
+        if (ObjectUtil.isNotNull(fileArray) && fileArray.size()>0){
             for (int i = 0; i < fileArray.size(); i++) {
                 JSONObject folder = fileArray.getJSONObject(i);
                 if ("folder".equals(folder.getStr("type")) && folderName.equals(folder.getStr("name"))){
@@ -159,19 +209,20 @@ public class AliYunPanUtil {
      * @param fileInfo 文件信息
      * @throws Exception
      */
-    public static void doUploadFile(String fileId,Map<String, Object> fileInfo){
+    public void doUploadFile(String fileId,Map<String, Object> fileInfo){
+        console.append("开始上传："+fileInfo.get("path")+"\n");
         JSONObject uploadFile = uploadFile(fileId,fileInfo);
         if(ObjectUtil.isNotNull(uploadFile.getJSONArray("part_info_list"))){//上传新文件
             byte[] fileBytes = FileUtil.readBytes(fileInfo.get("path").toString());
             String uploadUrl = uploadFile.getJSONArray("part_info_list").getJSONObject(0).getStr("upload_url");
-            OkHttpUtil.uploadFileBytes(uploadUrl,fileBytes);
+            okHttpUtil.uploadFileBytes(uploadUrl,fileBytes);
         }
         if (StrUtil.isEmpty(uploadFile.getStr("exist"))){//上传完成
             String upFileId = uploadFile.getStr("file_id");
             String uploadId = uploadFile.getStr("upload_id");
             completeFile(upFileId, uploadId);
         }
-        System.out.println("上传完成："+fileInfo.toString());
+        console.append("上传文件成功："+fileInfo.get("name")+"\n");
     }
 
     /**
@@ -181,9 +232,11 @@ public class AliYunPanUtil {
      * @param isUploadFile 是否上传文件
      * @throws Exception
      */
-    public static void scanFolders(String path,String pathId,Boolean isUploadFile){
+    public void scanFolders(String path,String pathId,Boolean isUploadFile){
+        console.append("开始获取："+path+"\n");
         //获取文件夹下所有文件
         List<String> fileList = FileUtil.fileFolderList(path,FileUtil.FILE);
+        console.append("获取："+path+" 下所有文件成功"+"\n");
         if (isUploadFile){
             uploadFileList(fileList,pathId);
         }
@@ -195,7 +248,7 @@ public class AliYunPanUtil {
             String filePath = path + FileUtil.FILE_SEPARATOR + folder;//路径
             fileList = FileUtil.fileFolderList(path,FileUtil.FILE);//获取当前文件夹下所有文件
             uploadFileList(fileList,fileId);//上传当前文件夹内的文件
-            System.out.println("--------------扫描新文件夹："+filePath);
+            console.append("扫描新文件夹："+filePath+"\n");
             scanFolders(filePath,fileId,true);
         }
     }
@@ -206,7 +259,7 @@ public class AliYunPanUtil {
      * @param pathId 阿里云文件夹ID
      * @throws Exception
      */
-    public static void uploadFileList(List<String> fileList, String pathId){
+    public void uploadFileList(List<String> fileList, String pathId){
         for (String filePath :  fileList) {
             Map<String, Object> map = FileUtil.getFileInfo(filePath);
             doUploadFile(pathId,map);

@@ -1,5 +1,9 @@
 #我是注释
 #执行的类或对象方法所在包的名字
-[xin.xingk.www]
+#[xin.xingk.www]
 #需要执行的类名和方法名
-App.Test = * * * * * ? *
+#App.Test = * * * * * ? *
+#执行的类或对象方法所在包的名字
+[xin.xingk.www.common]
+#需要执行的类名和方法名 每小时刷新阿里云盘登录信息
+CronTask.updateALiYunPanToken = 0 0 0/1 * * ?

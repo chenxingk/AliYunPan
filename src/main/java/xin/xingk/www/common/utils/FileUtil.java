@@ -2,6 +2,8 @@ package xin.xingk.www.common.utils;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import xin.xingk.www.common.CommonConstants;
+import xin.xingk.www.common.MyConsole;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
