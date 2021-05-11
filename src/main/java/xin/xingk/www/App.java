@@ -1,22 +1,15 @@
 package xin.xingk.www;
 
-import xin.xingk.www.common.CommonConstants;
-import xin.xingk.www.common.utils.AliYunPanUtil;
-import xin.xingk.www.common.utils.FileUtil;
-
-import java.util.List;
-import java.util.Map;
-
 /**
  * 微信备份程序
  *
  */
 public class App {
     public static void main( String[] args ) {
-        //AliYunPan aliYunPan = new AliYunPan();
+        AliYunPan aliYunPan = new AliYunPan();
 //        CronUtil.start();
 //        System.out.println("ok");
-        AliYunPanUtil.getAliYunPanInfo();//登录阿里云
+        /*AliYunPanUtil.getAliYunPanInfo();//登录阿里云
         String wxFileId=AliYunPanUtil.getFileId(CommonConstants.ROOT, "公司-微信备份");//备份目录ID
         List<String> folderList = FileUtil.fileFolderList(CommonConstants.PATH,FileUtil.FOLDER);
         for (String folderName :  folderList) {
@@ -34,7 +27,7 @@ public class App {
             String dateFileId = AliYunPanUtil.getFileId(folderFileId, folderName);//微信备份-文件夹-日期
             AliYunPanUtil.scanFolders(path,dateFileId,false);
         }
-        System.out.println("ok");
+        System.out.println("ok");*/
     }
 
     public static void Test(){
