@@ -27,7 +27,8 @@ public class CommonConstants {
     //根目录
     public final static String ROOT="root";
     //上传目录
-    public final static String PATH="E:\\用户目录\\文档\\WeChat Files\\wxid_3wc96wg6zgf022\\FileStorage\\File";
+    //public final static String PATH="E:\\用户目录\\文档\\WeChat Files\\wxid_3wc96wg6zgf022\\FileStorage\\File";
+    public final static String PATH="F:\\用户目录\\文档\\WeChat Files\\wxid_3wc96wg6zgf022\\FileStorage\\File";
 
 
 

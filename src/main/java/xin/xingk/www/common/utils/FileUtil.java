@@ -147,7 +147,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
                 List.add(file.getPath());
             }
             if (FOLDER.equals(type) && file.isDirectory()){
-                List.add(file.getPath());
+                List.add(file.getName());
             }
         }
         return List;
