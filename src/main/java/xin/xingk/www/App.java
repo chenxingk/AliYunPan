@@ -21,7 +21,7 @@ public class App {
         List<String> folderList = FileUtil.fileFolderList(CommonConstants.PATH,FileUtil.FOLDER);
         for (String folderName :  folderList) {
             System.out.println("folder:"+folderName);
-            String path = CommonConstants.PATH + "\\" + folderName;//路径
+            String path = CommonConstants.PATH + FileUtil.FILE_SEPARATOR + folderName;//路径
             List<String> fileList = FileUtil.fileFolderList(path,FileUtil.FILE);//本地文件夹下文件
             for (String filePath :  fileList) {
                 Map<String, Object> map = FileUtil.getFileInfo(filePath);

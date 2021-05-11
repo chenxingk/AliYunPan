@@ -192,7 +192,7 @@ public class AliYunPanUtil {
         //循环文件夹
         for (String folder : folderList){
             String fileId = getFileId(pathId, folder);//创建文件夹-文件夹ID
-            String filePath = path + "\\" + folder;//路径
+            String filePath = path + FileUtil.FILE_SEPARATOR + folder;//路径
             fileList = FileUtil.fileFolderList(path,FileUtil.FILE);//获取当前文件夹下所有文件
             uploadFileList(fileList,fileId);//上传当前文件夹内的文件
             System.out.println("--------------扫描新文件夹："+filePath);
