@@ -8,10 +8,13 @@ import cn.hutool.cron.CronUtil;
  */
 public class App {
     public static void main( String[] args ) {
+        //加载UI
         AliYunPan aliYunPan = new AliYunPan();
+        //开启定时
         CronUtil.start();
         //支持秒级别定时任务
         CronUtil.setMatchSecond(true);
+
 //        System.out.println("ok");
         /*AliYunPanUtil.getAliYunPanInfo();//登录阿里云
         String wxFileId=AliYunPanUtil.getFileId(CommonConstants.ROOT, "公司-微信备份");//备份目录ID

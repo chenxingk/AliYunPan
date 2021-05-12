@@ -1,7 +1,10 @@
 package xin.xingk.www.common;
 
 
-import javax.swing.*;
+import cn.hutool.setting.Setting;
+import xin.xingk.www.common.utils.FileUtil;
+
+import java.io.File;
 
 /**
  * Description: 公共变量
@@ -12,7 +15,11 @@ public class CommonConstants {
 
     //日志面板
     public static MyConsole console = new MyConsole();
-
+    //设置工具
+    //配置文件路径
+    public static String CONFIG_PATH = System.getProperty("user.dir") + File.separator + "back_config.setting";
+    //配置文件
+    public static Setting setting = new Setting(FileUtil.touch(CONFIG_PATH).getPath(), true);
     //获取token
     public final static String TOKEN_URL="https://websv.aliyundrive.com/token/refresh";
     //文件列表

@@ -32,6 +32,7 @@ public class OkHttpUtil {
      * @throws Exception
      */
     public JSONObject doPost(String url, JSONObject data){
+        int errNum=0;
         try {
             body = RequestBody.create(mediaType,data.toString());
             request = new Request.Builder()
@@ -45,8 +46,20 @@ public class OkHttpUtil {
             //System.out.println("result：>>>>>>>>>>>>>>>>>>>"+result);
             return JSONUtil.parseObj(result);
         } catch (Exception e) {
-            System.out.println("遇到异常："+e.toString());
-            return doPost(url,data);
+            if (e.toString().contains("A JSONObject text")){
+                console.append("普通请求遇到异常："+e.toString()+"\n");
+                return null;
+            }else {
+                errNum++;
+                console.append("普通请求遇到异常："+e.toString()+"\n");
+                if (errNum>5){
+                    console.append("普通请求失败次数超过："+errNum+" 次....已停止\n");
+                    return null;
+                }else{
+                    console.append("普通请求发起第："+errNum+" 次重试\n");
+                    return doPost(url,data);
+                }
+            }
         }
     }
 
@@ -58,6 +71,7 @@ public class OkHttpUtil {
      * @throws Exception
      */
     public JSONObject doFilePost(String url,JSONObject data){
+        int errNum=0;
         try {
             RequestBody body = RequestBody.create(mediaType, data.toString());
             request = new Request.Builder()
@@ -71,8 +85,15 @@ public class OkHttpUtil {
             //System.out.println("result：>>>>>>>>>>>>>>>>>>>"+result);
             return JSONUtil.parseObj(result);
         } catch (Exception e) {
-            System.out.println("遇到异常："+e.toString());
-            return doFilePost(url,data);
+            errNum++;
+            console.append("上传请求遇到异常："+e.toString()+"\n");
+            if (errNum>5){
+                console.append("上传请求失败次数超过："+errNum+" 次....已停止\n");
+                return null;
+            }else{
+                console.append("上传请求发起第："+errNum+" 次重试\n");
+                return doFilePost(url,data);
+            }
         }
     }
 
@@ -84,6 +105,7 @@ public class OkHttpUtil {
      * @throws Exception
      */
     public void uploadFileBytes(String url,byte[] fileBytes){
+        int errNum=0;
         try {
             RequestBody body = RequestBody.create(fileBytes);
             Request request = new Request.Builder().url(url).method("PUT",body).build();
@@ -91,8 +113,15 @@ public class OkHttpUtil {
             //String result=response.body().string();
             console.append("上传文件请求状态码："+response.code()+"\n");
         } catch (Exception e) {
-            System.out.println("遇到异常："+e.toString());
-            uploadFileBytes(url,fileBytes);
+            errNum++;
+            console.append("上传文件遇到异常："+e.toString()+"\n");
+            if (errNum>5){
+                console.append("上传文件失败次数超过："+errNum+" 次....已停止\n");
+                return;
+            }else{
+                console.append("上传文件发起第："+errNum+" 次重试\n");
+                uploadFileBytes(url,fileBytes);
+            }
         }
     }
 }

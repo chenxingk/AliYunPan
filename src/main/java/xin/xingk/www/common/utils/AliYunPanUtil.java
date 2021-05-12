@@ -24,12 +24,18 @@ public class AliYunPanUtil{
     OkHttpUtil okHttpUtil=new OkHttpUtil();
 
     public void startBackup() {
-        this.getAliYunPanInfo();//登录阿里云
+        boolean login = this.getAliYunPanInfo();//登录阿里云
+        if (!login){
+            return;
+        }
         String wxFileId=this.getFileId(CommonConstants.ROOT, CommonConstants.BACK_NAME);//备份目录ID
         if (CommonConstants.BACK_TYPE==0){//普通备份
             this.scanFolders(CommonConstants.PATH,wxFileId,true);
         }else {
+            //开始获取文件
             List<String> folderList = FileUtil.fileFolderList(CommonConstants.PATH,FileUtil.FOLDER);//获取用户目录下所有目录
+            List<String> folderFileList = FileUtil.fileFolderList(CommonConstants.PATH,FileUtil.FILE);//本地文件夹下文件
+            //上传文件夹下所有目录
             if (ObjectUtil.isNotNull(folderList) && folderList.size()>0){
                 for (String folderName :  folderList) {
                     String path = CommonConstants.PATH + FileUtil.FILE_SEPARATOR + folderName;//路径
@@ -47,18 +53,17 @@ public class AliYunPanUtil{
                     String dateFileId = this.getFileId(folderFileId, folderName);//微信备份-文件夹-日期
                     this.scanFolders(path,dateFileId,false);
                 }
-            }else {
-                console.append("开始获取："+CommonConstants.PATH+"\n");
-                List<String> fileList = FileUtil.fileFolderList(CommonConstants.PATH,FileUtil.FILE);//本地文件夹下文件
+            }
+            //上传文件夹下文件
+            if (ObjectUtil.isNotNull(folderFileList) && folderList.size()>0){
                 console.append("获取："+CommonConstants.PATH+" 下所有文件成功"+"\n");
-                for (String filePath :  fileList) {
+                for (String filePath :  folderFileList) {
                     Map<String, Object> map = FileUtil.getFileInfo(filePath);
                     String type = map.get("type").toString();
                     String typeFileId=this.getFileId(wxFileId,type);//微信备份-类型
                     this.doUploadFile(typeFileId,map);
                 }
             }
-
         }
     }
 
@@ -67,18 +72,23 @@ public class AliYunPanUtil{
      * @return
      * @throws Exception
      */
-    public void getAliYunPanInfo(){
+    public boolean getAliYunPanInfo(){
         console.append("开始登录阿里云盘...\n");
         CommonConstants.TOKEN="";
         JSONObject data = new JSONObject();
         data.set("refresh_token",CommonConstants.REFRESH_TOKEN);
         JSONObject aliYunPanInfo = okHttpUtil.doPost(CommonConstants.TOKEN_URL, data);
+        if (ObjectUtil.isNull(aliYunPanInfo)){
+            console.append("登录失败...请检查Token填写是否正确...\n");
+            return false;
+        }
         CommonConstants.TOKEN = aliYunPanInfo.getStr("token_type") + " " + aliYunPanInfo.getStr("access_token");
         CommonConstants.DriveId = aliYunPanInfo.getStr("default_drive_id");
         CommonConstants.REFRESH_TOKEN = aliYunPanInfo.getStr("refresh_token");
         if (StrUtil.isNotEmpty(CommonConstants.TOKEN)){
             console.append("登录阿里云盘成功...\n");
         }
+        return true;
     }
 
     /**
@@ -184,6 +194,7 @@ public class AliYunPanUtil{
      * @throws Exception
      */
     public String getFileId(String parentFileId,String folderName){
+        console.append("开始获取文件夹："+folderName+"\n");
         String fileId="";
         JSONObject fileList = getFileList(parentFileId);//获取文件目录
         JSONArray fileArray = fileList.getJSONArray("items");

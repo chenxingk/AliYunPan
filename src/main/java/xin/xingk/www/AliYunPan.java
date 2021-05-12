@@ -1,6 +1,8 @@
 package xin.xingk.www;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.setting.Setting;
 import xin.xingk.www.common.CommonConstants;
 import xin.xingk.www.common.MyConsole;
 import xin.xingk.www.common.utils.AliYunPanUtil;
@@ -9,8 +11,7 @@ import xin.xingk.www.common.utils.FileUtil;
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.Enumeration;
 
 
@@ -51,6 +52,13 @@ public class AliYunPan extends JFrame implements ActionListener {
     // 暂停备份
     private JButton pauseBackup;
 
+    //判断系统是否有托盘
+    static SystemTray tray = SystemTray.getSystemTray();
+    //托盘图标
+    private static TrayIcon trayIcon = null;
+    //配置文件
+    Setting setting =CommonConstants.setting;
+
     public AliYunPan(){
         initConfig();
         initUi();
@@ -72,8 +80,8 @@ public class AliYunPan extends JFrame implements ActionListener {
         }
         //设置显示窗口标题
         setTitle("备份助手");
-        //设置标题栏的图标为
-        this.setIconImage(new ImageIcon("src/main/resources/logo.png").getImage());
+        //设置标题栏的图标
+        this.setIconImage(new ImageIcon(getClass().getResource("/images/logo.png")).getImage());
         //设置窗口显示尺寸
         setSize(800,600);
         //窗口是否可以关闭
@@ -82,6 +90,14 @@ public class AliYunPan extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         //禁止改变窗口大小
         this.setResizable(false);
+
+        // 窗口最小化事件
+        this.addWindowListener(new WindowAdapter() {
+            public void windowIconified(WindowEvent e) {
+                setVisible(false);
+                miniTray();
+            }
+        });
     }
 
     public void initUi() {
@@ -108,18 +124,21 @@ public class AliYunPan extends JFrame implements ActionListener {
         //选择目录框
         pathTitle.setBounds(title_left, 20, title_width, title_high);
         container.add(pathTitle);
+        pathText.setText(setting.getStr("pathText"));
         pathText.setBounds(obj_left, 20, text_width, text_high);
         container.add(pathText);
 
         //token框
         tokenTitle.setBounds(title_left, 60, title_width, title_high);
         container.add(tokenTitle);
+        tokenText.setText(setting.getStr("tokenText"));
         tokenText.setBounds(obj_left, 60, text_width, text_high);
         container.add(tokenText);
 
         //目录名称框
         folderTitle.setBounds(title_left, 100, title_width, title_high);
         container.add(folderTitle);
+        folderText.setText(setting.getStr("folderText"));
         folderText.setBounds(obj_left, 100, text_width, text_high);
         container.add(folderText);
 
@@ -129,12 +148,26 @@ public class AliYunPan extends JFrame implements ActionListener {
         selectBtn.addActionListener(this);
         container.add(selectBtn);
 
+
+        //读取设置中选中的模式
+        String type = setting.getStr("backType");
+        boolean pt_checked=false;
+        boolean fl_checked=false;
+        if (ObjectUtil.isNotNull(type)){
+            if (type.equals("0")){
+                pt_checked=true;
+            }else if (type.equals("1")){
+                fl_checked=true;
+            }
+        }else {
+            pt_checked=true;
+        }
         //模式选择
-        puTongRadio = new JRadioButton("普通备份",true);
+        puTongRadio = new JRadioButton("普通备份",pt_checked);
         puTongRadio.setBounds(100, radio_top, radio_width, radio_high);
         puTongRadio.setBackground(container.getBackground());
         container.add(puTongRadio);
-        fenLeiRadio = new JRadioButton("分类备份");
+        fenLeiRadio = new JRadioButton("分类备份",fl_checked);
         fenLeiRadio.setBounds(250, radio_top, radio_width, radio_high);
         fenLeiRadio.setBackground(container.getBackground());
         container.add(fenLeiRadio);
@@ -182,20 +215,21 @@ public class AliYunPan extends JFrame implements ActionListener {
 
             //开始按钮
             if (e.getSource() == startBackup) {
-                if (tokenText.getText().length()!=32){
-                    JOptionPane.showMessageDialog(null, "您输入的token不正确", "错误", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
                 //获取用户输入的token
                 CommonConstants.REFRESH_TOKEN=tokenText.getText();
+                setting.set("tokenText",CommonConstants.REFRESH_TOKEN);
                 //获取用户输入的目录
                 CommonConstants.PATH=pathText.getText();
+                setting.set("pathText",CommonConstants.PATH);
                 //获取用户输入的目录名称
                 CommonConstants.BACK_NAME=folderText.getText();
+                setting.set("folderText",CommonConstants.BACK_NAME);
                 //获取上传模式
                 CommonConstants.BACK_TYPE = puTongRadio.isSelected() ? 0 : 1;
+                setting.set("backType",CommonConstants.BACK_TYPE+"");
                 //输出模式
                 console.append("备份模式："+(puTongRadio.isSelected() ? "普通模式" : "分类模式")+"\n");
+                setting.store(CommonConstants.CONFIG_PATH);
                 //执行上传文件操作
                 aliYunPanUtil.startBackup();
             }
@@ -223,7 +257,44 @@ public class AliYunPan extends JFrame implements ActionListener {
             JOptionPane.showMessageDialog(null, "您没有输入需要备份到阿里云的目录", "错误", JOptionPane.ERROR_MESSAGE);
             return false;
         }
+        if (tokenText.getText().length()!=32){
+            JOptionPane.showMessageDialog(null, "您输入的token不正确", "错误", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if (!FileUtil.isDirectory(pathText.getText())){
+            JOptionPane.showMessageDialog(null, "请选择正确目录", "错误", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
         return true;
+    }
+
+    //窗口最小化到任务栏托盘
+    private void miniTray() {
+        ImageIcon trayImg = new ImageIcon(JFrame.class.getClass().getResource("/images/logo.png"));//托盘图标
+        trayIcon = new TrayIcon(trayImg.getImage(), "备份助手");
+        trayIcon.setImageAutoSize(true);
+
+        //鼠标点击事件处理器
+        trayIcon.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                //if (e.getClickCount() ==2 ) {
+                // 鼠标点击一次打开软件
+                if (e.getClickCount() == 1) {
+                    // 移去托盘图标
+                    tray.remove(trayIcon);
+                    setVisible(true);
+                    //还原窗口
+                    setExtendedState(JFrame.NORMAL);
+                    toFront();
+                }
+            }
+        });
+
+        try {
+            tray.add(trayIcon);
+        } catch (Exception e) {
+            System.out.println("发生异常："+e);
+        }
     }
 
 }
