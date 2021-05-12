@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import cn.hutool.setting.Setting;
 import xin.xingk.www.common.CommonConstants;
 import xin.xingk.www.common.MyConsole;
 
@@ -19,6 +20,8 @@ public class AliYunPanUtil{
 
     // 日志界面
     MyConsole console = CommonConstants.console;
+    //配置文件
+    Setting setting =CommonConstants.setting;
 
     //请求工具类
     OkHttpUtil okHttpUtil=new OkHttpUtil();
@@ -85,6 +88,8 @@ public class AliYunPanUtil{
         CommonConstants.TOKEN = aliYunPanInfo.getStr("token_type") + " " + aliYunPanInfo.getStr("access_token");
         CommonConstants.DriveId = aliYunPanInfo.getStr("default_drive_id");
         CommonConstants.REFRESH_TOKEN = aliYunPanInfo.getStr("refresh_token");
+        setting.set("tokenText",CommonConstants.REFRESH_TOKEN);
+        setting.autoLoad(true);
         if (StrUtil.isNotEmpty(CommonConstants.TOKEN)){
             console.append("登录阿里云盘成功...\n");
         }
