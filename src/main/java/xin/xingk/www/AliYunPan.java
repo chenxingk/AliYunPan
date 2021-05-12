@@ -14,7 +14,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Enumeration;
 
-
+/**
+ * Description: GUI
+ * Author: 陈靖杰
+ * Date: 2021/05/12
+ */
 public class AliYunPan extends JFrame implements ActionListener {
 
     private static final int obj_left = 100;//左边距

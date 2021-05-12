@@ -3,6 +3,11 @@ package xin.xingk.www.common;
 import cn.hutool.core.util.StrUtil;
 import xin.xingk.www.common.utils.AliYunPanUtil;
 
+/**
+ * Description: 定时任务类
+ * Author: 陈靖杰
+ * Date: 2021/05/12
+ */
 public class CronTask {
 
     // 日志界面
