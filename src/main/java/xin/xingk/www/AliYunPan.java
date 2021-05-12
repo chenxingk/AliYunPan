@@ -233,6 +233,7 @@ public class AliYunPan extends JFrame implements ActionListener {
                 setting.set("backType",CommonConstants.BACK_TYPE+"");
                 //输出模式
                 console.append("备份模式："+(puTongRadio.isSelected() ? "普通模式" : "分类模式")+"\n");
+                console.paintImmediately(console.getBounds());
                 setting.store(CommonConstants.CONFIG_PATH);
                 //执行上传文件操作
                 aliYunPanUtil.startBackup();
