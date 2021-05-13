@@ -1,8 +1,6 @@
 package xin.xingk.www;
 
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.cron.CronUtil;
-import xin.xingk.www.common.CommonConstants;
 
 /**
  * 微信备份程序
@@ -38,11 +36,11 @@ public class App {
         System.out.println("ok");*/
         /*String CONFIG_PATH = System.getProperty("user.dir") + File.separator + "uploadLog.txt";
         FileWriter fileWriter = FileWriter.create(FileUtil.touch(CONFIG_PATH), CharsetUtil.CHARSET_UTF_8);
-        fileWriter.append("测试\n");
-        fileWriter.append("测试\n");
-        fileWriter.append("测试\n");
-        fileWriter.append("测试\n");
-        fileWriter.append("测试\n");
+        fileWriter.append("测试");
+        fileWriter.append("测试");
+        fileWriter.append("测试");
+        fileWriter.append("测试");
+        fileWriter.append("测试");
         FileReader fileReader = new FileReader(CONFIG_PATH);
         List<String> list = fileReader.readLines();
         System.out.println(111);*/

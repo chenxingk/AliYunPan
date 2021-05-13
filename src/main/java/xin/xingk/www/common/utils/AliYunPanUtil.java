@@ -47,7 +47,7 @@ public class AliYunPanUtil{
             if (ObjectUtil.isNotNull(folderList) && folderList.size()>0){
                 for (String folderName :  folderList) {
                     String path = CommonConstants.PATH + FileUtil.FILE_SEPARATOR + folderName;//路径
-                    console.append("开始获取："+path+"\n");
+                    CommonConstants.addConsole("开始获取："+path);
                     List<String> fileList = FileUtil.fileFolderList(path,FileUtil.FILE);//本地文件夹下文件
                     uploadFileList(fileList,wxFileId,true);
                     String folderFileId = this.getFileId(wxFileId, "文件夹");//微信备份-文件夹
@@ -58,7 +58,7 @@ public class AliYunPanUtil{
 
             //上传文件夹下文件
             if (ObjectUtil.isNotNull(folderFileList) && folderFileList.size()>0){
-                console.append("获取："+CommonConstants.PATH+" 下所有文件成功"+"\n");
+                CommonConstants.addConsole("获取："+CommonConstants.PATH+" 下所有文件成功");
                 uploadFileList(folderFileList,wxFileId,true);
             }
         }
@@ -70,13 +70,13 @@ public class AliYunPanUtil{
      * @throws Exception
      */
     public boolean getAliYunPanInfo(){
-        console.append("开始登录阿里云盘...\n");
+        CommonConstants.addConsole("开始登录阿里云盘...");
         CommonConstants.TOKEN="";
         JSONObject data = new JSONObject();
         data.set("refresh_token",CommonConstants.REFRESH_TOKEN);
         JSONObject aliYunPanInfo = okHttpUtil.doPost(CommonConstants.TOKEN_URL, data);
         if (ObjectUtil.isNull(aliYunPanInfo)){
-            console.append("登录失败...请检查Token填写是否正确...\n");
+            CommonConstants.addConsole("登录失败...请检查Token填写是否正确...");
             return false;
         }
         CommonConstants.TOKEN = aliYunPanInfo.getStr("token_type") + " " + aliYunPanInfo.getStr("access_token");
@@ -85,7 +85,7 @@ public class AliYunPanUtil{
         setting.set("tokenText",CommonConstants.REFRESH_TOKEN);
         setting.autoLoad(true);
         if (StrUtil.isNotEmpty(CommonConstants.TOKEN)){
-            console.append("登录阿里云盘成功...\n");
+            CommonConstants.addConsole("登录阿里云盘成功...");
         }
         return true;
     }
@@ -193,7 +193,7 @@ public class AliYunPanUtil{
      * @throws Exception
      */
     public String getFileId(String parentFileId,String folderName){
-        console.append("开始获取文件夹："+folderName+"\n");
+        CommonConstants.addConsole("开始获取文件夹："+folderName);
         String fileId="";
         JSONObject fileList = getFileList(parentFileId);//获取文件目录
         JSONArray fileArray = fileList.getJSONArray("items");
@@ -220,7 +220,7 @@ public class AliYunPanUtil{
      * @throws Exception
      */
     public void doUploadFile(String fileId,Map<String, Object> fileInfo){
-        console.append("开始上传："+fileInfo.get("path")+"\n");
+        CommonConstants.addConsole("开始上传："+fileInfo.get("path"));
         JSONObject uploadFile = uploadFile(fileId,fileInfo);
         if(ObjectUtil.isNotNull(uploadFile.getJSONArray("part_info_list"))){//上传新文件
             byte[] fileBytes = FileUtil.readBytes(fileInfo.get("path").toString());
@@ -232,7 +232,7 @@ public class AliYunPanUtil{
             String uploadId = uploadFile.getStr("upload_id");
             completeFile(upFileId, uploadId);
         }
-        console.append("上传文件成功："+fileInfo.get("name")+"\n");
+        CommonConstants.addConsole("上传文件成功："+fileInfo.get("name"));
     }
 
     /**
@@ -243,10 +243,10 @@ public class AliYunPanUtil{
      * @throws Exception
      */
     public void scanFolders(String path,String pathId,Boolean isUploadFile){
-        console.append("开始获取："+path+"\n");
+        CommonConstants.addConsole("开始获取："+path);
         //获取文件夹下所有文件
         List<String> fileList = FileUtil.fileFolderList(path,FileUtil.FILE);
-        console.append("获取："+path+" 下所有文件成功"+"\n");
+        CommonConstants.addConsole("获取："+path+" 下所有文件成功");
         if (isUploadFile){
             uploadFileList(fileList,pathId,false);
         }
@@ -258,10 +258,10 @@ public class AliYunPanUtil{
             String fileId = getFileId(pathId, folder);//创建文件夹-文件夹ID
             String filePath = path + FileUtil.FILE_SEPARATOR + folder;//路径
             //写入文件目录
-            writerLog.append(CommonConstants.PATH + FileUtil.FILE_SEPARATOR+getFolderName(filePath) + "\n");
+            writerLog.append(CommonConstants.PATH + FileUtil.FILE_SEPARATOR+getFolderName(filePath) + "");
             fileList = FileUtil.fileFolderList(path,FileUtil.FILE);//获取当前文件夹下所有文件
             uploadFileList(fileList,fileId,false);//上传当前文件夹内的文件
-            console.append("扫描新文件夹："+filePath+"\n");
+            CommonConstants.addConsole("扫描新文件夹："+filePath);
             scanFolders(filePath,fileId,true);
         }
     }
@@ -296,7 +296,7 @@ public class AliYunPanUtil{
         String folderName = StrUtil.subAfter(thisPath , CommonConstants.PATH+"\\", false);
         if (StrUtil.isNotEmpty(folderName) && !folderName.contains("\\")){
             //写入文件目录
-            //writerLog.append(CommonConstants.PATH + FileUtil.FILE_SEPARATOR+folderName + "\n");
+            //writerLog.append(CommonConstants.PATH + FileUtil.FILE_SEPARATOR+folderName + "");
         }else{
             folderName = StrUtil.subBefore(folderName , "\\", false);
         }

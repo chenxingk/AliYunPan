@@ -10,9 +10,6 @@ import xin.xingk.www.common.utils.AliYunPanUtil;
  */
 public class CronTask {
 
-    // 日志界面
-    MyConsole console = CommonConstants.console;
-
     //阿里云工具类
     private AliYunPanUtil aliYunPanUtil=new AliYunPanUtil();
 
@@ -21,7 +18,7 @@ public class CronTask {
      */
     public void updateALiYunPanToken(){
         if (StrUtil.isNotEmpty(CommonConstants.REFRESH_TOKEN)){
-            console.append("定时更新阿里云Token\n");
+            CommonConstants.addConsole("定时更新阿里云Token");
             aliYunPanUtil.getAliYunPanInfo();
         }
     }

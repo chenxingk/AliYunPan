@@ -192,7 +192,7 @@ public class Test extends JFrame implements ActionListener {
         checkBtn.addActionListener(this);
         container.add(checkBtn);
 
-        logArea = new JTextArea("Program Start...\n");
+        logArea = new JTextArea("Program Start...");
         logArea.setForeground(Color.white);
         logArea.setBackground(Color.BLACK);
 //        logArea.setBounds(0, 300, 800, 600);
@@ -302,29 +302,29 @@ public class Test extends JFrame implements ActionListener {
             // 代码评审记录
             pathMap.put("review", rootPath + map.get("review"));
 
-            logArea.setText("开始检查...\n");
+            logArea.setText("开始检查...");
             // pathList=new ArrayList<String>();
             // getAllFileInDir(newOld);
             // for(String str:pathList){
-            // logArea.append(str+"\n");
+            // logArea.append(str);
             // }
             getRMConfig();
             for (Entry<String, String> entry : pathMap.entrySet()) {
                 switch (entry.getKey()) {
                     case "newOld":
-                        logArea.append("前后文件\n");
+                        logArea.append("前后文件");
                         break;
                     case "test":
-                        logArea.append("测试报告\n");
+                        logArea.append("测试报告");
                         break;
                     case "design":
-                        logArea.append("设计文档\n");
+                        logArea.append("设计文档");
                         break;
                     case "sumary":
-                        logArea.append("反讲纪要\n");
+                        logArea.append("反讲纪要");
                         break;
                     case "review":
-                        logArea.append("代码检视\n");
+                        logArea.append("代码检视");
                         break;
                     default:
                         break;
@@ -332,7 +332,7 @@ public class Test extends JFrame implements ActionListener {
                 inDirRmList = getRmInPath(entry.getValue());
                 for (Entry<String, String> rmEntry : rmMap.entrySet()) {
                     if (!inDirRmList.contains(rmEntry.getKey())) {
-                        logArea.append(rmEntry.getKey() + ": " + rmEntry.getValue() + "\n");
+                        logArea.append(rmEntry.getKey() + ": " + rmEntry.getValue() + "");
                     }
                 }
             }
@@ -340,7 +340,7 @@ public class Test extends JFrame implements ActionListener {
 
         if (e.getSource() == refreshBtn) {
             configArea.setText(getConfigStr());
-            logArea.append("刷新配置文件成功\n");
+            logArea.append("刷新配置文件成功");
         }
 
         if (e.getSource() == saveBtn) {
@@ -458,13 +458,13 @@ public class Test extends JFrame implements ActionListener {
             filePath.add(path);
         }
         int i = 0;
-        logArea.setText("开始创建文件夹...\n");
+        logArea.setText("开始创建文件夹...");
         for (String path : filePath) {
             File file = new File(path);
             try {
                 i++;
                 file.mkdirs();
-                logArea.append(i + ". " + path + "\n");
+                logArea.append(i + ". " + path + "");
             } catch (Exception e) {
                 return false;
             }
@@ -507,7 +507,7 @@ public class Test extends JFrame implements ActionListener {
             String line;
             while ((line = br.readLine()) != null) {
                 sb.append(line);
-                sb.append("\n");
+                sb.append("");
             }
             br.close();
 

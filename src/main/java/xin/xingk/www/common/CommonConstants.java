@@ -56,6 +56,13 @@ public class CommonConstants {
     //备份目录名称
     public static int BACK_TYPE=0;//0是普通备份 1是分类备份
 
-
+    /**
+     * 添加控制台
+     * @param text
+     */
+    public static void addConsole(String text){
+        console.append(text+"\n");
+        console.paintImmediately(console.getBounds());
+    }
 
 }
