@@ -4,7 +4,6 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.setting.Setting;
 import xin.xingk.www.common.CommonConstants;
-import xin.xingk.www.common.MyConsole;
 import xin.xingk.www.common.utils.AliYunPanUtil;
 import xin.xingk.www.common.utils.FileUtil;
 
@@ -34,7 +33,8 @@ public class AliYunPan extends JFrame implements ActionListener {
     //阿里云工具类
     private AliYunPanUtil aliYunPanUtil=new AliYunPanUtil();
     // 日志界面
-    MyConsole console = CommonConstants.console;
+    JScrollPane consolePane = CommonConstants.consolePane;
+    JScrollBar scrollBar = CommonConstants.scrollBar;
     // 备份目录
     private JTextField pathText;
     // Token
@@ -97,6 +97,14 @@ public class AliYunPan extends JFrame implements ActionListener {
 
         // 窗口最小化事件
         this.addWindowListener(new WindowAdapter() {
+            /*public void windowClosing(WindowEvent e) {
+                Thread exit = new Thread(new Runnable() {
+                    public void run() {
+                        System.exit(0);
+                    }
+                });
+                exit.start();
+            }*/
             public void windowIconified(WindowEvent e) {
                 setVisible(false);
                 miniTray();
@@ -189,13 +197,10 @@ public class AliYunPan extends JFrame implements ActionListener {
         pauseBackup.setBounds(250, 195, 100, 30);
         pauseBackup.addActionListener(this);
         container.add(pauseBackup);
-
         //日志面板
-        JScrollPane consolePane = new JScrollPane(console);
         consolePane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-        JScrollBar jb = consolePane.getVerticalScrollBar();
-        jb.setSize(100,100);
-        consolePane.setBounds(-1, 240, 800, 600);
+        scrollBar.setSize(100,100);
+        consolePane.setBounds(0, 240, 800, 348);
         container.add(consolePane);
     }
 

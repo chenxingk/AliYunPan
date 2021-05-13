@@ -7,6 +7,7 @@ import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.setting.Setting;
 import xin.xingk.www.common.utils.FileUtil;
 
+import javax.swing.*;
 import java.io.File;
 
 /**
@@ -18,6 +19,8 @@ public class CommonConstants {
 
     //日志面板
     public static MyConsole console = new MyConsole();
+    public static JScrollPane consolePane = new JScrollPane(console);
+    public static JScrollBar scrollBar = consolePane.getVerticalScrollBar();
     //设置工具
     public static String SYSTEM_PATH = System.getProperty("user.dir") + File.separator;
     //配置文件路径
@@ -57,12 +60,13 @@ public class CommonConstants {
     public static int BACK_TYPE=0;//0是普通备份 1是分类备份
 
     /**
-     * 添加控制台
+     * 添加控制台日志
      * @param text
      */
     public static void addConsole(String text){
         console.append(text+"\n");
         console.paintImmediately(console.getBounds());
+        scrollBar.setValue(scrollBar.getMaximum());
     }
 
 }
