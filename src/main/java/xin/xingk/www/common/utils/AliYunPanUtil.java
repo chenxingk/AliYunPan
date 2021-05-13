@@ -1,5 +1,7 @@
 package xin.xingk.www.common.utils;
 
+import cn.hutool.core.io.file.FileReader;
+import cn.hutool.core.io.file.FileWriter;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
@@ -25,6 +27,8 @@ public class AliYunPanUtil{
 
     //请求工具类
     OkHttpUtil okHttpUtil=new OkHttpUtil();
+    FileWriter writerLog = CommonConstants.writerLog;
+    FileReader readerLog = CommonConstants.readerLog;
 
     public void startBackup() {
         boolean login = this.getAliYunPanInfo();//登录阿里云
@@ -38,34 +42,24 @@ public class AliYunPanUtil{
             //开始获取文件
             List<String> folderList = FileUtil.fileFolderList(CommonConstants.PATH,FileUtil.FOLDER);//获取用户目录下所有目录
             List<String> folderFileList = FileUtil.fileFolderList(CommonConstants.PATH,FileUtil.FILE);//本地文件夹下文件
+
             //上传文件夹下所有目录
             if (ObjectUtil.isNotNull(folderList) && folderList.size()>0){
                 for (String folderName :  folderList) {
                     String path = CommonConstants.PATH + FileUtil.FILE_SEPARATOR + folderName;//路径
                     console.append("开始获取："+path+"\n");
                     List<String> fileList = FileUtil.fileFolderList(path,FileUtil.FILE);//本地文件夹下文件
-                    console.append("获取："+path+" 下所有文件成功\n");
-                    for (String filePath :  fileList) {
-                        Map<String, Object> map = FileUtil.getFileInfo(filePath);
-                        String type = map.get("type").toString();
-                        String typeFileId=this.getFileId(wxFileId,type);//微信备份-类型
-                        String dateFileId=this.getFileId(typeFileId,folderName);//微信备份-类型-日期
-                        this.doUploadFile(dateFileId,map);
-                    }
+                    uploadFileList(fileList,wxFileId,true);
                     String folderFileId = this.getFileId(wxFileId, "文件夹");//微信备份-文件夹
                     String dateFileId = this.getFileId(folderFileId, folderName);//微信备份-文件夹-日期
                     this.scanFolders(path,dateFileId,false);
                 }
             }
+
             //上传文件夹下文件
-            if (ObjectUtil.isNotNull(folderFileList) && folderList.size()>0){
+            if (ObjectUtil.isNotNull(folderFileList) && folderFileList.size()>0){
                 console.append("获取："+CommonConstants.PATH+" 下所有文件成功"+"\n");
-                for (String filePath :  folderFileList) {
-                    Map<String, Object> map = FileUtil.getFileInfo(filePath);
-                    String type = map.get("type").toString();
-                    String typeFileId=this.getFileId(wxFileId,type);//微信备份-类型
-                    this.doUploadFile(typeFileId,map);
-                }
+                uploadFileList(folderFileList,wxFileId,true);
             }
         }
     }
@@ -254,16 +248,19 @@ public class AliYunPanUtil{
         List<String> fileList = FileUtil.fileFolderList(path,FileUtil.FILE);
         console.append("获取："+path+" 下所有文件成功"+"\n");
         if (isUploadFile){
-            uploadFileList(fileList,pathId);
+            uploadFileList(fileList,pathId,false);
         }
         //获得目录下所有文件夹
         List<String> folderList = FileUtil.fileFolderList(path,FileUtil.FOLDER);
         //循环文件夹
         for (String folder : folderList){
+
             String fileId = getFileId(pathId, folder);//创建文件夹-文件夹ID
             String filePath = path + FileUtil.FILE_SEPARATOR + folder;//路径
+            //写入文件目录
+            writerLog.append(CommonConstants.PATH + FileUtil.FILE_SEPARATOR+getFolderName(filePath) + "\n");
             fileList = FileUtil.fileFolderList(path,FileUtil.FILE);//获取当前文件夹下所有文件
-            uploadFileList(fileList,fileId);//上传当前文件夹内的文件
+            uploadFileList(fileList,fileId,false);//上传当前文件夹内的文件
             console.append("扫描新文件夹："+filePath+"\n");
             scanFolders(filePath,fileId,true);
         }
@@ -273,13 +270,37 @@ public class AliYunPanUtil{
      * 上传文件夹下文件到某个目录
      * @param fileList 文件list
      * @param pathId 阿里云文件夹ID
+     * @param backType 是否开启分类
      * @throws Exception
      */
-    public void uploadFileList(List<String> fileList, String pathId){
+    public void uploadFileList(List<String> fileList, String pathId,Boolean backType){
         for (String filePath :  fileList) {
             Map<String, Object> map = FileUtil.getFileInfo(filePath);
-            doUploadFile(pathId,map);
+            if (backType){//开启分类
+                String type = map.get("type").toString();
+                String typeFileId=this.getFileId(pathId,type);//微信备份-类型
+                String dateFileId=this.getFileId(typeFileId,getFolderName(filePath));//微信备份-类型-文件夹
+                doUploadFile(dateFileId,map);
+            }else {
+                doUploadFile(pathId,map);
+            }
         }
+    }
+
+    /**
+     * 获取文件夹名称
+     * @param thisPath
+     * @return
+     */
+    public String getFolderName(String thisPath) {
+        String folderName = StrUtil.subAfter(thisPath , CommonConstants.PATH+"\\", false);
+        if (StrUtil.isNotEmpty(folderName) && !folderName.contains("\\")){
+            //写入文件目录
+            //writerLog.append(CommonConstants.PATH + FileUtil.FILE_SEPARATOR+folderName + "\n");
+        }else{
+            folderName = StrUtil.subBefore(folderName , "\\", false);
+        }
+        return folderName;
     }
     
     
