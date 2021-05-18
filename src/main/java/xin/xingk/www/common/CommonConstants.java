@@ -58,15 +58,20 @@ public class CommonConstants {
     public static String BACK_NAME="";
     //备份目录名称
     public static int BACK_TYPE=0;//0是普通备份 1是分类备份
+    public static int CLEAN_CONSOLE=0;//0是情况 1不清空
 
     /**
      * 添加控制台日志
      * @param text
      */
     public static void addConsole(String text){
-        console.append(text+"\n");
-        console.paintImmediately(console.getBounds());
-        scrollBar.setValue(scrollBar.getMaximum());
+        if (CLEAN_CONSOLE==0){
+            console.setText("开始运行"+"\n");
+        }else {
+            console.append(text+"\n");
+            console.paintImmediately(console.getBounds());
+            scrollBar.setValue(scrollBar.getMaximum());
+        }
     }
 
 }

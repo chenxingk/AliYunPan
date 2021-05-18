@@ -64,8 +64,10 @@ public class AliYunPan extends JFrame implements ActionListener {
     Setting setting =CommonConstants.setting;
 
     public AliYunPan(){
-        initConfig();
-        initUi();
+        Thread init = new Thread(() -> initConfig());
+        init.start();
+        Thread ui = new Thread(() -> initUi());
+        ui.start();
         this.setVisible(true);
     }
 
@@ -97,18 +99,15 @@ public class AliYunPan extends JFrame implements ActionListener {
 
         // 窗口最小化事件
         this.addWindowListener(new WindowAdapter() {
-            /*public void windowClosing(WindowEvent e) {
-                Thread exit = new Thread(new Runnable() {
-                    public void run() {
-                        System.exit(0);
-                    }
-                });
-                exit.start();
-            }*/
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+
             public void windowIconified(WindowEvent e) {
                 setVisible(false);
                 miniTray();
             }
+
         });
     }
 
@@ -224,6 +223,7 @@ public class AliYunPan extends JFrame implements ActionListener {
 
             //开始按钮
             if (e.getSource() == startBackup) {
+                CommonConstants.CLEAN_CONSOLE=0;
                 //获取用户输入的token
                 CommonConstants.REFRESH_TOKEN=tokenText.getText();
                 setting.set("tokenText",CommonConstants.REFRESH_TOKEN);
@@ -240,7 +240,9 @@ public class AliYunPan extends JFrame implements ActionListener {
                 CommonConstants.addConsole("备份模式："+(puTongRadio.isSelected() ? "普通模式" : "分类模式"));
                 setting.store(CommonConstants.CONFIG_PATH);
                 //执行上传文件操作
-                aliYunPanUtil.startBackup();
+                Thread backup = new Thread(() -> aliYunPanUtil.startBackup());
+                backup.stop();
+                backup.start();
             }
 
             //暂停按钮

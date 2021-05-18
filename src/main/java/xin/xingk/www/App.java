@@ -8,6 +8,8 @@ import cn.hutool.cron.CronUtil;
  */
 public class App {
     public static void main( String[] args ) {
+//        Thread threadOne = new Thread(() -> new AliYunPan());
+//        threadOne.start();
         //加载UI
         new AliYunPan();
         //开启定时

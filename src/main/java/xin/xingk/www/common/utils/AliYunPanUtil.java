@@ -31,6 +31,7 @@ public class AliYunPanUtil{
     FileReader readerLog = CommonConstants.readerLog;
 
     public void startBackup() {
+        CommonConstants.CLEAN_CONSOLE=1;
         boolean login = this.getAliYunPanInfo();//登录阿里云
         if (!login){
             return;
