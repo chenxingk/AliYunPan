@@ -187,6 +187,7 @@ public class AliYunPan extends JFrame implements ActionListener {
 
 
         //startBackup = new JButton("开始备份");
+        startBackup.setFont(new Font("宋体", Font.PLAIN, 13));
         startBackup.setBounds(100, 195, 100, 30);
         startBackup.addActionListener(this);
         container.add(startBackup);
