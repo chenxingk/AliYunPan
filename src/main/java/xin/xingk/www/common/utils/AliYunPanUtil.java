@@ -8,8 +8,8 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.setting.Setting;
 import xin.xingk.www.common.CommonConstants;
-import xin.xingk.www.common.MyConsole;
 
+import javax.swing.*;
 import java.util.List;
 import java.util.Map;
 
@@ -20,16 +20,19 @@ import java.util.Map;
  */
 public class AliYunPanUtil{
 
-    // 日志界面
-    MyConsole console = CommonConstants.console;
     //配置文件
     Setting setting =CommonConstants.setting;
+    //Token文本框
+    JTextField tokenText = CommonConstants.tokenText;
 
     //请求工具类
-    OkHttpUtil okHttpUtil=new OkHttpUtil();
+    OkHttpUtil okHttpUtil = new OkHttpUtil();
     FileWriter writerLog = CommonConstants.writerLog;
     FileReader readerLog = CommonConstants.readerLog;
 
+    /**
+     * 开始备份
+     */
     public void startBackup() {
         CommonConstants.CLEAN_CONSOLE=1;
         boolean login = this.getAliYunPanInfo();//登录阿里云
@@ -45,24 +48,24 @@ public class AliYunPanUtil{
             List<String> folderFileList = FileUtil.fileFolderList(CommonConstants.PATH,FileUtil.FILE);//本地文件夹下文件
 
             //上传文件夹下所有目录
-            if (ObjectUtil.isNotNull(folderList) && folderList.size()>0){
+            if (folderList.size()!=0){
                 for (String folderName :  folderList) {
                     String path = CommonConstants.PATH + FileUtil.FILE_SEPARATOR + folderName;//路径
                     CommonConstants.addConsole("开始获取："+path);
-                    List<String> fileList = FileUtil.fileFolderList(path,FileUtil.FILE);//本地文件夹下文件
-                    uploadFileList(fileList,wxFileId,true);
                     String folderFileId = this.getFileId(wxFileId, "文件夹");//微信备份-文件夹
-                    String dateFileId = this.getFileId(folderFileId, folderName);//微信备份-文件夹-日期
-                    this.scanFolders(path,dateFileId,false);
+                    String dateFileId = this.getFileId(folderFileId, folderName);//微信备份-文件夹-folderName
+                    this.scanFolders(path,dateFileId,true);
                 }
             }
 
             //上传文件夹下文件
-            if (ObjectUtil.isNotNull(folderFileList) && folderFileList.size()>0){
+            if (folderFileList.size()!=0){
                 CommonConstants.addConsole("获取："+CommonConstants.PATH+" 下所有文件成功");
                 uploadFileList(folderFileList,wxFileId,true);
             }
         }
+        CommonConstants.addConsole("本次备份："+CommonConstants.PATH+" 下所有文件成功！...");
+        return;
     }
 
     /**
@@ -83,7 +86,9 @@ public class AliYunPanUtil{
         CommonConstants.TOKEN = aliYunPanInfo.getStr("token_type") + " " + aliYunPanInfo.getStr("access_token");
         CommonConstants.DriveId = aliYunPanInfo.getStr("default_drive_id");
         CommonConstants.REFRESH_TOKEN = aliYunPanInfo.getStr("refresh_token");
-        setting.set("tokenText",CommonConstants.REFRESH_TOKEN);
+        setting.set("tokenText",aliYunPanInfo.getStr("refresh_token"));
+        tokenText.setText(aliYunPanInfo.getStr("refresh_token"));
+        setting.store(CommonConstants.CONFIG_PATH);
         setting.autoLoad(true);
         if (StrUtil.isNotEmpty(CommonConstants.TOKEN)){
             CommonConstants.addConsole("登录阿里云盘成功...");
@@ -221,19 +226,27 @@ public class AliYunPanUtil{
      * @throws Exception
      */
     public void doUploadFile(String fileId,Map<String, Object> fileInfo){
-        CommonConstants.addConsole("开始上传："+fileInfo.get("path"));
-        JSONObject uploadFile = uploadFile(fileId,fileInfo);
-        if(ObjectUtil.isNotNull(uploadFile.getJSONArray("part_info_list"))){//上传新文件
-            byte[] fileBytes = FileUtil.readBytes(fileInfo.get("path").toString());
-            String uploadUrl = uploadFile.getJSONArray("part_info_list").getJSONObject(0).getStr("upload_url");
-            okHttpUtil.uploadFileBytes(uploadUrl,fileBytes);
+        //写入上传文件的路径
+        List<String> logList = readerLog.readLines();
+        if (!logList.contains(fileInfo.get("path"))){
+            CommonConstants.addConsole("开始上传："+fileInfo.get("path"));
+            JSONObject uploadFile = uploadFile(fileId,fileInfo);
+            if(ObjectUtil.isNotNull(uploadFile.getJSONArray("part_info_list"))){//上传新文件
+                byte[] fileBytes = FileUtil.readBytes(fileInfo.get("path").toString());
+                String uploadUrl = uploadFile.getJSONArray("part_info_list").getJSONObject(0).getStr("upload_url");
+                okHttpUtil.uploadFileBytes(uploadUrl,fileBytes);
+            }
+            if (StrUtil.isEmpty(uploadFile.getStr("exist"))){//上传完成
+                String upFileId = uploadFile.getStr("file_id");
+                String uploadId = uploadFile.getStr("upload_id");
+                completeFile(upFileId, uploadId);
+            }
+            writerLog.append(fileInfo.get("path")+ "\n");
+            CommonConstants.addConsole("上传文件成功："+fileInfo.get("name"));
+        }else {
+            CommonConstants.addConsole(fileInfo.get("path")+" 已上传 跳过");
         }
-        if (StrUtil.isEmpty(uploadFile.getStr("exist"))){//上传完成
-            String upFileId = uploadFile.getStr("file_id");
-            String uploadId = uploadFile.getStr("upload_id");
-            completeFile(upFileId, uploadId);
-        }
-        CommonConstants.addConsole("上传文件成功："+fileInfo.get("name"));
+        return;
     }
 
     /**
@@ -255,11 +268,8 @@ public class AliYunPanUtil{
         List<String> folderList = FileUtil.fileFolderList(path,FileUtil.FOLDER);
         //循环文件夹
         for (String folder : folderList){
-
             String fileId = getFileId(pathId, folder);//创建文件夹-文件夹ID
             String filePath = path + FileUtil.FILE_SEPARATOR + folder;//路径
-            //写入文件目录
-            writerLog.append(CommonConstants.PATH + FileUtil.FILE_SEPARATOR+getFolderName(filePath) + "");
             fileList = FileUtil.fileFolderList(path,FileUtil.FILE);//获取当前文件夹下所有文件
             uploadFileList(fileList,fileId,false);//上传当前文件夹内的文件
             CommonConstants.addConsole("扫描新文件夹："+filePath);
@@ -275,6 +285,8 @@ public class AliYunPanUtil{
      * @throws Exception
      */
     public void uploadFileList(List<String> fileList, String pathId,Boolean backType){
+        List<String> logList = readerLog.readLines();
+        fileList.removeAll(logList);
         for (String filePath :  fileList) {
             Map<String, Object> map = FileUtil.getFileInfo(filePath);
             if (backType){//开启分类

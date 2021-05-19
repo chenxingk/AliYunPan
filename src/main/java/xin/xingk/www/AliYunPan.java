@@ -35,10 +35,10 @@ public class AliYunPan extends JFrame implements ActionListener {
     // 日志界面
     JScrollPane consolePane = CommonConstants.consolePane;
     JScrollBar scrollBar = CommonConstants.scrollBar;
+    //Token文本框
+    JTextField tokenText = CommonConstants.tokenText;
     // 备份目录
     private JTextField pathText;
-    // Token
-    private JTextField tokenText;
     // 目录名称
     private JTextField folderText;
     //选择文件夹按钮
@@ -64,10 +64,8 @@ public class AliYunPan extends JFrame implements ActionListener {
     Setting setting =CommonConstants.setting;
 
     public AliYunPan(){
-        Thread init = new Thread(() -> initConfig());
-        init.start();
-        Thread ui = new Thread(() -> initUi());
-        ui.start();
+        initConfig();
+        initUi();
         this.setVisible(true);
     }
 
@@ -122,7 +120,7 @@ public class AliYunPan extends JFrame implements ActionListener {
         JLabel pathTitle = new JLabel("选择目录");
         pathText = new JTextField();
         JLabel tokenTitle = new JLabel("阿里云Token");
-        tokenText = new JTextField();
+        //tokenText = new JTextField();
         JLabel folderTitle = new JLabel("备份目录名称");
         folderText = new JTextField();
         JLabel backTitle = new JLabel("备份模式");
@@ -241,7 +239,6 @@ public class AliYunPan extends JFrame implements ActionListener {
                 setting.store(CommonConstants.CONFIG_PATH);
                 //执行上传文件操作
                 Thread backup = new Thread(() -> aliYunPanUtil.startBackup());
-                backup.stop();
                 backup.start();
             }
 

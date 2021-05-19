@@ -23,4 +23,13 @@ public class CronTask {
         }
     }
 
+    /**
+     * 定时备份文件
+     */
+    public void backFileList(){
+        //执行上传文件操作
+        Thread backup = new Thread(() -> aliYunPanUtil.startBackup());
+        backup.start();
+    }
+
 }

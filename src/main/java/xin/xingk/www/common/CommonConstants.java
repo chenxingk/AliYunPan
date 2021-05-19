@@ -21,6 +21,8 @@ public class CommonConstants {
     public static MyConsole console = new MyConsole();
     public static JScrollPane consolePane = new JScrollPane(console);
     public static JScrollBar scrollBar = consolePane.getVerticalScrollBar();
+    // Token文本框
+    public static JTextField tokenText = new JTextField();
     //设置工具
     public static String SYSTEM_PATH = System.getProperty("user.dir") + File.separator;
     //配置文件路径

@@ -16,6 +16,20 @@ public class App {
         CronUtil.start();
         //支持秒级别定时任务
         CronUtil.setMatchSecond(true);
+
+
+
+        //获取用户输入的token
+        /*CommonConstants.REFRESH_TOKEN="ec06dae699d14c8e87e55372d92f4664";
+        //获取用户输入的目录
+        CommonConstants.PATH="F:\\用户目录\\文档\\WeChat Files\\wxid_3wc96wg6zgf022\\FileStorage\\File\\2020-12";
+        //获取用户输入的目录名称
+        CommonConstants.BACK_NAME="测试2";
+        //获取上传模式
+        CommonConstants.BACK_TYPE = 1;
+        AliYunPanUtil aliYunPanUtil=new AliYunPanUtil();
+        aliYunPanUtil.startBackup();*/
+
 //        System.out.println("ok");
         /*AliYunPanUtil.getAliYunPanInfo();//登录阿里云
         String wxFileId=AliYunPanUtil.getFileId(CommonConstants.ROOT, "公司-微信备份");//备份目录ID
