@@ -24,7 +24,8 @@ public class AliYunPanUtil{
     Setting setting =CommonConstants.setting;
     //Token文本框
     JTextField tokenText = CommonConstants.tokenText;
-
+    // 开始备份
+    private JButton startBackup = CommonConstants.startBackup;
     //请求工具类
     OkHttpUtil okHttpUtil = new OkHttpUtil();
     FileWriter writerLog = CommonConstants.writerLog;
@@ -68,6 +69,8 @@ public class AliYunPanUtil{
 
         }
         CommonConstants.addConsole("本次备份："+CommonConstants.PATH+" 下所有文件成功！...");
+        startBackup.setText("开始备份");
+        startBackup.setEnabled(true);
         return;
     }
 

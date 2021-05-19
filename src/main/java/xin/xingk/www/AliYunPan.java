@@ -52,7 +52,7 @@ public class AliYunPan extends JFrame implements ActionListener {
     private JRadioButton fenLeiRadio;
 
     // 开始备份
-    private JButton startBackup;
+    private JButton startBackup = CommonConstants.startBackup;
     // 暂停备份
     private JButton pauseBackup;
 
@@ -186,7 +186,7 @@ public class AliYunPan extends JFrame implements ActionListener {
         typeGroup.add(fenLeiRadio);
 
 
-        startBackup = new JButton("开始备份");
+        //startBackup = new JButton("开始备份");
         startBackup.setBounds(100, 195, 100, 30);
         startBackup.addActionListener(this);
         container.add(startBackup);
@@ -221,6 +221,8 @@ public class AliYunPan extends JFrame implements ActionListener {
 
             //开始按钮
             if (e.getSource() == startBackup) {
+                startBackup.setEnabled(false);
+                startBackup.setText("正在备份");
                 CommonConstants.CLEAN_CONSOLE=0;
                 //获取用户输入的token
                 CommonConstants.REFRESH_TOKEN=tokenText.getText();
@@ -237,7 +239,6 @@ public class AliYunPan extends JFrame implements ActionListener {
                 //输出模式
                 CommonConstants.addConsole("备份模式："+(puTongRadio.isSelected() ? "普通模式" : "分类模式"));
                 setting.store(CommonConstants.CONFIG_PATH);
-
                 //执行上传文件操作
                 try {
                     Thread backup = new Thread(() -> aliYunPanUtil.startBackup());
@@ -245,7 +246,6 @@ public class AliYunPan extends JFrame implements ActionListener {
                 } catch (Exception exc) {
                     CommonConstants.addConsole("遇到异常情况："+exc.toString());
                 }
-
             }
 
             //暂停按钮
