@@ -1,6 +1,7 @@
 package xin.xingk.www;
 
 import cn.hutool.cron.CronUtil;
+import cn.hutool.cron.task.CronTask;
 
 /**
  * 微信备份程序
@@ -8,8 +9,6 @@ import cn.hutool.cron.CronUtil;
  */
 public class App {
     public static void main( String[] args ) {
-//        Thread threadOne = new Thread(() -> new AliYunPan());
-//        threadOne.start();
         //加载UI
         new AliYunPan();
         //开启定时
@@ -34,7 +33,6 @@ public class App {
             System.out.println("遇到异常情况："+e.toString());
         }*/
 
-//        System.out.println("ok");
         /*AliYunPanUtil.getAliYunPanInfo();//登录阿里云
         String wxFileId=AliYunPanUtil.getFileId(CommonConstants.ROOT, "公司-微信备份");//备份目录ID
         List<String> folderList = FileUtil.fileFolderList(CommonConstants.PATH,FileUtil.FOLDER);
@@ -54,16 +52,6 @@ public class App {
             AliYunPanUtil.scanFolders(path,dateFileId,false);
         }
         System.out.println("ok");*/
-        /*String CONFIG_PATH = System.getProperty("user.dir") + File.separator + "uploadLog.txt";
-        FileWriter fileWriter = FileWriter.create(FileUtil.touch(CONFIG_PATH), CharsetUtil.CHARSET_UTF_8);
-        fileWriter.append("测试");
-        fileWriter.append("测试");
-        fileWriter.append("测试");
-        fileWriter.append("测试");
-        fileWriter.append("测试");
-        FileReader fileReader = new FileReader(CONFIG_PATH);
-        List<String> list = fileReader.readLines();
-        System.out.println(111);*/
     }
 
     public static void Test(){
