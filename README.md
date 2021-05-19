@@ -12,7 +12,6 @@
   <img  width="92%" style="border-radius:10px;margin-top:20px;margin-bottom:20px;box-shadow: 2px 0 6px gray;" src="https://images.gitee.com/uploads/images/2021/0519/172731_35c58ed6_4873209.png" />
 </div>
 </div>
-# AliYunPan
 
 #### 介绍
 Java Swing + Hutool + Okhttp3 自动备份文件小工具
