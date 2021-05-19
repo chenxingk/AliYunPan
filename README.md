@@ -32,6 +32,7 @@ Java Swing + Hutool + Okhttp3 自动备份文件到【阿里云盘】的小工�
 1.  双击打开程序，选择要备份的目录
 2.  通过浏览器登录阿里云盘，登录成功后按F12打开浏览器控制台
 3.  输入【`JSON.parse(localStorage.getItem('token')).refresh_token`】即可获得Token
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0519/174415_3a7fbc5f_4873209.png "屏幕截图.png")
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0519/175154_8de09162_4873209.png "屏幕截图.png")
 4.   **备份目录则填写想要上传到【阿里云盘】的目录名称** 
 5.  点击开始备份，即可运行。
+
