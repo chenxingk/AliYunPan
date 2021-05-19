@@ -2,7 +2,7 @@
 <br/>
 
   <h1 align="center">
-    本地文件备份
+    自动备份文件到网盘
   </h1>
   <h4 align="center">
     一款可以定时备份本地目录到阿里云盘的小工具
@@ -14,7 +14,7 @@
 </div>
 
 #### 介绍
-Java Swing + Hutool + Okhttp3 自动备份文件小工具
+Java Swing + Hutool + Okhttp3 自动备份文件到【阿里云盘】的小工具
 
 #### 安装教程
 
