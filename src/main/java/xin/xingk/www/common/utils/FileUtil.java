@@ -2,8 +2,6 @@ package xin.xingk.www.common.utils;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
-import xin.xingk.www.common.CommonConstants;
-import xin.xingk.www.common.MyConsole;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
@@ -94,6 +92,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         applyTypes.add("ipa");
         applyTypes.add("app");
         applyTypes.add("dmg");
+        applyTypes.add("rpm");
 
         /**
          * 开发类型
@@ -114,6 +113,8 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         devTypes.add("yml");
         devTypes.add("css");
         devTypes.add("json");
+        devTypes.add("out");
+        devTypes.add("class");
     }
 
     /**

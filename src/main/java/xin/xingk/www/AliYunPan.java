@@ -237,9 +237,15 @@ public class AliYunPan extends JFrame implements ActionListener {
                 //输出模式
                 CommonConstants.addConsole("备份模式："+(puTongRadio.isSelected() ? "普通模式" : "分类模式"));
                 setting.store(CommonConstants.CONFIG_PATH);
+
                 //执行上传文件操作
-                Thread backup = new Thread(() -> aliYunPanUtil.startBackup());
-                backup.start();
+                try {
+                    Thread backup = new Thread(() -> aliYunPanUtil.startBackup());
+                    backup.start();
+                } catch (Exception exc) {
+                    CommonConstants.addConsole("遇到异常情况："+exc.toString());
+                }
+
             }
 
             //暂停按钮

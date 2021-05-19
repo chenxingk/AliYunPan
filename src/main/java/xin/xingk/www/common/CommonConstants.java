@@ -1,6 +1,7 @@
 package xin.xingk.www.common;
 
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.io.file.FileWriter;
 import cn.hutool.core.util.CharsetUtil;
@@ -70,7 +71,7 @@ public class CommonConstants {
         if (CLEAN_CONSOLE==0){
             console.setText("开始运行"+"\n");
         }else {
-            console.append(text+"\n");
+            console.append("["+DateUtil.now()+"] "+text+"\n");
             console.paintImmediately(console.getBounds());
             scrollBar.setValue(scrollBar.getMaximum());
         }

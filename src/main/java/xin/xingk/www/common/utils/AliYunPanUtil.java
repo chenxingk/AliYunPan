@@ -47,22 +47,25 @@ public class AliYunPanUtil{
             List<String> folderList = FileUtil.fileFolderList(CommonConstants.PATH,FileUtil.FOLDER);//获取用户目录下所有目录
             List<String> folderFileList = FileUtil.fileFolderList(CommonConstants.PATH,FileUtil.FILE);//本地文件夹下文件
 
-            //上传文件夹下所有目录
-            if (folderList.size()!=0){
-                for (String folderName :  folderList) {
-                    String path = CommonConstants.PATH + FileUtil.FILE_SEPARATOR + folderName;//路径
-                    CommonConstants.addConsole("开始获取："+path);
-                    String folderFileId = this.getFileId(wxFileId, "文件夹");//微信备份-文件夹
-                    String dateFileId = this.getFileId(folderFileId, folderName);//微信备份-文件夹-folderName
-                    this.scanFolders(path,dateFileId,true);
-                }
-            }
-
             //上传文件夹下文件
             if (folderFileList.size()!=0){
                 CommonConstants.addConsole("获取："+CommonConstants.PATH+" 下所有文件成功");
                 uploadFileList(folderFileList,wxFileId,true);
             }
+
+            //上传文件夹下所有目录
+            if (folderList.size()!=0){
+                for (String folderName :  folderList) {
+                    String path = CommonConstants.PATH + FileUtil.FILE_SEPARATOR + folderName;//路径
+                    CommonConstants.addConsole("开始获取："+path);
+                    List<String> fileList = FileUtil.fileFolderList(path,FileUtil.FILE);//本地文件夹下文件
+                    uploadFileList(fileList,wxFileId,true);
+                    String folderFileId = this.getFileId(wxFileId, "文件夹");//微信备份-文件夹
+                    String dateFileId = this.getFileId(folderFileId, folderName);//微信备份-文件夹-folderName
+                    this.scanFolders(path,dateFileId,false);
+                }
+            }
+
         }
         CommonConstants.addConsole("本次备份："+CommonConstants.PATH+" 下所有文件成功！...");
         return;
@@ -288,14 +291,18 @@ public class AliYunPanUtil{
         List<String> logList = readerLog.readLines();
         fileList.removeAll(logList);
         for (String filePath :  fileList) {
-            Map<String, Object> map = FileUtil.getFileInfo(filePath);
-            if (backType){//开启分类
-                String type = map.get("type").toString();
-                String typeFileId=this.getFileId(pathId,type);//微信备份-类型
-                String dateFileId=this.getFileId(typeFileId,getFolderName(filePath));//微信备份-类型-文件夹
-                doUploadFile(dateFileId,map);
-            }else {
-                doUploadFile(pathId,map);
+            try {
+                Map<String, Object> map = FileUtil.getFileInfo(filePath);
+                if (backType){//开启分类
+                    String type = map.get("type").toString();
+                    String typeFileId=this.getFileId(pathId,type);//微信备份-类型
+                    String dateFileId=this.getFileId(typeFileId,getFolderName(filePath));//微信备份-类型-文件夹
+                    doUploadFile(dateFileId,map);
+                }else {
+                    doUploadFile(pathId,map);
+                }
+            } catch (Exception e) {
+                CommonConstants.addConsole("遇到异常情况："+e.toString());
             }
         }
     }

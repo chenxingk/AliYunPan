@@ -22,13 +22,17 @@ public class App {
         //获取用户输入的token
         /*CommonConstants.REFRESH_TOKEN="ec06dae699d14c8e87e55372d92f4664";
         //获取用户输入的目录
-        CommonConstants.PATH="F:\\用户目录\\文档\\WeChat Files\\wxid_3wc96wg6zgf022\\FileStorage\\File\\2020-12";
+        CommonConstants.PATH="F:\\用户目录\\文档\\WeChat Files\\wxid_3wc96wg6zgf022\\FileStorage\\File\\2021-05";
         //获取用户输入的目录名称
         CommonConstants.BACK_NAME="测试2";
         //获取上传模式
         CommonConstants.BACK_TYPE = 1;
         AliYunPanUtil aliYunPanUtil=new AliYunPanUtil();
-        aliYunPanUtil.startBackup();*/
+        try {
+            aliYunPanUtil.startBackup();
+        } catch (Exception e) {
+            System.out.println("遇到异常情况："+e.toString());
+        }*/
 
 //        System.out.println("ok");
         /*AliYunPanUtil.getAliYunPanInfo();//登录阿里云
