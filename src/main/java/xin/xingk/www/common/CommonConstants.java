@@ -26,7 +26,7 @@ public class CommonConstants {
     public static JTextField tokenText = new JTextField();
     //开始备份按钮
     public static JButton startBackup = new JButton("开始备份");
-    //设置工具
+    //当前路径
     public static String SYSTEM_PATH = System.getProperty("user.dir") + File.separator;
     //配置文件路径
     public static String CONFIG_PATH = SYSTEM_PATH + "back_config.setting";
@@ -58,7 +58,6 @@ public class CommonConstants {
     //根目录
     public final static String ROOT="root";
     //上传目录
-    //public static String PATH="E:\\用户目录\\文档\\WeChat Files\\wxid_3wc96wg6zgf022\\FileStorage\\File";
     public static String PATH="";
     //备份目录名称
     public static String BACK_NAME="";
