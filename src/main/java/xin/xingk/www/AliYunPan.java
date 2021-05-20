@@ -69,6 +69,13 @@ public class AliYunPan extends JFrame implements ActionListener {
         //初始化UI
         initUi();
         this.setVisible(true);
+        //初始化变量
+        CommonConstants.PATH = setting.getStr("pathText");
+        CommonConstants.REFRESH_TOKEN = setting.getStr("tokenText");
+        CommonConstants.BACK_NAME = setting.getStr("folderText");
+        if (StrUtil.isNotEmpty(setting.getStr("backType"))){
+            CommonConstants.BACK_TYPE = Integer.parseInt(setting.getStr("backType"));
+        }
         //开启目录检测
         aliYunPanUtil.monitorFolder();
     }

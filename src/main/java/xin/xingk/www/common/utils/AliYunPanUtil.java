@@ -44,9 +44,8 @@ public class AliYunPanUtil{
         CommonConstants.CLEAN_CONSOLE=1;
         CommonConstants.BACK_STATE = true;
         boolean login = this.getAliYunPanInfo();//登录阿里云
-        if (!login){
-            return;
-        }
+        if (!login) return;
+        if (!checkConfig()) return;
         CommonConstants.FILE_ID = this.getFileId(CommonConstants.ROOT, CommonConstants.BACK_NAME);//备份目录ID
         if (CommonConstants.BACK_TYPE==0){//普通备份
             this.scanFolders(CommonConstants.PATH,CommonConstants.FILE_ID,true);
@@ -347,6 +346,12 @@ public class AliYunPanUtil{
      * 监控目录
      */
     public void monitorFolder() {
+        if (StrUtil.isEmpty(setting.getStr("pathText"))) return;
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         CommonConstants.CLEAN_CONSOLE=1;
         //开启目录检测
         Console.log("开启目录检测");
