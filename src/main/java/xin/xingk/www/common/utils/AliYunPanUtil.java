@@ -221,7 +221,7 @@ public class AliYunPanUtil{
      * @throws Exception
      */
     public String getFileId(String parentFileId,String folderName){
-        CommonConstants.addConsole("开始获取文件夹："+folderName);
+        //CommonConstants.addConsole("开始获取文件夹："+folderName);
         String fileId="";
         JSONObject fileList = getFileList(parentFileId);//获取文件目录
         JSONArray fileArray = fileList.getJSONArray("items");
@@ -282,7 +282,7 @@ public class AliYunPanUtil{
         CommonConstants.addConsole("开始获取："+path);
         //获取文件夹下所有文件
         List<String> fileList = FileUtil.fileFolderList(path,FileUtil.FILE);
-        CommonConstants.addConsole("获取："+path+" 下所有文件成功");
+        //CommonConstants.addConsole("获取："+path+" 下所有文件成功");
         if (isUploadFile){
             uploadFileList(fileList,pathId,false);
         }
@@ -294,7 +294,7 @@ public class AliYunPanUtil{
             String filePath = path + FileUtil.FILE_SEPARATOR + folder;//路径
             fileList = FileUtil.fileFolderList(path,FileUtil.FILE);//获取当前文件夹下所有文件
             uploadFileList(fileList,fileId,false);//上传当前文件夹内的文件
-            CommonConstants.addConsole("扫描新文件夹："+filePath);
+            //CommonConstants.addConsole("扫描新文件夹："+filePath);
             scanFolders(filePath,fileId,true);
         }
     }
@@ -353,7 +353,7 @@ public class AliYunPanUtil{
             e.printStackTrace();
         }
         CommonConstants.CLEAN_CONSOLE=1;
-        //开启目录检测
+        //开启目录检测 开始获取文件夹
         Console.log("开启目录检测");
         CommonConstants.addConsole("开启目录检测");
         File file = FileUtil.file(setting.getStr("pathText"));
@@ -366,7 +366,7 @@ public class AliYunPanUtil{
                 Console.log("创建：{}-> {}", currentPath, obj);
                 //备份方法不执行时候执行监听
                 if (!CommonConstants.BACK_STATE){
-                    uploadMonitor(currentPath);
+                    uploadMonitor(currentPath,obj);
                 }
             }
 
@@ -376,8 +376,10 @@ public class AliYunPanUtil{
                 Console.log("修改：{}-> {}", currentPath, obj);
                 //备份方法不执行时候执行监听
                 if (!CommonConstants.BACK_STATE){
+                    String path = currentPath.toString() + "\\" + obj.toString();
+                    //CommonConstants.addConsole("检测到："+path+" 文件发生变化！");
                     List<String> logList = readerLog.readLines();
-                    logList.remove(currentPath.toString()+"\\"+obj.toString());
+                    logList.remove(path);
                     writerLog.writeLines(logList);
                 }
                 //uploadMonitor(currentPath);
@@ -406,8 +408,8 @@ public class AliYunPanUtil{
      * 上传监控目录
      * @param currentPath
      */
-    public void uploadMonitor(Path currentPath) {
-        CommonConstants.addConsole("检测到："+currentPath.toString()+" 目录发生变化，开始上传新文件...");
+    public void uploadMonitor(Path currentPath,Object obj) {
+        CommonConstants.addConsole("检测到："+currentPath.toString()+" 目录有新文件...");
         if (checkConfig()){
             Thread backup = new Thread(() -> {
                 boolean login = getAliYunPanInfo();//登录阿里云
@@ -416,6 +418,7 @@ public class AliYunPanUtil{
                 }
                 CommonConstants.FILE_ID = getFileId(CommonConstants.ROOT, CommonConstants.BACK_NAME);//备份目录ID
                 uploadTwoLevelFolder(CommonConstants.FILE_ID,currentPath.toString());
+                CommonConstants.addConsole("上传 "+obj.toString()+" 成功！");
             });
             backup.start();
         }
