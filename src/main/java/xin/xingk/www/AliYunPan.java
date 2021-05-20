@@ -64,9 +64,13 @@ public class AliYunPan extends JFrame implements ActionListener {
     Setting setting =CommonConstants.setting;
 
     public AliYunPan(){
+        //GUI默认配置
         initConfig();
+        //初始化UI
         initUi();
         this.setVisible(true);
+        //开启目录检测
+        aliYunPanUtil.monitorFolder();
     }
 
     /**

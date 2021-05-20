@@ -48,6 +48,7 @@ public class CommonConstants {
     public final static String COMPLETE_FILE_URL="https://api.aliyundrive.com/v2/file/complete";
     //删除文件
     public final static String DELETE_FILE_URL="https://api.aliyundrive.com/v2/recyclebin/trash";
+    public static String FILE_ID="";
     //refresh_token
     public static String REFRESH_TOKEN="";
     //Token
@@ -63,7 +64,10 @@ public class CommonConstants {
     public static String BACK_NAME="";
     //备份目录名称
     public static int BACK_TYPE=0;//0是普通备份 1是分类备份
-    public static int CLEAN_CONSOLE=0;//0是情况 1不清空
+    //输出日志模式 0是覆盖 1追加
+    public static int CLEAN_CONSOLE=0;
+    //备份状态
+    public static boolean BACK_STATE = false;
 
     /**
      * 添加控制台日志
@@ -78,5 +82,6 @@ public class CommonConstants {
             scrollBar.setValue(scrollBar.getMaximum());
         }
     }
+
 
 }

@@ -2,6 +2,9 @@ package xin.xingk.www.common.utils;
 
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.io.file.FileWriter;
+import cn.hutool.core.io.watch.WatchMonitor;
+import cn.hutool.core.io.watch.Watcher;
+import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
@@ -10,6 +13,9 @@ import cn.hutool.setting.Setting;
 import xin.xingk.www.common.CommonConstants;
 
 import javax.swing.*;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.WatchEvent;
 import java.util.List;
 import java.util.Map;
 
@@ -36,13 +42,14 @@ public class AliYunPanUtil{
      */
     public void startBackup() {
         CommonConstants.CLEAN_CONSOLE=1;
+        CommonConstants.BACK_STATE = true;
         boolean login = this.getAliYunPanInfo();//登录阿里云
         if (!login){
             return;
         }
-        String wxFileId=this.getFileId(CommonConstants.ROOT, CommonConstants.BACK_NAME);//备份目录ID
+        CommonConstants.FILE_ID = this.getFileId(CommonConstants.ROOT, CommonConstants.BACK_NAME);//备份目录ID
         if (CommonConstants.BACK_TYPE==0){//普通备份
-            this.scanFolders(CommonConstants.PATH,wxFileId,true);
+            this.scanFolders(CommonConstants.PATH,CommonConstants.FILE_ID,true);
         }else {
             //开始获取文件
             List<String> folderList = FileUtil.fileFolderList(CommonConstants.PATH,FileUtil.FOLDER);//获取用户目录下所有目录
@@ -51,19 +58,14 @@ public class AliYunPanUtil{
             //上传文件夹下文件
             if (folderFileList.size()!=0){
                 CommonConstants.addConsole("获取："+CommonConstants.PATH+" 下所有文件成功");
-                uploadFileList(folderFileList,wxFileId,true);
+                uploadFileList(folderFileList,CommonConstants.FILE_ID,true);
             }
 
             //上传文件夹下所有目录
             if (folderList.size()!=0){
                 for (String folderName :  folderList) {
                     String path = CommonConstants.PATH + FileUtil.FILE_SEPARATOR + folderName;//路径
-                    CommonConstants.addConsole("开始获取："+path);
-                    List<String> fileList = FileUtil.fileFolderList(path,FileUtil.FILE);//本地文件夹下文件
-                    uploadFileList(fileList,wxFileId,true);
-                    String folderFileId = this.getFileId(wxFileId, "文件夹");//微信备份-文件夹
-                    String dateFileId = this.getFileId(folderFileId, folderName);//微信备份-文件夹-folderName
-                    this.scanFolders(path,dateFileId,false);
+                    uploadTwoLevelFolder(CommonConstants.FILE_ID,path);
                 }
             }
 
@@ -71,7 +73,22 @@ public class AliYunPanUtil{
         CommonConstants.addConsole("本次备份："+CommonConstants.PATH+" 下所有文件成功！...");
         startBackup.setText("开始备份");
         startBackup.setEnabled(true);
+        CommonConstants.BACK_STATE = false;
         return;
+    }
+
+    /**
+     * 上传二级文件夹
+     * @param fileId
+     * @param path
+     */
+    private void uploadTwoLevelFolder(String fileId, String path) {
+        CommonConstants.addConsole("开始获取："+path);
+        List<String> fileList = FileUtil.fileFolderList(path,FileUtil.FILE);//本地文件夹下文件
+        uploadFileList(fileList,fileId,true);
+        String folderFileId = this.getFileId(fileId, "文件夹");//微信备份-文件夹
+        String dateFileId = this.getFileId(folderFileId, getFolderName(path));//微信备份-文件夹-folderName
+        this.scanFolders(path,dateFileId,false);
     }
 
     /**
@@ -324,6 +341,110 @@ public class AliYunPanUtil{
             folderName = StrUtil.subBefore(folderName , "\\", false);
         }
         return folderName;
+    }
+
+    /**
+     * 监控目录
+     */
+    public void monitorFolder() {
+        CommonConstants.CLEAN_CONSOLE=1;
+        //开启目录检测
+        Console.log("开启目录检测");
+        CommonConstants.addConsole("开启目录检测");
+        File file = FileUtil.file(setting.getStr("pathText"));
+        //这里只监听文件或目录的修改事件
+        WatchMonitor watchMonitor = WatchMonitor.create(file,WatchMonitor.ENTRY_CREATE,WatchMonitor.ENTRY_MODIFY);
+        watchMonitor.setWatcher(new Watcher(){
+            @Override
+            public void onCreate(WatchEvent<?> event, Path currentPath) {
+                Object obj = event.context();
+                Console.log("创建：{}-> {}", currentPath, obj);
+                //备份方法不执行时候执行监听
+                if (!CommonConstants.BACK_STATE){
+                    uploadMonitor(currentPath);
+                }
+            }
+
+            @Override
+            public void onModify(WatchEvent<?> event, Path currentPath) {
+                Object obj = event.context();
+                Console.log("修改：{}-> {}", currentPath, obj);
+                //备份方法不执行时候执行监听
+                if (!CommonConstants.BACK_STATE){
+                    List<String> logList = readerLog.readLines();
+                    logList.remove(currentPath.toString()+"\\"+obj.toString());
+                    writerLog.writeLines(logList);
+                }
+                //uploadMonitor(currentPath);
+            }
+
+            @Override
+            public void onDelete(WatchEvent<?> event, Path currentPath) {
+                /*Object obj = event.context();
+                Console.log("删除：{}-> {}", currentPath, obj);*/
+            }
+
+            @Override
+            public void onOverflow(WatchEvent<?> event, Path currentPath) {
+                /*Object obj = event.context();
+                Console.log("Overflow：{}-> {}", currentPath, obj);*/
+            }
+        });
+        //设置监听目录的最大深入，目录层级大于制定层级的变更将不被监听，默认只监听当前层级目录
+        //监听所有目录
+        watchMonitor.setMaxDepth(Integer.MAX_VALUE);
+        //启动监听
+        watchMonitor.start();
+    }
+
+    /**
+     * 上传监控目录
+     * @param currentPath
+     */
+    public void uploadMonitor(Path currentPath) {
+        CommonConstants.addConsole("检测到："+currentPath.toString()+" 目录发生变化，开始上传新文件...");
+        if (checkConfig()){
+            Thread backup = new Thread(() -> {
+                boolean login = getAliYunPanInfo();//登录阿里云
+                if (!login){
+                    return;
+                }
+                CommonConstants.FILE_ID = getFileId(CommonConstants.ROOT, CommonConstants.BACK_NAME);//备份目录ID
+                uploadTwoLevelFolder(CommonConstants.FILE_ID,currentPath.toString());
+            });
+            backup.start();
+        }
+    }
+
+    /**
+     * 验证配置文件
+     */
+    public Boolean checkConfig(){
+        if (StrUtil.isEmpty(setting.getStr("pathText"))){
+            CommonConstants.addConsole("您没有选择需要备份的目录");
+            return false;
+        }
+        if (StrUtil.isEmpty(setting.getStr("tokenText"))){
+            CommonConstants.addConsole( "您没有输入阿里云token");
+            return false;
+        }
+        if (StrUtil.isEmpty(setting.getStr("folderText"))){
+            CommonConstants.addConsole("您没有输入需要备份到阿里云的目录");
+            return false;
+        }
+        if (setting.getStr("tokenText").length()!=32){
+            CommonConstants.addConsole("您输入的token不正确");
+            return false;
+        }
+        if (!FileUtil.isDirectory(setting.getStr("pathText"))){
+            CommonConstants.addConsole("请选择正确目录");
+            return false;
+        }
+        CommonConstants.PATH = setting.getStr("pathText");
+        CommonConstants.REFRESH_TOKEN = setting.getStr("tokenText");
+        CommonConstants.BACK_NAME = setting.getStr("folderText");
+        CommonConstants.BACK_TYPE = Integer.parseInt(setting.getStr("backType"));
+        return true;
     }
     
     
