@@ -221,6 +221,17 @@ public class OkHttpUtil {
         if (StrUtil.isNotEmpty(redirectUrl)){//异常信息返回
             return json;
         }
+        return doLogin(json);
+    }
+
+    /**
+     * 执行登录
+     * @param json
+     * @return
+     * @throws Exception
+     */
+    public static JSONObject doLogin(JSONObject json) throws Exception {
+        String response;
         String dataStr = json.getJSONObject("content").getJSONObject("data").getStr("bizExt");
         //解密返回的数据
         response = Base64.decodeStr(dataStr, CharsetUtil.CHARSET_GBK);
@@ -334,6 +345,47 @@ public class OkHttpUtil {
         data.response().headers();
         return data.response().cookies();
     }
+
+
+
+    /**
+     * 获取阿里云二维码
+     */
+    public static JSONObject getQrCodeUrl() throws Exception {
+        Request request = new Request.Builder()
+                .url("https://passport.aliyundrive.com/newlogin/qrcode/generate.do?appName=aliyun_drive")
+                .method("GET", null)
+                .build();
+        Response response = client.newCall(request).execute();
+        return JSONUtil.parseObj(response.body().string());
+    }
+
+    /**
+     * 查询二维码状态
+     * @param t
+     * @param ck
+     * @return
+     * @throws Exception
+     */
+    public static JSONObject queryQrCode(String t,String ck){
+        try {
+            RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                    .addFormDataPart("t", t)
+                    .addFormDataPart("ck", ck)
+                    .build();
+            Request request = new Request.Builder()
+                    .url("https://passport.aliyundrive.com/newlogin/qrcode/query.do?appName=aliyun_drive")
+                    .method("POST", body)
+                    .build();
+            Response response = client.newCall(request).execute();
+            return JSONUtil.parseObj(response.body().string());
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+
+
 
 
 

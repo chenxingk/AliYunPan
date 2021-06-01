@@ -3,16 +3,21 @@ package xin.xingk.www.ui;
 import cn.hutool.core.lang.Validator;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.qrcode.QrCodeUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.setting.Setting;
 import xin.xingk.www.common.CommonConstants;
+import xin.xingk.www.common.utils.FileUtil;
 import xin.xingk.www.common.utils.OkHttpUtil;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Enumeration;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -20,7 +25,7 @@ import java.util.TimerTask;
 /**
  * 登录-UI
  */
-public class Login extends JFrame implements ActionListener {
+public class Login extends JFrame implements ActionListener, ChangeListener {
 
     private static final int title_left = 10;//标题左边距
     private static final int title_width = 166;//标题宽
@@ -33,20 +38,20 @@ public class Login extends JFrame implements ActionListener {
     private static final int user_top = 20;//用户名上边距
     private static final int pass_top = 60;//密码上边距
 
-    private static final int login_left = 80;//密码上边距
+    private static final int login_left = 80;//密码左边距
     private static final int login_top = 130;//密码上边距
-    private static final int login_width = 60;//密码上边距
-    private static final int login_high = 30;//密码上边距
+    private static final int login_width = 60;//密码宽
+    private static final int login_high = 30;//密码高
 
-    private static final int reset_left = 180;//密码上边距
-    private static final int reset_top = 130;//密码上边距
-    private static final int reset_width = 60;//密码上边距
-    private static final int reset_high = 30;//密码上边距
+    private static final int reset_left = 180;//重置左边距
+    private static final int reset_top = 130;//重置上边距
+    private static final int reset_width = 60;//重置宽
+    private static final int reset_high = 30;//重置高
 
-    private static final int info_left = 10;//密码上边距
-    private static final int info_top = 180;//密码上边距
-    private static final int info_width = 380;//密码上边距
-    private static final int info_high = 25;//密码上边距
+    private static final int info_left = 10;//说明左边距
+    private static final int info_top = 180;//说明上边距
+    private static final int info_width = 380;//说明宽
+    private static final int info_high = 25;//说明高
 
 
     //用户名
@@ -68,6 +73,20 @@ public class Login extends JFrame implements ActionListener {
     private JButton smsResetBtn;
     // 发送验证码按钮
     private JButton smsSendBtn;
+
+    //二维码面板
+    private Container qrCodeLogin;
+    //二维码
+    private JLabel qrCodeLab;
+    //二维码
+    private ImageIcon qrCodeImg;
+    //二维码地址
+    private String codeContent;
+    //CK码
+    private String ck;
+    //时间戳
+    private String t;
+
 
     //TAB面板
     private JTabbedPane mainTab = new JTabbedPane();
@@ -183,12 +202,28 @@ public class Login extends JFrame implements ActionListener {
         smsLogin.add(info);
         mainTab.add("手机登录", smsLogin);
 
+        //二维码登录
+        qrCodeLogin = new Container();
+        qrCodeImg=new ImageIcon(getClass().getResource("/images/logo.png"));
+
+        qrCodeLab = new JLabel(qrCodeImg);
+        qrCodeLab.setBounds(92, 3, 180, 180);
+        qrCodeLogin.add(qrCodeLab);
+
+        info=new JLabel("注：请使用阿里云盘APP，扫描二维码");
+        info.setBounds(info_left, 185, info_width, info_high);
+        qrCodeLogin.add(info);
+        mainTab.add("二维码登录", qrCodeLogin);
+        mainTab.addChangeListener(this);
         // 配置界面
         this.setContentPane(mainTab);
     }
 
+    /**
+     * 按钮点击事件
+     * @param e
+     */
     public void actionPerformed(ActionEvent e) {
-        //mainTab.getSelectedIndex() 0 是账号密码 1验证码
         //账号密码登录
         if (e.getSource() == loginBtn) {
             doLogin();
@@ -345,5 +380,78 @@ public class Login extends JFrame implements ActionListener {
             }
         }
         return true;
+    }
+
+    /**
+     * 二维码登录
+     * @param e
+     */
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        JTabbedPane tab = (JTabbedPane) e.getSource();
+        int tabIndex = tab.getSelectedIndex();
+        //二维码登录
+        if (tabIndex==2){
+            //生成二维码
+            try {
+                getQrCodeImg();
+                //开启倒计时检测
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    public void run() {
+                        JSONObject qrCode = OkHttpUtil.queryQrCode(t, ck);
+                        String status = qrCode.getJSONObject("content").getJSONObject("data").getStr("qrCodeStatus");
+                        if ("CONFIRMED".equals(status)){
+                            try {
+                                JSONObject json = OkHttpUtil.doLogin(qrCode);
+                                if (!checkLoginJson(json)) return;
+                                String refreshToken = json.getStr("refresh_token");
+                                if (StrUtil.isNotEmpty(refreshToken)){
+                                    CommonConstants.REFRESH_TOKEN = refreshToken;
+                                    info.setText("登录成功，正在跳转中，请稍后...");
+                                    setting.set("tokenText",refreshToken);
+                                    setting.store(CommonConstants.CONFIG_PATH);
+                                    setVisible(false);
+                                    FileUtil.del(CommonConstants.SYSTEM_PATH + "qrcode.png");
+                                    this.cancel();
+                                    new AliYunPan();
+                                }
+                            } catch (Exception exc) {
+                                JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
+                        }
+                        //二维码过期 刷新二维码
+                        if ("EXPIRED".equals(status)){
+                            getQrCodeImg();
+                        }
+                        if ("SCANED".equals(status)){
+                            info.setText("已扫描二维码，等待确认...（确认后需等待1-2s）");
+                        }
+                    }
+                }, 0, 500);
+            } catch (Exception exc) {
+                System.out.println(exc.toString());
+            }
+        }
+    }
+
+    /**
+     * 获取二维码图片
+     * @throws Exception
+     */
+    private void getQrCodeImg() {
+        try {
+            JSONObject qrCodeUrl = OkHttpUtil.getQrCodeUrl();
+            codeContent = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("codeContent");
+            ck = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("ck");
+            t = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("t");
+            File file = QrCodeUtil.generate(codeContent, 180, 180, FileUtil.file(CommonConstants.SYSTEM_PATH + "qrcode.png"));
+            qrCodeImg=new ImageIcon(file.getPath());
+            qrCodeLab.setIcon(qrCodeImg);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
     }
 }
