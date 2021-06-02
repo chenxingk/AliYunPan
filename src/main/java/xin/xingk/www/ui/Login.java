@@ -7,7 +7,6 @@ import cn.hutool.extra.qrcode.QrCodeUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.setting.Setting;
 import xin.xingk.www.common.CommonConstants;
-import xin.xingk.www.common.utils.FileUtil;
 import xin.xingk.www.common.utils.OkHttpUtil;
 
 import javax.swing.*;
@@ -17,7 +16,6 @@ import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.Enumeration;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -86,6 +84,8 @@ public class Login extends JFrame implements ActionListener, ChangeListener {
     private String ck;
     //时间戳
     private String t;
+    //二维码说明
+    Timer qrTimer;
 
 
     //TAB面板
@@ -388,6 +388,7 @@ public class Login extends JFrame implements ActionListener, ChangeListener {
      */
     @Override
     public void stateChanged(ChangeEvent e) {
+        qrTimer = new Timer();
         JTabbedPane tab = (JTabbedPane) e.getSource();
         int tabIndex = tab.getSelectedIndex();
         //二维码登录
@@ -395,9 +396,7 @@ public class Login extends JFrame implements ActionListener, ChangeListener {
             //生成二维码
             try {
                 getQrCodeImg();
-                //开启倒计时检测
-                Timer timer = new Timer();
-                timer.schedule(new TimerTask() {
+                qrTimer.schedule(new TimerTask() {
                     public void run() {
                         JSONObject qrCode = OkHttpUtil.queryQrCode(t, ck);
                         String status = qrCode.getJSONObject("content").getJSONObject("data").getStr("qrCodeStatus");
@@ -412,7 +411,6 @@ public class Login extends JFrame implements ActionListener, ChangeListener {
                                     setting.set("tokenText",refreshToken);
                                     setting.store(CommonConstants.CONFIG_PATH);
                                     setVisible(false);
-                                    FileUtil.del(CommonConstants.SYSTEM_PATH + "qrcode.png");
                                     this.cancel();
                                     new AliYunPan();
                                 }
@@ -446,8 +444,8 @@ public class Login extends JFrame implements ActionListener, ChangeListener {
             codeContent = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("codeContent");
             ck = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("ck");
             t = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("t");
-            File file = QrCodeUtil.generate(codeContent, 180, 180, FileUtil.file(CommonConstants.SYSTEM_PATH + "qrcode.png"));
-            qrCodeImg=new ImageIcon(file.getPath());
+            byte[] qrCode = QrCodeUtil.generatePng(codeContent, 180, 180);
+            qrCodeImg=new ImageIcon(qrCode);
             qrCodeLab.setIcon(qrCodeImg);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);

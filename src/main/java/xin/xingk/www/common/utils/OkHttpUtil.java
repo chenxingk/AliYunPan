@@ -260,7 +260,7 @@ public class OkHttpUtil {
      */
     public static String getClientId(){
         HttpResponse res = HttpRequest.get("https://aliyundrive.com/sign/in").execute();
-        return StrUtil.subBetween(res.body(), "client_id:\"", "\"");
+        return StrUtil.subBetween(res.body(), "client_id: '", "'");
     }
 
     /**
