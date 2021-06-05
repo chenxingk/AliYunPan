@@ -262,6 +262,9 @@ public class AliYunPanUtil{
      * @throws Exception
      */
     public void doUploadFile(String fileId,Map<String, Object> fileInfo){
+        if (!fileInfo.get("name").toString().startsWith("~$")){
+            return;
+        }
         //写入上传文件的路径
         List<String> logList = readerLog.readLines();
         if (!logList.contains(fileInfo.get("path"))){
@@ -378,7 +381,7 @@ public class AliYunPanUtil{
                 String fileSuffix = FileUtil.getSuffix(obj.toString());
                 //备份方法不执行时候执行监听
                 //排除掉未下载完的文件 后缀长度超过8个字符的不处理
-                if (!CommonConstants.BACK_STATE && fileSuffix.length()<=8){
+                if (!CommonConstants.BACK_STATE && fileSuffix.length()<=8 && !obj.toString().startsWith("~$")){
                      uploadMonitor(currentPath, obj);
                 }
             }
