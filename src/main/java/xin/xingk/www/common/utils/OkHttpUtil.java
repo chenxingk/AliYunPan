@@ -7,8 +7,6 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import okhttp3.*;
@@ -38,6 +36,7 @@ public class OkHttpUtil {
    static MediaType mediaType = MediaType.parse("application/json");
    static RequestBody body;
    static Request request;
+   static String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36 Edg/90.0.818.66";
 
 
     /**
@@ -259,8 +258,15 @@ public class OkHttpUtil {
      * @throws IOException
      */
     public static String getClientId(){
-        HttpResponse res = HttpRequest.get("https://aliyundrive.com/sign/in").execute();
-        return StrUtil.subBetween(res.body(), "client_id: '", "'");
+        Connection connect = Jsoup.connect("https://aliyundrive.com/sign/in");
+        Connection data = connect.header("User-Agent",USER_AGENT).header("referer","https://aliyundrive.com/");
+        try {
+            Document doc = data.get();
+            return StrUtil.subBetween(doc.html(), "client_id: '", "'");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     /**
@@ -339,7 +345,7 @@ public class OkHttpUtil {
      */
     public static Map<String, String> initCookie(String url) throws Exception {
         Connection connect = Jsoup.connect(url);
-        Connection data = connect.header("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36 Edg/90.0.818.66")
+        Connection data = connect.header("User-Agent",USER_AGENT)
                 .header("referer","https://aliyundrive.com/");
         Document doc = data.get();
         data.response().headers();
