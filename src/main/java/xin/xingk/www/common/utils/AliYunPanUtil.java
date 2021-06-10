@@ -262,7 +262,7 @@ public class AliYunPanUtil{
      * @throws Exception
      */
     public void doUploadFile(String fileId,Map<String, Object> fileInfo){
-        if (!fileInfo.get("name").toString().startsWith("~$")){
+        if (fileInfo.get("name").toString().startsWith("~$")){
             return;
         }
         //写入上传文件的路径
