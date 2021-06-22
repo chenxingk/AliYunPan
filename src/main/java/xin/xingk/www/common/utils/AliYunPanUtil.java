@@ -2,9 +2,8 @@ package xin.xingk.www.common.utils;
 
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.io.file.FileWriter;
-import cn.hutool.core.io.watch.SimpleWatcher;
 import cn.hutool.core.io.watch.WatchMonitor;
-import cn.hutool.core.io.watch.watchers.DelayWatcher;
+import cn.hutool.core.io.watch.Watcher;
 import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -372,7 +371,7 @@ public class AliYunPanUtil{
         //开启目录检测 开始获取文件夹
         Console.log("开启目录检测");
         CommonConstants.addConsole("开启目录检测");
-        WatchMonitor monitor = WatchMonitor.createAll(setting.getStr("pathText"), new DelayWatcher(new SimpleWatcher() {
+/*        WatchMonitor monitor = WatchMonitor.createAll(setting.getStr("pathText"), new DelayWatcher(new SimpleWatcher() {
             @Override
             public void onCreate(WatchEvent<?> event, Path currentPath) {
                 Object obj = event.context();
@@ -391,16 +390,51 @@ public class AliYunPanUtil{
                 Object obj = event.context();
                 Console.log("修改：{}-> {}", currentPath, obj);
                 //备份方法不执行时候执行监听
-                /*if (!CommonConstants.BACK_STATE){
+                *//*if (!CommonConstants.BACK_STATE){
                     String path = currentPath.toString() + "\\" + obj.toString();
                     //CommonConstants.addConsole("检测到："+path+" 文件发生变化！");
                     List<String> logList = readerLog.readLines();
                     logList.remove(path);
                     writerLog.writeLines(logList);
                     uploadMonitor(currentPath,obj);
-                }*/
+                }*//*
             }
-        }, 500));
+        }, 500));*/
+
+        WatchMonitor monitor = WatchMonitor.create(setting.getStr("pathText"), WatchMonitor.ENTRY_CREATE);
+        monitor.setWatcher(new Watcher(){
+            @Override
+            public void onCreate(WatchEvent<?> event, Path currentPath) {
+                Object obj = event.context();
+                Console.log("创建：{}-> {}", currentPath, obj);
+                //获取文件后缀
+                String fileSuffix = FileUtil.getSuffix(obj.toString());
+                //备份方法不执行时候执行监听
+                //排除掉未下载完的文件 后缀长度超过8个字符的不处理
+                if (!CommonConstants.BACK_STATE && fileSuffix.length()<=8 && !obj.toString().startsWith("~$")){
+                     uploadMonitor(currentPath, obj);
+                }
+            }
+
+            @Override
+            public void onModify(WatchEvent<?> event, Path currentPath) {
+                Object obj = event.context();
+                Console.log("修改：{}-> {}", currentPath, obj);
+            }
+
+            @Override
+            public void onDelete(WatchEvent<?> event, Path currentPath) {
+                Object obj = event.context();
+                Console.log("删除：{}-> {}", currentPath, obj);
+            }
+
+            @Override
+            public void onOverflow(WatchEvent<?> event, Path currentPath) {
+                Object obj = event.context();
+                Console.log("Overflow：{}-> {}", currentPath, obj);
+            }
+        });
+
         //设置监听目录的最大深入，目录层级大于制定层级的变更将不被监听，默认只监听当前层级目录
         //监听所有目录
         monitor.setMaxDepth(Integer.MAX_VALUE);
