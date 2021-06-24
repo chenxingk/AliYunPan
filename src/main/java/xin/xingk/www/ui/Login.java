@@ -10,8 +10,6 @@ import xin.xingk.www.common.CommonConstants;
 import xin.xingk.www.common.utils.OkHttpUtil;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -23,7 +21,7 @@ import java.util.TimerTask;
 /**
  * 登录-UI
  */
-public class Login extends JFrame implements ActionListener, ChangeListener {
+public class Login extends JFrame implements ActionListener{
 
     private static final int title_left = 10;//标题左边距
     private static final int title_width = 166;//标题宽
@@ -161,7 +159,7 @@ public class Login extends JFrame implements ActionListener, ChangeListener {
         resetBtn.addActionListener(this);
         passLogin.add(resetBtn);
 
-        mainTab.add("账号登录", passLogin);
+        //mainTab.add("账号登录", passLogin);
         Container smsLogin = new Container();
 
         //手机号登录
@@ -200,7 +198,7 @@ public class Login extends JFrame implements ActionListener, ChangeListener {
         info=new JLabel("注：请输入您的阿里云手机号！by 微信:chen151363 有bug请反馈");
         info.setBounds(info_left, info_top, info_width, info_high);
         smsLogin.add(info);
-        mainTab.add("手机登录", smsLogin);
+        //mainTab.add("手机登录", smsLogin);
 
         //二维码登录
         qrCodeLogin = new Container();
@@ -214,9 +212,43 @@ public class Login extends JFrame implements ActionListener, ChangeListener {
         info.setBounds(info_left, 185, info_width, info_high);
         qrCodeLogin.add(info);
         mainTab.add("二维码登录", qrCodeLogin);
-        mainTab.addChangeListener(this);
         // 配置界面
         this.setContentPane(mainTab);
+
+        getQrCodeImg();
+        qrTimer = new Timer();
+        qrTimer.schedule(new TimerTask() {
+            public void run() {
+                JSONObject qrCode = OkHttpUtil.queryQrCode(t, ck);
+                String status = qrCode.getJSONObject("content").getJSONObject("data").getStr("qrCodeStatus");
+                if ("CONFIRMED".equals(status)){
+                    try {
+                        JSONObject json = OkHttpUtil.doLogin(qrCode);
+                        if (!checkLoginJson(json)) return;
+                        String refreshToken = json.getStr("refresh_token");
+                        if (StrUtil.isNotEmpty(refreshToken)){
+                            CommonConstants.REFRESH_TOKEN = refreshToken;
+                            info.setText("登录成功，正在跳转中，请稍后...");
+                            setting.set("tokenText",refreshToken);
+                            setting.store(CommonConstants.CONFIG_PATH);
+                            setVisible(false);
+                            this.cancel();
+                            new AliYunPan();
+                        }
+                    } catch (Exception exc) {
+                        JOptionPane.showMessageDialog(null, exc.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+                //二维码过期 刷新二维码
+                if ("EXPIRED".equals(status)){
+                    getQrCodeImg();
+                }
+                if ("SCANED".equals(status)){
+                    info.setText("已扫描二维码，等待确认...（确认后需等待1-2s）");
+                }
+            }
+        }, 0, 500);
     }
 
     /**
@@ -382,57 +414,57 @@ public class Login extends JFrame implements ActionListener, ChangeListener {
         return true;
     }
 
-    /**
-     * 二维码登录
-     * @param e
-     */
-    @Override
-    public void stateChanged(ChangeEvent e) {
-        qrTimer = new Timer();
-        JTabbedPane tab = (JTabbedPane) e.getSource();
-        int tabIndex = tab.getSelectedIndex();
-        //二维码登录
-        if (tabIndex==2){
-            //生成二维码
-            try {
-                getQrCodeImg();
-                qrTimer.schedule(new TimerTask() {
-                    public void run() {
-                        JSONObject qrCode = OkHttpUtil.queryQrCode(t, ck);
-                        String status = qrCode.getJSONObject("content").getJSONObject("data").getStr("qrCodeStatus");
-                        if ("CONFIRMED".equals(status)){
-                            try {
-                                JSONObject json = OkHttpUtil.doLogin(qrCode);
-                                if (!checkLoginJson(json)) return;
-                                String refreshToken = json.getStr("refresh_token");
-                                if (StrUtil.isNotEmpty(refreshToken)){
-                                    CommonConstants.REFRESH_TOKEN = refreshToken;
-                                    info.setText("登录成功，正在跳转中，请稍后...");
-                                    setting.set("tokenText",refreshToken);
-                                    setting.store(CommonConstants.CONFIG_PATH);
-                                    setVisible(false);
-                                    this.cancel();
-                                    new AliYunPan();
-                                }
-                            } catch (Exception exc) {
-                                JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-                        }
-                        //二维码过期 刷新二维码
-                        if ("EXPIRED".equals(status)){
-                            getQrCodeImg();
-                        }
-                        if ("SCANED".equals(status)){
-                            info.setText("已扫描二维码，等待确认...（确认后需等待1-2s）");
-                        }
-                    }
-                }, 0, 500);
-            } catch (Exception exc) {
-                System.out.println(exc.toString());
-            }
-        }
-    }
+//    /**
+//     * 二维码登录
+//     * @param e
+//     */
+//    @Override
+//    public void stateChanged(ChangeEvent e) {
+//        qrTimer = new Timer();
+//        JTabbedPane tab = (JTabbedPane) e.getSource();
+//        int tabIndex = tab.getSelectedIndex();
+//        //二维码登录
+//        if (tabIndex==2){
+//            //生成二维码
+//            try {
+//                getQrCodeImg();
+//                qrTimer.schedule(new TimerTask() {
+//                    public void run() {
+//                        JSONObject qrCode = OkHttpUtil.queryQrCode(t, ck);
+//                        String status = qrCode.getJSONObject("content").getJSONObject("data").getStr("qrCodeStatus");
+//                        if ("CONFIRMED".equals(status)){
+//                            try {
+//                                JSONObject json = OkHttpUtil.doLogin(qrCode);
+//                                if (!checkLoginJson(json)) return;
+//                                String refreshToken = json.getStr("refresh_token");
+//                                if (StrUtil.isNotEmpty(refreshToken)){
+//                                    CommonConstants.REFRESH_TOKEN = refreshToken;
+//                                    info.setText("登录成功，正在跳转中，请稍后...");
+//                                    setting.set("tokenText",refreshToken);
+//                                    setting.store(CommonConstants.CONFIG_PATH);
+//                                    setVisible(false);
+//                                    this.cancel();
+//                                    new AliYunPan();
+//                                }
+//                            } catch (Exception exc) {
+//                                JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+//                                return;
+//                            }
+//                        }
+//                        //二维码过期 刷新二维码
+//                        if ("EXPIRED".equals(status)){
+//                            getQrCodeImg();
+//                        }
+//                        if ("SCANED".equals(status)){
+//                            info.setText("已扫描二维码，等待确认...（确认后需等待1-2s）");
+//                        }
+//                    }
+//                }, 0, 500);
+//            } catch (Exception exc) {
+//                System.out.println(exc.toString());
+//            }
+//        }
+//    }
 
     /**
      * 获取二维码图片
