@@ -401,8 +401,8 @@ public class AliYunPanUtil{
             }
         }, 500));*/
 
-        WatchMonitor monitor = WatchMonitor.create(setting.getStr("pathText"), WatchMonitor.ENTRY_CREATE);
-        monitor.setWatcher(new Watcher(){
+        CommonConstants.monitor = WatchMonitor.create(setting.getStr("pathText"), WatchMonitor.ENTRY_CREATE);
+        CommonConstants.monitor.setWatcher(new Watcher(){
             @Override
             public void onCreate(WatchEvent<?> event, Path currentPath) {
                 Object obj = event.context();
@@ -437,9 +437,9 @@ public class AliYunPanUtil{
 
         //设置监听目录的最大深入，目录层级大于制定层级的变更将不被监听，默认只监听当前层级目录
         //监听所有目录
-        monitor.setMaxDepth(Integer.MAX_VALUE);
+        CommonConstants.monitor.setMaxDepth(Integer.MAX_VALUE);
         //启动监听
-        monitor.start();
+        CommonConstants.monitor.start();
     }
 
     /**

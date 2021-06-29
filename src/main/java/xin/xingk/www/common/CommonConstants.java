@@ -4,6 +4,7 @@ package xin.xingk.www.common;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.io.file.FileWriter;
+import cn.hutool.core.io.watch.WatchMonitor;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.setting.Setting;
 import xin.xingk.www.common.utils.FileUtil;
@@ -75,8 +76,10 @@ public class CommonConstants {
     public static int CLEAN_CONSOLE=1;
     //备份状态
     public static boolean BACK_STATE = false;
-
+    //是否打印日志
     public static boolean IS_CONSOLE = false;
+    //文件监听
+    public static WatchMonitor monitor;
 
     /**
      * 添加控制台日志

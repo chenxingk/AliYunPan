@@ -278,6 +278,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
                 setting.set("tokenText","");
                 setting.store(CommonConstants.CONFIG_PATH);
                 setVisible(false);
+                CommonConstants.monitor.close();
                 new Login();
             }
 
