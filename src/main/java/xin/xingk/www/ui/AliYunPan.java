@@ -74,12 +74,6 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         this.setVisible(true);
         //初始化变量
         CommonConstants.IS_CONSOLE=true;
-        CommonConstants.PATH = setting.getStr("pathText");
-        CommonConstants.REFRESH_TOKEN = setting.getStr("tokenText");
-        CommonConstants.BACK_NAME = setting.getStr("folderText");
-        if (StrUtil.isNotEmpty(setting.getStr("backType"))){
-            CommonConstants.BACK_TYPE = Integer.parseInt(setting.getStr("backType"));
-        }
         //开启目录检测
         aliYunPanUtil.monitorFolder();
     }
@@ -148,7 +142,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         //选择目录框
         pathTitle.setBounds(title_left, 20, title_width, title_high);
         container.add(pathTitle);
-        pathText.setText(setting.getStr("pathText"));
+        pathText.setText(CommonConstants.PATH);
         pathText.setBounds(obj_left, 20, text_width, text_high);
         pathText.setEditable(false);
         container.add(pathText);
@@ -156,7 +150,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         //token框
         tokenTitle.setBounds(title_left, 60, title_width, title_high);
         container.add(tokenTitle);
-        tokenText.setText(setting.getStr("tokenText").substring(0,16)+"****************");
+        tokenText.setText(CommonConstants.REFRESH_TOKEN.substring(0,16)+"****************");
         tokenText.setBounds(obj_left, 60, text_width, text_high);
         tokenText.setEditable(false);
         container.add(tokenText);
@@ -164,7 +158,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         //目录名称框
         folderTitle.setBounds(title_left, 100, title_width, title_high);
         container.add(folderTitle);
-        folderText.setText(setting.getStr("folderText"));
+        folderText.setText(CommonConstants.BACK_NAME);
         folderText.setBounds(obj_left, 100, text_width, text_high);
         folderText.addFocusListener(this);
         container.add(folderText);
@@ -177,17 +171,13 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
 
 
         //读取设置中选中的模式
-        String type = setting.getStr("backType");
+        int backType = CommonConstants.BACK_TYPE;
         boolean pt_checked=false;
         boolean fl_checked=false;
-        if (ObjectUtil.isNotNull(type)){
-            if (type.equals("0")){
-                pt_checked=true;
-            }else if (type.equals("1")){
-                fl_checked=true;
-            }
-        }else {
+        if (backType==0){
             pt_checked=true;
+        }else{
+            fl_checked=true;
         }
         //模式选择
         puTongRadio = new JRadioButton("普通备份",pt_checked);
@@ -249,9 +239,6 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
                 startBackup.setEnabled(false);
                 startBackup.setText("正在备份");
                 CommonConstants.CLEAN_CONSOLE=0;
-                //获取用户输入的token
-//                CommonConstants.REFRESH_TOKEN=tokenText.getText();
-//                setting.set("tokenText",CommonConstants.REFRESH_TOKEN);
                 //获取用户输入的目录
                 CommonConstants.PATH=pathText.getText();
                 setting.set("pathText",CommonConstants.PATH);

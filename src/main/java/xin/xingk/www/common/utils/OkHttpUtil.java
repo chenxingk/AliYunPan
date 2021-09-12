@@ -5,8 +5,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
-import cn.hutool.crypto.asymmetric.KeyType;
-import cn.hutool.crypto.asymmetric.RSA;
+import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import okhttp3.*;
@@ -14,7 +13,6 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import xin.xingk.www.common.CommonConstants;
-import xin.xingk.www.common.MyConsole;
 
 import java.io.IOException;
 import java.util.Map;
@@ -26,9 +24,6 @@ import java.util.concurrent.TimeUnit;
  * Date: 2021/05/10
  */
 public class OkHttpUtil {
-
-    // 日志界面
-    MyConsole console = CommonConstants.console;
     //错误次数
     int errNum=0;
 
@@ -115,6 +110,18 @@ public class OkHttpUtil {
     }
 
     /**
+     * 删除阿里云盘文件
+     * @param data
+     * @return
+     */
+    public void deleteFile(JSONObject data){
+        HttpRequest request = HttpRequest.post(CommonConstants.DELETE_FILE_URL);
+        request.body(data.toString());
+        request.header("Content-Type", "application/json");
+        request.header("authorization", CommonConstants.TOKEN);
+    }
+
+    /**
      * 阿里云盘上传二进制文件
      * @param url
      * @param fileBytes
@@ -142,86 +149,7 @@ public class OkHttpUtil {
         }
     }
 
-    /**
-     * 账号密码登录阿里云
-     * @param phone
-     * @param password
-     */
-    public static JSONObject passwordLogin(String phone, String password) throws Exception {
-        RSA rsa = new RSA(null, CommonConstants.PUBLIC_KEY);
-        password = rsa.encryptBcd(password, KeyType.PublicKey);
-        MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-        RequestBody body = RequestBody.create(mediaType, "loginId="+phone+"&password2="+password+"&keepLogin=true");
-        Request request = new Request.Builder()
-                .url(CommonConstants.PASS_URL)
-                .method("POST", body)
-                .addHeader("accept", "application/json, text/plain, */*")
-                .addHeader("content-type", "application/x-www-form-urlencoded")
-                .build();
-        Response response = client.newCall(request).execute();
-        return getAliLoginInfo(response.body().string());
-    }
 
-    /**
-     * 手机登录发送验证码
-     * @param phone
-     */
-    public static JSONObject smsSend(String phone,String cookie) throws Exception {
-        RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
-                .addFormDataPart("phoneCode", "86")
-                .addFormDataPart("loginId", phone)
-                .addFormDataPart("countryCode", "CN")
-                .build();
-        Request request = new Request.Builder()
-                .url("https://passport.aliyundrive.com/newlogin/sms/send.do?appName=aliyun_drive")
-                .method("POST", body)
-                .addHeader("Cookie",cookie)
-                .build();
-        Response response = client.newCall(request).execute();
-        String result = response.body().string();
-        return JSONUtil.parseObj(result);
-    }
-
-    /**
-     * 手机验证码登录阿里云
-     * @param phone
-     */
-    public static JSONObject smsLogin(String phone,String token,String smsCode,String Cookie) throws Exception {
-        RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
-                .addFormDataPart("phoneCode", "86")
-                .addFormDataPart("loginId", phone)
-                .addFormDataPart("countryCode", "CN")
-                .addFormDataPart("smsCode", smsCode)
-                .addFormDataPart("smsToken", token)
-                .addFormDataPart("keepLogin", "false")
-                .build();
-        Request request = new Request.Builder()
-                .url("https://passport.aliyundrive.com/newlogin/sms/login.do?appName=aliyun_drive")
-                .method("POST", body)
-                .addHeader("Cookie", Cookie)
-                .build();
-        Response response = client.newCall(request).execute();
-        return getAliLoginInfo(response.body().string());
-    }
-
-
-    /**
-     * 获得阿里云登录信息
-     * @param response
-     * @return
-     */
-    public static JSONObject getAliLoginInfo(String response) throws Exception {
-        JSONObject json = JSONUtil.parseObj(response);
-        String titleMsg = json.getJSONObject("content").getJSONObject("data").getStr("titleMsg");
-        if (StrUtil.isNotEmpty(titleMsg)){//异常信息返回
-            return json;
-        }
-        String redirectUrl = json.getJSONObject("content").getJSONObject("data").getStr("iframeRedirectUrl");
-        if (StrUtil.isNotEmpty(redirectUrl)){//异常信息返回
-            return json;
-        }
-        return doLogin(json);
-    }
 
     /**
      * 执行登录
@@ -300,8 +228,7 @@ public class OkHttpUtil {
      * @return
      */
     private static JSONObject getToken(String code) throws IOException {
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
+        OkHttpClient client = new OkHttpClient().newBuilder().build();
         MediaType mediaType = MediaType.parse("application/json; charset=UTF-8");
         RequestBody body = RequestBody.create(mediaType, "{\"code\":\""+ code +"\"}");
         Request request = new Request.Builder()

@@ -86,7 +86,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         /**
          * 软件类型
          */
-        applyTypes.add("1");
+        applyTypes.add("1");//微信发送的APK文件
         applyTypes.add("apk");
         applyTypes.add("exe");
         applyTypes.add("ipa");
@@ -160,15 +160,15 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
      * 获取文件信息
      * @param path 文件路径
      */
-    public static Map<String, Object> getFileInfo(String path) {
+    public static Map<String, String> getFileInfo(String path) {
         String contentType= new MimetypesFileTypeMap().getContentType(new File(path));
         if (StrUtil.isEmpty(contentType)) contentType="application/octet-stream";
-        Map<String, Object> map = new HashMap();
+        Map<String, String> map = new HashMap();
         File file = file(path);
         String type = getFileTypes(file.getName());
         map.put("name",file.getName());
         map.put("path",file.getPath());
-        map.put("size",file.length());
+        map.put("size",file.length()+"");
         map.put("type",type);
         map.put("content_type",contentType);
         map.put("content_hash",DigestUtil.sha1Hex(file).toUpperCase());

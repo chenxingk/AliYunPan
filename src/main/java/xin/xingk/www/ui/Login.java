@@ -111,7 +111,7 @@ public class Login extends JFrame{
                             new AliYunPan();
                         }
                     } catch (Exception exc) {
-                        JOptionPane.showMessageDialog(null, exc.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, exc.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                 }
