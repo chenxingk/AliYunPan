@@ -105,7 +105,7 @@ public class Login extends JFrame{
                             CommonConstants.REFRESH_TOKEN = refreshToken;
                             info.setText("登录成功，正在跳转中，请稍后...");
                             setting.set("tokenText",refreshToken);
-                            setting.store(CommonConstants.CONFIG_PATH);
+                            setting.store();
                             setVisible(false);
                             this.cancel();
                             new AliYunPan();

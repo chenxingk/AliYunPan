@@ -1,16 +1,24 @@
 package xin.xingk.www.ui;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.unit.DataUnit;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.cron.CronUtil;
+import cn.hutool.cron.task.Task;
 import cn.hutool.setting.Setting;
 import xin.xingk.www.common.CommonConstants;
+import xin.xingk.www.common.CronTasks;
 import xin.xingk.www.common.utils.AliYunPanUtil;
 import xin.xingk.www.common.utils.FileUtil;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
+import javax.xml.crypto.Data;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Date;
 import java.util.Enumeration;
 
 /**
@@ -65,17 +73,23 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
     private static TrayIcon trayIcon = null;
     //配置文件
     Setting setting =CommonConstants.setting;
+    //定时任务
+    private static CronTasks cronTasks = new CronTasks();
 
-    public AliYunPan(){
+    public AliYunPan() throws InterruptedException {
         //GUI默认配置
         initConfig();
+        Thread.sleep(100);
         //初始化UI
         initUi();
         this.setVisible(true);
+        Thread.sleep(100);
         //初始化变量
         CommonConstants.IS_CONSOLE=true;
         //开启目录检测
         aliYunPanUtil.monitorFolder();
+        //开启定时任务
+        startTask();
     }
 
     /**
@@ -228,7 +242,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
                 //保存选择的目录
                 CommonConstants.PATH=pathText.getText();
                 setting.set("pathText",CommonConstants.PATH);
-                setting.store(CommonConstants.CONFIG_PATH);
+                setting.store();
             }
         }else {
             //开始按钮
@@ -250,7 +264,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
                 setting.set("backType",CommonConstants.BACK_TYPE+"");
                 //输出模式
                 CommonConstants.addConsole("备份模式："+(puTongRadio.isSelected() ? "普通模式" : "分类模式"));
-                setting.store(CommonConstants.CONFIG_PATH);
+                setting.store();
                 //执行上传文件操作
                 try {
                     Thread backup = new Thread(() -> aliYunPanUtil.startBackup());
@@ -263,7 +277,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
             //退出按钮
             if (e.getSource() == logOut) {
                 setting.set("tokenText","");
-                setting.store(CommonConstants.CONFIG_PATH);
+                setting.store();
                 setVisible(false);
                 CommonConstants.monitor.close();
                 new Login();
@@ -288,7 +302,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
     public void doSetBackType(int type) {
         CommonConstants.BACK_TYPE = type;
         setting.set("backType", CommonConstants.BACK_TYPE + "");
-        setting.store(CommonConstants.CONFIG_PATH);
+        setting.store();
     }
 
     /**
@@ -355,7 +369,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
             //获取用户输入的目录名称
             CommonConstants.BACK_NAME=folderText.getText();
             setting.set("folderText",CommonConstants.BACK_NAME);
-            setting.store(CommonConstants.CONFIG_PATH);
+            setting.store();
         }
     }
 
@@ -367,8 +381,36 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
             //获取用户输入的目录名称
             CommonConstants.BACK_NAME=folderText.getText();
             setting.set("folderText",CommonConstants.BACK_NAME);
-            setting.store(CommonConstants.CONFIG_PATH);
+            setting.store();
         }
+    }
+
+    /**
+     * 定时任务开始
+     */
+    private void startTask() {
+        //每小时刷新阿里云盘登录信息
+        CronUtil.schedule("0 0 0/1 * * ?", (Task) () -> cronTasks.updateALiYunPanToken());
+        //设置定时备份时间
+        String backupTime="";
+        if (StrUtil.isEmpty(setting.getStr("backupTime"))){
+            backupTime = DateUtil.format(DateUtil.parse("20:30:00"), "HH:mm:ss");
+            setting.set("backupTime",backupTime);
+            setting.store();
+        }
+        try {
+            backupTime = DateUtil.format(DateUtil.parse(setting.getStr("backupTime")), "HH:mm:ss");
+            String cronTab = DateUtil.format(DateUtil.parse(setting.getStr("backupTime")), "ss mm HH * * ?");
+            CronUtil.schedule(cronTab, (Task) () -> cronTasks.backFileList());
+            CommonConstants.addConsole("自动备份定时任务开启成功，每天【"+backupTime+"】执行");
+        } catch (Exception e) {
+            CommonConstants.addConsole("自动备份定时任务开启失败，请检查backupTime参数格式是否为(hh:mm:ss)");
+        }
+        CommonConstants.addConsole("如需修改定时请到back_config.setting文件中修改backupTime参数，注意格式不要写错哦~");
+        //开启定时
+        CronUtil.start();
+        //支持秒级别定时任务
+        CronUtil.setMatchSecond(true);
     }
 
 }

@@ -15,18 +15,14 @@ public class App {
         AliYunPanUtil aliYunPanUtil = new AliYunPanUtil();
         boolean login = aliYunPanUtil.getAliYunPanInfo();
         if(login){
-            new AliYunPan();
+            try {
+                new AliYunPan();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }else{
             new Login();
         }
-        //开启定时
-        CronUtil.start();
-        //支持秒级别定时任务
-        CronUtil.setMatchSecond(true);
     }
 
-    //测试定时
-    public  void Test(){
-        System.out.println(111);
-    }
 }

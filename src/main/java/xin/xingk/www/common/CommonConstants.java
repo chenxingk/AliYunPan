@@ -55,8 +55,6 @@ public class CommonConstants {
     public final static String COMPLETE_FILE_URL="https://api.aliyundrive.com/v2/file/complete";
     //删除文件
     public final static String DELETE_FILE_URL="https://api.aliyundrive.com/v2/recyclebin/trash";
-    //文件夹ID
-    public static String FILE_ID="";
     //refresh_token
     public static String REFRESH_TOKEN = setting.getStr("tokenText");
     //Token

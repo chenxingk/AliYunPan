@@ -4,11 +4,11 @@ import cn.hutool.core.util.StrUtil;
 import xin.xingk.www.common.utils.AliYunPanUtil;
 
 /**
- * Description: 定时任务类
+ * Description: 定时任务
  * Author: 陈靖杰
  * Date: 2021/05/12
  */
-public class CronTask {
+public class CronTasks {
 
     //阿里云工具类
     private AliYunPanUtil aliYunPanUtil=new AliYunPanUtil();
@@ -32,7 +32,7 @@ public class CronTask {
             Thread backup = new Thread(() -> aliYunPanUtil.startBackup());
             backup.start();
         } catch (Exception e) {
-            CommonConstants.addConsole("遇到异常情况："+e.toString());
+            CommonConstants.addConsole("定时备份遇到异常情况："+e.toString());
         }
     }
 
