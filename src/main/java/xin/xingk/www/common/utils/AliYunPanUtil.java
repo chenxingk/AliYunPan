@@ -68,7 +68,7 @@ public class AliYunPanUtil{
             if (folderList.size()!=0){
                 for (String folderName :  folderList) {
                     String path = rootPath + FileUtil.FILE_SEPARATOR + folderName;//路径
-                    uploadTwoLevelFolder(rootPath,path);
+                    uploadTwoLevelFolder(fileId,path);
                 }
             }
         }
