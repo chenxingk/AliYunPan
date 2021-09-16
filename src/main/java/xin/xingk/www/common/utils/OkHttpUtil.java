@@ -119,6 +119,7 @@ public class OkHttpUtil {
         request.body(data.toString());
         request.header("Content-Type", "application/json");
         request.header("authorization", CommonConstants.TOKEN);
+        request.execute().body();
     }
 
     /**
