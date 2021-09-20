@@ -1,9 +1,6 @@
 package xin.xingk.www.ui;
 
-import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.io.unit.DataUnit;
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.task.Task;
@@ -15,10 +12,8 @@ import xin.xingk.www.common.utils.FileUtil;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
-import javax.xml.crypto.Data;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Date;
 import java.util.Enumeration;
 
 /**
@@ -76,18 +71,17 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
     //定时任务
     private static CronTasks cronTasks = new CronTasks();
 
-    public AliYunPan() throws InterruptedException {
+    public AliYunPan(){
         //GUI默认配置
         initConfig();
-        Thread.sleep(100);
         //初始化UI
         initUi();
-        this.setVisible(true);
-        Thread.sleep(100);
         //初始化变量
         CommonConstants.IS_CONSOLE=true;
         //开启目录检测
         aliYunPanUtil.monitorFolder();
+        //显示窗口
+        this.setVisible(true);
         //开启定时任务
         startTask();
     }
@@ -134,7 +128,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
 
     public void initUi() {
         // 初始化控件
-        Container container = getContentPane();
+        Container container = new Container();
         container.setLayout(null);
 
         /**
@@ -224,6 +218,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         scrollBar.setSize(100,100);
         consolePane.setBounds(0, 240, 800, 348);
         container.add(consolePane);
+        this.setContentPane(container);
     }
 
     /**

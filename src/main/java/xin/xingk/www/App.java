@@ -15,11 +15,7 @@ public class App {
         AliYunPanUtil aliYunPanUtil = new AliYunPanUtil();
         boolean login = aliYunPanUtil.getAliYunPanInfo();
         if(login){
-            try {
-                new AliYunPan();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            new AliYunPan();
         }else{
             new Login();
         }
