@@ -1,6 +1,7 @@
 package xin.xingk.www.ui;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.task.Task;
@@ -273,8 +274,8 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
             if (e.getSource() == logOut) {
                 setting.set("tokenText","");
                 setting.store();
-                setVisible(false);
-                CommonConstants.monitor.close();
+                this.setVisible(false);
+                if (ObjectUtil.isNotNull(CommonConstants.monitor)) CommonConstants.monitor.close();
                 new Login();
             }
 

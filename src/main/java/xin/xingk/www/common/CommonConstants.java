@@ -112,7 +112,6 @@ public class CommonConstants {
      * 添加文件上传日志
      * @param path
      * @param fileId
-     * @return
      */
     public static void addFileUploadLog(String path,String fileId){
         JSONObject fileInfo = new JSONObject();
@@ -129,6 +128,10 @@ public class CommonConstants {
         writerLog.write(json.toString());
     }
 
+    /**
+     * 删除上传文件日志
+     * @param path
+     */
     public static void removeFileUploadLog(String path){
         JSONObject fileInfo = new JSONObject();
         JSONArray fileList = new JSONArray();

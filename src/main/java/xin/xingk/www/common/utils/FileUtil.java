@@ -43,6 +43,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         docTypes.add("pdf");
         docTypes.add("chm");
         docTypes.add("xmind");
+        devTypes.add("md");
 
         /**
          * 压缩包类型
