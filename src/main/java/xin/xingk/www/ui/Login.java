@@ -111,7 +111,7 @@ public class Login extends JFrame{
                             new AliYunPan();
                         }
                     } catch (Exception exc) {
-                        JOptionPane.showMessageDialog(null, exc.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, exc.getMessage(), "二维码验证错误", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                 }
@@ -135,12 +135,12 @@ public class Login extends JFrame{
         if (ObjectUtil.isNotNull(json.getJSONObject("content"))) {
             String titleMsg = json.getJSONObject("content").getJSONObject("data").getStr("titleMsg");
             if (StrUtil.isNotEmpty(titleMsg)) {
-                JOptionPane.showMessageDialog(null, titleMsg, "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, titleMsg, "异常错误", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
             String redirectUrl = json.getJSONObject("content").getJSONObject("data").getStr("iframeRedirectUrl");
             if (StrUtil.isNotEmpty(redirectUrl)) {//异常信息返回
-                JOptionPane.showMessageDialog(null, "请您先在电脑网页登录成功后，再登录本软件", "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "请您先在电脑网页登录成功后，再登录本软件", "登录错误", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
         }
@@ -161,7 +161,7 @@ public class Login extends JFrame{
             qrCodeImg=new ImageIcon(qrCode);
             qrCodeLab.setIcon(qrCodeImg);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e.toString(), "错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e.toString(), "获取二维码错误", JOptionPane.ERROR_MESSAGE);
             return;
         }
     }
