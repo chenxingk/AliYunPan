@@ -256,10 +256,6 @@ public class AliYunPanUtil{
      * @throws Exception
      */
     public void doUploadFile(String fileId,Map<String, String> fileInfo){
-        String fileSuffix = FileUtil.getSuffix(fileInfo.get("name"));//文件后缀
-        if (fileInfo.get("name").startsWith("~$") || fileSuffix.length()>=8){
-            return;
-        }
         //写入上传文件的路径
         String id = CommonConstants.getFileUploadFileId(fileInfo.get("path"));
         if (StrUtil.isEmpty(id)){
@@ -322,6 +318,10 @@ public class AliYunPanUtil{
         List<String> logList = CommonConstants.getFileUploadList();
         fileList.removeAll(logList);
         for (String filePath :  fileList) {
+            String fileSuffix = FileUtil.getSuffix(filePath);//文件后缀
+            if (FileUtil.getPrefix(filePath).startsWith("~$") || fileSuffix.length()>=8){
+                continue;
+            }
             try {
                 Map<String, String> map = FileUtil.getFileInfo(filePath);
                 if (backType){//开启分类
