@@ -58,11 +58,11 @@ public class OkHttpUtil {
             return json;
         } catch (Exception e) {
             if (e.toString().contains("A JSONObject text")){
-                CommonConstants.addConsole("普通请求遇到异常："+e.toString());
+                CommonConstants.addConsole(url+"请求"+"遇到异常："+e);
                 return null;
             }else{
                 errNum++;
-                CommonConstants.addConsole("普通请求遇到异常："+e.toString());
+                CommonConstants.addConsole(url+"请求"+"遇到异常："+e);
                 if (errNum>5){
                     CommonConstants.addConsole("普通请求失败次数超过："+errNum+" 次....已停止");
                     return null;
@@ -98,7 +98,7 @@ public class OkHttpUtil {
             return json;
         } catch (Exception e) {
             errNum++;
-            CommonConstants.addConsole("上传请求遇到异常："+e.toString());
+            CommonConstants.addConsole("上传请求遇到异常："+e);
             if (errNum>5){
                 CommonConstants.addConsole("上传请求失败次数超过："+errNum+" 次....已停止");
                 return null;

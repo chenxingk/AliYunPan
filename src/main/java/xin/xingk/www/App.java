@@ -12,8 +12,7 @@ import xin.xingk.www.ui.Login;
 public class App {
 
     public static void main( String[] args ) {
-        AliYunPanUtil aliYunPanUtil = new AliYunPanUtil();
-        boolean login = aliYunPanUtil.getAliYunPanInfo();
+        boolean login = new AliYunPanUtil().getAliYunPanInfo();
         if(login){
             new AliYunPan();
         }else{
