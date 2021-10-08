@@ -159,7 +159,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         //token框
         tokenTitle.setBounds(title_left, 60, title_width, title_high);
         container.add(tokenTitle);
-        tokenText.setText(CommonConstants.REFRESH_TOKEN.substring(0,16)+"****************");
+        tokenText.setText(StrUtil.hide(CommonConstants.REFRESH_TOKEN,10,20));
         tokenText.setBounds(obj_left, 60, text_width, text_high);
         tokenText.setEditable(false);
         container.add(tokenText);

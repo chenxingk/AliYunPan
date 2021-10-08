@@ -122,7 +122,7 @@ public class AliYunPanUtil{
         CommonConstants.TOKEN = json.getStr("token_type") + " " + json.getStr("access_token");
         CommonConstants.DriveId = json.getStr("default_drive_id");
         setting.set("tokenText", json.getStr("refresh_token"));
-        tokenText.setText(CommonConstants.REFRESH_TOKEN.substring(0,16)+"****************");
+        tokenText.setText(StrUtil.hide(CommonConstants.REFRESH_TOKEN,10,20));
         setting.store();
     }
 
