@@ -128,10 +128,62 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
     }
 
     public void initUi() {
+        JTabbedPane mainTab = new JTabbedPane();
+
+        Container index = setIndex();
+        Container config = setConfig();
+        //index.setLayout(null);
+        mainTab.add("主界面", index);
+        mainTab.add("配置界面", config);
+        this.setContentPane(mainTab);
+    }
+
+    public Container setConfig(){
+        //初始化控件
+        Container container = new Container();
+
+        //目录检测
+        JLabel monitor = new JLabel("目录检测");
+        monitor.setBounds(title_left, 20, title_width, title_high);
+        container.add(monitor);
+        //开启目录检测
+        JRadioButton startMonitor = new JRadioButton("开启",true);
+        startMonitor.setBounds(100, 20, radio_width, radio_high);
+        startMonitor.setBackground(container.getBackground());
+        startMonitor.addActionListener(this);
+        container.add(startMonitor);
+        //停止目录检测
+        JRadioButton stopMonitor = new JRadioButton("关闭",false);
+        stopMonitor.setBounds(250, 20, radio_width, radio_high);
+        stopMonitor.setBackground(container.getBackground());
+        stopMonitor.addActionListener(this);
+        container.add(stopMonitor);
+        //设置为单选
+        ButtonGroup typeGroup = new ButtonGroup();
+        typeGroup.add(startMonitor);
+        typeGroup.add(stopMonitor);
+
+        //备份时间
+        JLabel timeTask = new JLabel("备份时间");
+        timeTask.setBounds(title_left, 60, title_width, title_high);
+        container.add(timeTask);
+        JTextField timeTaskText = new JTextField();
+        timeTaskText.setText("请输入时分秒，如:[20:30:00]");
+        timeTaskText.setForeground(Color.GRAY);
+        timeTaskText.setBounds(obj_left, 60, 200, text_high);
+        timeTaskText.setEditable(true);
+        container.add(timeTaskText);
+
+        JButton saveTime = new JButton("保存");
+        saveTime.setBounds(305, 62, 60, 25);
+        saveTime.addActionListener(this);
+        container.add(saveTime);
+        return container;
+    }
+
+    public Container setIndex(){
         // 初始化控件
         Container container = new Container();
-        container.setLayout(null);
-
         /**
          * 左侧标题
          */
@@ -219,7 +271,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         scrollBar.setSize(100,100);
         consolePane.setBounds(0, 240, 800, 348);
         container.add(consolePane);
-        this.setContentPane(container);
+        return container;
     }
 
     /**
