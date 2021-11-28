@@ -280,6 +280,9 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         saveTime = new JButton("保存");
         saveTime.setBounds(305, 62, 60, 25);
         saveTime.addActionListener(this);
+        if (ConfigUtil.getMonitorFolder()){
+            startMonitorFolder();
+        }
         container.add(saveTime);
         return container;
     }
