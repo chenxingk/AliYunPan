@@ -1,19 +1,16 @@
 package xin.xingk.www.ui;
 
-import cn.hutool.core.lang.Validator;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.qrcode.QrCodeUtil;
 import cn.hutool.json.JSONObject;
-import cn.hutool.setting.Setting;
 import xin.xingk.www.common.CommonConstants;
-import xin.xingk.www.common.utils.OkHttpUtil;
+import xin.xingk.www.util.ConfigUtil;
+import xin.xingk.www.util.OkHttpUtil;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Enumeration;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -23,14 +20,10 @@ import java.util.TimerTask;
  */
 public class Login extends JFrame{
 
-    //二维码面板
-    private Container qrCodeLogin;
     //二维码
     private JLabel qrCodeLab;
     //二维码
     private ImageIcon qrCodeImg;
-    //二维码地址
-    private String codeContent;
     //CK码
     private String ck;
     //时间戳
@@ -41,10 +34,7 @@ public class Login extends JFrame{
     Timer qrTimer;
 
     //TAB面板
-    private JTabbedPane mainTab = new JTabbedPane();
-
-    //配置文件
-    Setting setting = CommonConstants.setting;
+    private final JTabbedPane mainTab = new JTabbedPane();
 
 
     public Login() {
@@ -76,7 +66,8 @@ public class Login extends JFrame{
 
     public void initUi() {
         //二维码登录
-        qrCodeLogin = new Container();
+        //二维码面板
+        Container qrCodeLogin = new Container();
         qrCodeImg=new ImageIcon(getClass().getResource("/images/logo.png"));
 
         qrCodeLab = new JLabel(qrCodeImg);
@@ -102,10 +93,8 @@ public class Login extends JFrame{
                         if (!checkLoginJson(json)) return;
                         String refreshToken = json.getStr("refresh_token");
                         if (StrUtil.isNotEmpty(refreshToken)){
-                            CommonConstants.REFRESH_TOKEN = refreshToken;
                             info.setText("登录成功，正在跳转中，请稍后...");
-                            setting.set("tokenText",refreshToken);
-                            setting.store();
+                            ConfigUtil.set(CommonConstants.REFRESH_TOKEN,refreshToken);
                             setVisible(false);
                             this.cancel();
                             new AliYunPan();
@@ -154,7 +143,8 @@ public class Login extends JFrame{
     private void getQrCodeImg() {
         try {
             JSONObject qrCodeUrl = OkHttpUtil.getQrCodeUrl();
-            codeContent = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("codeContent");
+            //二维码地址
+            String codeContent = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("codeContent");
             ck = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("ck");
             t = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("t");
             byte[] qrCode = QrCodeUtil.generatePng(codeContent, 180, 180);
@@ -162,7 +152,6 @@ public class Login extends JFrame{
             qrCodeLab.setIcon(qrCodeImg);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.toString(), "获取二维码错误", JOptionPane.ERROR_MESSAGE);
-            return;
         }
     }
 }

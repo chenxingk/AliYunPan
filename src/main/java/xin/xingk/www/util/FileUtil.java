@@ -1,4 +1,4 @@
-package xin.xingk.www.common.utils;
+package xin.xingk.www.util;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;

@@ -1,12 +1,11 @@
 package xin.xingk.www;
 
-import cn.hutool.cron.CronUtil;
-import xin.xingk.www.common.utils.AliYunPanUtil;
+import xin.xingk.www.util.AliYunPanUtil;
 import xin.xingk.www.ui.AliYunPan;
 import xin.xingk.www.ui.Login;
 
 /**
- * 微信备份程序
+ * 备份程序
  *
  */
 public class App {

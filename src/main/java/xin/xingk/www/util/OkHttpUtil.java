@@ -1,7 +1,8 @@
-package xin.xingk.www.common.utils;
+package xin.xingk.www.util;
 
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
@@ -13,6 +14,7 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import xin.xingk.www.common.CommonConstants;
+import xin.xingk.www.common.CommonUI;
 
 import java.io.IOException;
 import java.util.Map;
@@ -42,6 +44,9 @@ public class OkHttpUtil {
      * @throws Exception
      */
     public JSONObject doPost(String url, JSONObject data){
+//        if (CommonConstants.FILE_LIST_URL.equals(url)){
+//            ThreadUtil.sleep(2000);//防止429频繁
+//        }
         try {
             body = RequestBody.create(mediaType,data.toString());
             request = new Request.Builder()
@@ -51,23 +56,28 @@ public class OkHttpUtil {
                     .addHeader("Content-Type", "application/json").build();
             Response response = client.newCall(request).execute();
             String result = response.body().string();
-            CommonConstants.addConsole("请求状态码："+response.code());
-            //System.out.println("result：>>>>>>>>>>>>>>>>>>>"+result);
+            CommonUI.console("请求状态码：{}",response.code());
+            if (429==response.code()){
+                System.out.println("请求频繁了，休息一下。。。。正在准备重试中。。。："+result);
+                CommonUI.console("请求频繁了，休息一下。。。。正在准备重试中。。。");
+                ThreadUtil.sleep(3000);
+                return doPost(url,data);
+            }
             JSONObject json = JSONUtil.parseObj(result);
             errNum=0;
             return json;
         } catch (Exception e) {
             if (e.toString().contains("A JSONObject text")){
-                CommonConstants.addConsole(url+"请求"+"遇到异常："+e);
+                CommonUI.console("{} 请求遇到异常：{}",url,e);
                 return null;
             }else{
                 errNum++;
-                CommonConstants.addConsole(url+"请求"+"遇到异常："+e);
+                CommonUI.console("{} 请求遇到异常：{}",url,e);
                 if (errNum>5){
-                    CommonConstants.addConsole("普通请求失败次数超过："+errNum+" 次....已停止");
+                    CommonUI.console("普通请求失败次数超过：{} 次....已停止",errNum);
                     return null;
                 }else{
-                    CommonConstants.addConsole("普通请求发起第："+errNum+" 次重试");
+                    CommonUI.console("普通请求发起第：{} 次重试",errNum);
                     return doPost(url,data);
                 }
             }
@@ -91,19 +101,19 @@ public class OkHttpUtil {
                     .addHeader("Content-Type", "multipart/form-data").build();
             Response response = client.newCall(request).execute();
             String result = response.body().string();
-            CommonConstants.addConsole("请求状态码："+response.code());
+            CommonUI.console("新文件请求状态码：{}",response.code());
             //System.out.println("result：>>>>>>>>>>>>>>>>>>>"+result);
             JSONObject json = JSONUtil.parseObj(result);
             errNum=0;
             return json;
         } catch (Exception e) {
             errNum++;
-            CommonConstants.addConsole("上传请求遇到异常："+e);
+            CommonUI.console("上传请求遇到异常：{}",e);
             if (errNum>5){
-                CommonConstants.addConsole("上传请求失败次数超过："+errNum+" 次....已停止");
+                CommonUI.console("上传请求失败次数超过：{} 次....已停止",errNum);
                 return null;
             }else{
-                CommonConstants.addConsole("上传请求发起第："+errNum+" 次重试");
+                CommonUI.console("上传请求发起第：{} 次重试",errNum);
                 return doFilePost(url,data);
             }
         }
@@ -135,16 +145,16 @@ public class OkHttpUtil {
             Request request = new Request.Builder().url(url).method("PUT",body).build();
             Response response = client.newCall(request).execute();
             //String result=response.body().string();
-            CommonConstants.addConsole("上传文件请求状态码："+response.code());
+            CommonUI.console("上传文件请求状态码：{}",response.code());
             errNum=0;
         } catch (Exception e) {
             errNum++;
-            CommonConstants.addConsole("上传文件遇到异常："+e.toString());
+            CommonUI.console("上传文件遇到异常：{}",e.toString());
             if (errNum>5){
-                CommonConstants.addConsole("上传文件失败次数超过："+errNum+" 次....已停止");
+                CommonUI.console("上传文件失败次数超过：{} 次....已停止",errNum);
                 return;
             }else{
-                CommonConstants.addConsole("上传文件发起第："+errNum+" 次重试");
+                CommonUI.console("上传文件发起第：{} 次重试",errNum);
                 uploadFileBytes(url,fileBytes);
             }
         }

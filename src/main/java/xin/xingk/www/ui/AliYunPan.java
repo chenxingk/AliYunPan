@@ -1,20 +1,26 @@
 package xin.xingk.www.ui;
 
-import cn.hutool.core.date.DateUtil;
+
+import cn.hutool.core.io.watch.WatchMonitor;
+import cn.hutool.core.io.watch.Watcher;
+import cn.hutool.core.io.watch.watchers.DelayWatcher;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.cron.CronUtil;
-import cn.hutool.cron.task.Task;
-import cn.hutool.setting.Setting;
 import xin.xingk.www.common.CommonConstants;
+import xin.xingk.www.common.CommonUI;
 import xin.xingk.www.common.CronTasks;
-import xin.xingk.www.common.utils.AliYunPanUtil;
-import xin.xingk.www.common.utils.FileUtil;
+import xin.xingk.www.util.AliYunPanUtil;
+import xin.xingk.www.util.ConfigUtil;
+import xin.xingk.www.util.FileUtil;
+import xin.xingk.www.util.UploadLogUtil;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.awt.event.*;
+import java.nio.file.Path;
+import java.nio.file.WatchEvent;
 import java.util.Enumeration;
 
 /**
@@ -39,36 +45,49 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
 
     //阿里云工具类
     private AliYunPanUtil aliYunPanUtil=new AliYunPanUtil();
+
+    /**
+     * 主页面
+     */
     // 日志界面
-    JScrollPane consolePane = CommonConstants.consolePane;
-    JScrollBar scrollBar = CommonConstants.scrollBar;
-    //Token文本框
-    JTextField tokenText = CommonConstants.tokenText;
+    JScrollPane consolePane = CommonUI.consolePane;
+    JScrollBar scrollBar = CommonUI.scrollBar;
+    // Token文本框
+    JTextField tokenText = CommonUI.tokenText;
     // 备份目录
     private JTextField pathText;
     // 目录名称
     private JTextField folderText;
-    //选择文件夹按钮
+    // 选择文件夹按钮
     private JButton selectBtn;
-    //选择文件夹
+    // 选择文件夹
     private JFileChooser selectPathChooser = new JFileChooser();
-
-    // 迭代一单选框
+    // 普通备份
     private JRadioButton puTongRadio;
-    // 迭代二单选框
+    // 分类备份
     private JRadioButton fenLeiRadio;
-
     // 开始备份
-    private JButton startBackup = CommonConstants.startBackup;
+    private JButton startBackup = CommonUI.startBackup;
     // 退出登录
     private JButton logOut;
+
+    /**
+     * 更多设置
+     */
+    //开启目录监控
+    private JRadioButton startMonitor;
+    //关闭目录监控
+    private JRadioButton stopMonitor;
+    //定时备份时间
+    private JTextField timeTaskText;
+    //保存定时备份
+    private JButton saveTime;
+
 
     //判断系统是否有托盘
     static SystemTray tray = SystemTray.getSystemTray();
     //托盘图标
     private static TrayIcon trayIcon = null;
-    //配置文件
-    Setting setting =CommonConstants.setting;
     //定时任务
     private static CronTasks cronTasks = new CronTasks();
 
@@ -79,12 +98,10 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         initUi();
         //初始化变量
         CommonConstants.IS_CONSOLE=true;
-        //开启目录检测
-        aliYunPanUtil.monitorFolder();
         //显示窗口
         this.setVisible(true);
         //开启定时任务
-        startTask();
+        CronTasks.startTask();
     }
 
     /**
@@ -105,7 +122,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         //设置标题栏的图标
         this.setIconImage(new ImageIcon(getClass().getResource("/images/logo.png")).getImage());
         //设置窗口显示尺寸
-        setSize(800,600);
+        setSize(800,625);
         //窗口是否可以关闭
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //默认居中显示
@@ -134,51 +151,8 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         Container config = setConfig();
         //index.setLayout(null);
         mainTab.add("主界面", index);
-        mainTab.add("配置界面", config);
+        mainTab.add("更多设置", config);
         this.setContentPane(mainTab);
-    }
-
-    public Container setConfig(){
-        //初始化控件
-        Container container = new Container();
-
-        //目录检测
-        JLabel monitor = new JLabel("目录检测");
-        monitor.setBounds(title_left, 20, title_width, title_high);
-        container.add(monitor);
-        //开启目录检测
-        JRadioButton startMonitor = new JRadioButton("开启",true);
-        startMonitor.setBounds(100, 20, radio_width, radio_high);
-        startMonitor.setBackground(container.getBackground());
-        startMonitor.addActionListener(this);
-        container.add(startMonitor);
-        //停止目录检测
-        JRadioButton stopMonitor = new JRadioButton("关闭",false);
-        stopMonitor.setBounds(250, 20, radio_width, radio_high);
-        stopMonitor.setBackground(container.getBackground());
-        stopMonitor.addActionListener(this);
-        container.add(stopMonitor);
-        //设置为单选
-        ButtonGroup typeGroup = new ButtonGroup();
-        typeGroup.add(startMonitor);
-        typeGroup.add(stopMonitor);
-
-        //备份时间
-        JLabel timeTask = new JLabel("备份时间");
-        timeTask.setBounds(title_left, 60, title_width, title_high);
-        container.add(timeTask);
-        JTextField timeTaskText = new JTextField();
-        timeTaskText.setText("请输入时分秒，如:[20:30:00]");
-        timeTaskText.setForeground(Color.GRAY);
-        timeTaskText.setBounds(obj_left, 60, 200, text_high);
-        timeTaskText.setEditable(true);
-        container.add(timeTaskText);
-
-        JButton saveTime = new JButton("保存");
-        saveTime.setBounds(305, 62, 60, 25);
-        saveTime.addActionListener(this);
-        container.add(saveTime);
-        return container;
     }
 
     public Container setIndex(){
@@ -203,7 +177,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         //选择目录框
         pathTitle.setBounds(title_left, 20, title_width, title_high);
         container.add(pathTitle);
-        pathText.setText(CommonConstants.PATH);
+        pathText.setText(ConfigUtil.getPath());
         pathText.setBounds(obj_left, 20, text_width, text_high);
         pathText.setEditable(false);
         container.add(pathText);
@@ -211,7 +185,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         //token框
         tokenTitle.setBounds(title_left, 60, title_width, title_high);
         container.add(tokenTitle);
-        tokenText.setText(StrUtil.hide(CommonConstants.REFRESH_TOKEN,10,20));
+        tokenText.setText(StrUtil.hide(ConfigUtil.getRefreshToken(),10,20));
         tokenText.setBounds(obj_left, 60, text_width, text_high);
         tokenText.setEditable(false);
         container.add(tokenText);
@@ -219,7 +193,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         //目录名称框
         folderTitle.setBounds(title_left, 100, title_width, title_high);
         container.add(folderTitle);
-        folderText.setText(CommonConstants.BACK_NAME);
+        folderText.setText(ConfigUtil.getBackName());
         folderText.setBounds(obj_left, 100, text_width, text_high);
         folderText.addFocusListener(this);
         container.add(folderText);
@@ -230,23 +204,13 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         selectBtn.addActionListener(this);
         container.add(selectBtn);
 
-
-        //读取设置中选中的模式
-        int backType = CommonConstants.BACK_TYPE;
-        boolean pt_checked=false;
-        boolean fl_checked=false;
-        if (backType==0){
-            pt_checked=true;
-        }else{
-            fl_checked=true;
-        }
         //模式选择
-        puTongRadio = new JRadioButton("普通备份",pt_checked);
+        puTongRadio = new JRadioButton("普通备份",ConfigUtil.getBackType());
         puTongRadio.setBounds(100, radio_top, radio_width, radio_high);
         puTongRadio.setBackground(container.getBackground());
         puTongRadio.addActionListener(this);
         container.add(puTongRadio);
-        fenLeiRadio = new JRadioButton("分类备份",fl_checked);
+        fenLeiRadio = new JRadioButton("分类备份",!ConfigUtil.getBackType());
         fenLeiRadio.setBounds(250, radio_top, radio_width, radio_high);
         fenLeiRadio.setBackground(container.getBackground());
         fenLeiRadio.addActionListener(this);
@@ -256,8 +220,6 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         typeGroup.add(puTongRadio);
         typeGroup.add(fenLeiRadio);
 
-
-        //startBackup = new JButton("开始备份");
         startBackup.setFont(new Font("宋体", Font.PLAIN, 13));
         startBackup.setBounds(100, 195, 100, 30);
         startBackup.addActionListener(this);
@@ -268,9 +230,57 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         container.add(logOut);
         //日志面板
         consolePane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scrollBar.setSize(100,100);
-        consolePane.setBounds(0, 240, 800, 348);
+        scrollBar.setSize(100,355);
+        consolePane.setBounds(0, 240, 800, 360);
         container.add(consolePane);
+        return container;
+    }
+
+    public Container setConfig(){
+        //初始化控件
+        Container container = new Container();
+
+        //目录检测
+        JLabel monitor = new JLabel("目录检测");
+        monitor.setBounds(title_left, 20, title_width, title_high);
+        container.add(monitor);
+
+        //开启目录检测
+        startMonitor = new JRadioButton("开启",ConfigUtil.getMonitorFolder());
+        startMonitor.setBounds(100, 20, radio_width, radio_high);
+        startMonitor.setBackground(container.getBackground());
+        startMonitor.addActionListener(this);
+        container.add(startMonitor);
+        //停止目录检测
+        stopMonitor = new JRadioButton("关闭",!ConfigUtil.getMonitorFolder());
+        stopMonitor.setBounds(250, 20, radio_width, radio_high);
+        stopMonitor.setBackground(container.getBackground());
+        stopMonitor.addActionListener(this);
+        container.add(stopMonitor);
+        //设置为单选
+        ButtonGroup typeGroup = new ButtonGroup();
+        typeGroup.add(startMonitor);
+        typeGroup.add(stopMonitor);
+
+        //备份时间
+        JLabel timeTask = new JLabel("备份时间");
+        timeTask.setBounds(title_left, 60, title_width, title_high);
+        container.add(timeTask);
+        timeTaskText = new JTextField();
+        if (StrUtil.isEmpty(ConfigUtil.getBackupTime())){
+            timeTaskText.setForeground(Color.GRAY);
+            timeTaskText.setText("请输入时分秒，如:[20:30:00]");
+        }else {
+            timeTaskText.setText(ConfigUtil.getBackupTime());
+        }
+        timeTaskText.setBounds(obj_left, 60, 200, text_high);
+        timeTaskText.addFocusListener(this);
+        container.add(timeTaskText);
+
+        saveTime = new JButton("保存");
+        saveTime.setBounds(305, 62, 60, 25);
+        saveTime.addActionListener(this);
+        container.add(saveTime);
         return container;
     }
 
@@ -288,9 +298,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
                 pathText.setText(selectPathChooser.getSelectedFile().getPath());
                 pathText.setEditable(false);
                 //保存选择的目录
-                CommonConstants.PATH=pathText.getText();
-                setting.set("pathText",CommonConstants.PATH);
-                setting.store();
+                ConfigUtil.set(CommonConstants.PATH,pathText.getText());
             }
         }else {
             //开始按钮
@@ -300,58 +308,71 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
                 }
                 startBackup.setEnabled(false);
                 startBackup.setText("正在备份");
-                CommonConstants.CLEAN_CONSOLE=0;
+                CommonConstants.CLEAN_CONSOLE = 0;
                 //获取用户输入的目录
-                CommonConstants.PATH=pathText.getText();
-                setting.set("pathText",CommonConstants.PATH);
+                ConfigUtil.set(CommonConstants.PATH,pathText.getText());
                 //获取用户输入的目录名称
-                CommonConstants.BACK_NAME=folderText.getText();
-                setting.set("folderText",CommonConstants.BACK_NAME);
+                ConfigUtil.set(CommonConstants.BACKUP_NAME,folderText.getText());
                 //获取上传模式
-                CommonConstants.BACK_TYPE = puTongRadio.isSelected() ? 0 : 1;
-                setting.set("backType",CommonConstants.BACK_TYPE+"");
+                ConfigUtil.set(CommonConstants.BACKUP_TYPE,puTongRadio.isSelected() ? "0" : "1");
                 //输出模式
-                CommonConstants.addConsole("备份模式："+(puTongRadio.isSelected() ? "普通模式" : "分类模式"));
-                setting.store();
+                CommonUI.console("备份模式：{}",(puTongRadio.isSelected() ? "普通模式" : "分类模式"));
                 //执行上传文件操作
                 try {
                     Thread backup = new Thread(() -> aliYunPanUtil.startBackup());
                     backup.start();
                 } catch (Exception exc) {
-                    CommonConstants.addConsole("遇到异常情况："+exc.toString());
+                    CommonUI.console("遇到异常情况：{}",exc.toString());
                 }
             }
 
             //退出按钮
             if (e.getSource() == logOut) {
-                setting.set("tokenText","");
-                setting.store();
+                ConfigUtil.set(CommonConstants.REFRESH_TOKEN,"");
                 this.setVisible(false);
-                if (ObjectUtil.isNotNull(CommonConstants.monitor)) CommonConstants.monitor.close();
+                if (ObjectUtil.isNotEmpty(CommonConstants.monitor)) CommonConstants.monitor.close();
                 new Login();
             }
 
             //普通模式
             if (e.getSource() == puTongRadio) {
-                doSetBackType(0);
+                ConfigUtil.set(CommonConstants.BACKUP_TYPE, 0 + "");
             }
 
-            //普通模式
+            //分类模式
             if (e.getSource() == fenLeiRadio) {
-                doSetBackType(1);
+                ConfigUtil.set(CommonConstants.BACKUP_TYPE, 1 + "");
             }
+
+            //开启目录监控
+            if (e.getSource() == startMonitor) {
+                startMonitorFolder();
+            }
+
+            //关闭目录监控
+            if (e.getSource() == stopMonitor) {
+                if (ObjectUtil.isNotEmpty(CommonConstants.monitor)) CommonConstants.monitor.close();
+                ConfigUtil.set(CommonConstants.MONITOR_FOLDER,"0");
+                JOptionPane.showMessageDialog(null, "已关闭目录检测", "提示", JOptionPane.INFORMATION_MESSAGE);
+                CommonUI.console("关闭目录检测");
+            }
+
+            if (e.getSource().equals(saveTime)){
+                String time = timeTaskText.getText();
+                boolean contains = ReUtil.contains("^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$", time);
+                if (contains){
+                    ConfigUtil.set(CommonConstants.BACKUP_TIME,time);
+                    CronTasks.startTimeBackupFile(time);
+                    JOptionPane.showMessageDialog(null, "开启定时任务成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                }else{
+                    JOptionPane.showMessageDialog(null, "请按格式输入定时备份时间", "错误", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
+
         }
     }
 
-    /**
-     * 设置备份模式
-     * @param type
-     */
-    public void doSetBackType(int type) {
-        CommonConstants.BACK_TYPE = type;
-        setting.set("backType", CommonConstants.BACK_TYPE + "");
-        setting.store();
-    }
 
     /**
      * 验证文本框输入
@@ -412,53 +433,93 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
     //获得焦点的时候
     @Override
     public void focusGained(FocusEvent e) {
+        JTextField tempJText = (JTextField) e.getSource();
+        tempJText.setForeground(Color.BLACK);
         //文件目录
-        if (e.getSource() == folderText) {
+        if (tempJText == folderText) {
             //获取用户输入的目录名称
-            CommonConstants.BACK_NAME=folderText.getText();
-            setting.set("folderText",CommonConstants.BACK_NAME);
-            setting.store();
+            ConfigUtil.set(CommonConstants.BACKUP_NAME,folderText.getText());
+        }
+        //定时时间
+        if(tempJText == timeTaskText) {
+            if (StrUtil.isEmpty(ConfigUtil.getBackupTime())){
+                timeTaskText.setText("20:30:00");
+            }
         }
     }
 
     //失去焦点的时候
     @Override
     public void focusLost(FocusEvent e) {
+        JTextField tempJText = (JTextField) e.getSource();
+        if (StrUtil.isEmpty(tempJText.getText())){
+            tempJText.setForeground(Color.GRAY);
+        }
         //文件目录
-        if (e.getSource() == folderText) {
+        if (tempJText == folderText) {
             //获取用户输入的目录名称
-            CommonConstants.BACK_NAME=folderText.getText();
-            setting.set("folderText",CommonConstants.BACK_NAME);
-            setting.store();
+            ConfigUtil.set(CommonConstants.BACKUP_NAME,folderText.getText());
+        }
+
+        //定时时间
+        if (tempJText == timeTaskText) {
+
         }
     }
 
     /**
-     * 定时任务开始
+     * 开启目录监控
      */
-    private void startTask() {
-        //每小时刷新阿里云盘登录信息
-        CronUtil.schedule("0 0 0/1 * * ?", (Task) () -> cronTasks.updateALiYunPanToken());
-        //设置定时备份时间
-        String backupTime="";
-        if (StrUtil.isEmpty(setting.getStr("backupTime"))){
-            backupTime = DateUtil.format(DateUtil.parse("20:30:00"), "HH:mm:ss");
-            setting.set("backupTime",backupTime);
-            setting.store();
+    public void startMonitorFolder() {
+        if (!checkText()){//验证
+            stopMonitor.setSelected(true);
+            return;
+        }else {
+            JOptionPane.showMessageDialog(null, "已开启目录检测", "提示", JOptionPane.INFORMATION_MESSAGE);
+            ConfigUtil.set(CommonConstants.MONITOR_FOLDER,"1");
         }
-        try {
-            backupTime = DateUtil.format(DateUtil.parse(setting.getStr("backupTime")), "HH:mm:ss");
-            String cronTab = DateUtil.format(DateUtil.parse(setting.getStr("backupTime")), "ss mm HH * * ?");
-            CronUtil.schedule(cronTab, (Task) () -> cronTasks.backFileList());
-            CommonConstants.addConsole("自动备份定时任务开启成功，每天【"+backupTime+"】执行");
-        } catch (Exception e) {
-            CommonConstants.addConsole("自动备份定时任务开启失败，请检查backupTime参数格式是否为(hh:mm:ss)");
-        }
-        CommonConstants.addConsole("如需修改定时请到back_config.setting文件中修改backupTime参数，注意格式不要写错哦~");
-        //开启定时
-        CronUtil.start();
-        //支持秒级别定时任务
-        CronUtil.setMatchSecond(true);
+        //开启目录检测 开始获取文件夹
+        CommonUI.console("开启目录检测");
+        CommonConstants.monitor = WatchMonitor.createAll(ConfigUtil.getPath(), new DelayWatcher(new Watcher() {
+            @Override
+            public void onModify(WatchEvent<?> event, Path currentPath) {
+                String path = currentPath.toString();//文件路径
+                String fileName = event.context().toString();//文件名
+                String fileSuffix = FileUtil.getSuffix(fileName);//文件后缀
+                //备份方法不执行时候执行监听
+                if (!CommonConstants.BACK_STATE && fileSuffix.length()<=8 && !fileName.startsWith("~$")){
+                    String fileId = UploadLogUtil.getFileUploadFileId(path + FileUtil.FILE_SEPARATOR + fileName);
+                    if (StrUtil.isNotEmpty(fileId)){
+                        String filePath = path + FileUtil.FILE_SEPARATOR + fileName;
+                        CommonUI.console("{} 发生变化，删除后上传新版",filePath);
+                        aliYunPanUtil.deleteFile(fileId);//如果文件存在 先删除在重新上传
+                        UploadLogUtil.removeFileUploadLog(filePath);//删除文件上传日志
+                    }
+                    aliYunPanUtil.monitorUpload(path,fileName);
+                }
+            }
+
+            @Override
+            public void onCreate(WatchEvent<?> event, Path currentPath) {
+            }
+
+            @Override
+            public void onDelete(WatchEvent<?> event, Path currentPath) {
+
+            }
+
+            @Override
+            public void onOverflow(WatchEvent<?> event, Path currentPath) {
+
+            }
+        }, 500));
+        //设置监听目录的最大深入，目录层级大于制定层级的变更将不被监听，默认只监听当前层级目录
+        //监听所有目录
+        CommonConstants.monitor.setMaxDepth(Integer.MAX_VALUE);
+        //启动监听
+        CommonConstants.monitor.start();
     }
+
+
 
 }
