@@ -7,7 +7,7 @@
   <h4 align="center">
     一款可以定时备份本地目录到阿里云盘的小工具
   </h4> 
-
+![输入图片说明](images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20211128142956.png)
 <div align="center">
   <img  width="92%" style="border-radius:10px;margin-top:20px;margin-bottom:20px;box-shadow: 2px 0 6px gray;" src="https://images.gitee.com/uploads/images/2021/0524/152244_1b5520ce_4873209.png" />
 </div>
@@ -35,12 +35,12 @@ Java Swing + Hutool + Okhttp3 自动备份文件到【阿里云盘】的小工�
 | ![输入图片说明](https://images.gitee.com/uploads/images/2021/0524/152531_4b2a9fa5_4873209.png "屏幕截图.png")  | ![输入图片说明](https://images.gitee.com/uploads/images/2021/0524/152435_7c4a1340_4873209.png "屏幕截图.png")  |![输入图片说明](https://images.gitee.com/uploads/images/2021/0603/101943_e74e8ba2_9173799.png "屏幕截图.png")  |
 
 #### 下载安装
-1.  windows系统 **含** JDK安装包，适合没有JDK环境的使用：[点击下载](http://yunpan.xingk.xin/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B-0.2-win-%E5%90%ABJDK.exe)
-2.  windows系统 **不含** JDK安装包，适合有JDK环境的可以直接运行：[点击下载](https://gitee.com/xingk-code/AliYunPan/attach_files/846544/download/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B-0.2-win-%E4%B8%8D%E5%90%ABJDK.exe)
-2.  windows、macos、等系统有JDK的可以直接下载jar运行：[点击下载](https://gitee.com/xingk-code/AliYunPan/attach_files/846545/download/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B-0.2-mac-liunx-win.jar)
+1.  windows系统  **含JDK安装包，适合没有JDK环境的** 使用：[v0.3点击下载](http://yunpan.xingk.xin/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B-0.3-win-%E5%90%ABJDK.exe)
+2.  windows系统  **不含JDK安装包，适合有JDK环境的** 可以直接运行：[v0.3点击下载](https://gitee.com/xingk-code/AliYunPan/attach_files/894143/download/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B-0.3-win-%E4%B8%8D%E5%90%ABJDK.exe)
+2.  windows、macos、等系统有JDK的可以直接下载jar运行：[v0.3点击下载](https://gitee.com/xingk-code/AliYunPan/attach_files/894142/download/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B-0.3-mac-liunx-win.jar)
 
 #### 更新日志
-##### 2021-09-20
+##### 2021-11-28
 
 - 新增更多设置界面，配置自动备份时间
 - 文件目录监控改为手动开启关闭
