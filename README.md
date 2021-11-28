@@ -35,8 +35,8 @@ Java Swing + Hutool + Okhttp3 自动备份文件到【阿里云盘】的小工�
 
 #### 下载安装
 1.  windows系统  **含JDK安装包，适合没有JDK环境的** 使用：[v0.3点击下载](http://yunpan.xingk.xin/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B-0.3-win-%E5%90%ABJDK.exe)
-2.  windows系统  **不含JDK安装包，适合有JDK环境的** 可以直接运行：[v0.3点击下载](https://gitee.com/xingk-code/AliYunPan/attach_files/894143/download/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B-0.3-win-%E4%B8%8D%E5%90%ABJDK.exe)
-2.  windows、macos、等系统有JDK的可以直接下载jar运行：[v0.3点击下载](https://gitee.com/xingk-code/AliYunPan/attach_files/894142/download/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B-0.3-mac-liunx-win.jar)
+2.  windows系统  **不含JDK安装包，适合有JDK环境的** 可以直接运行：[v0.3点击下载](https://gitee.com/xingk-code/AliYunPan/attach_files/894154/download/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B-0.3-win-%E4%B8%8D%E5%90%ABJDK.exe)
+2.  windows、macos、等系统有JDK的可以直接下载jar运行：[v0.3点击下载](https://gitee.com/xingk-code/AliYunPan/attach_files/894155/download/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B-0.3-mac-liunx-win.jar)
 
 #### 更新日志
 ##### 2021-11-28
