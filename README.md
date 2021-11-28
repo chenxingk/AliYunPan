@@ -7,7 +7,6 @@
   <h4 align="center">
     一款可以定时备份本地目录到阿里云盘的小工具
   </h4> 
-![输入图片说明](images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20211128142956.png)
 <div align="center">
   <img  width="92%" style="border-radius:10px;margin-top:20px;margin-bottom:20px;box-shadow: 2px 0 6px gray;" src="https://images.gitee.com/uploads/images/2021/0524/152244_1b5520ce_4873209.png" />
 </div>
