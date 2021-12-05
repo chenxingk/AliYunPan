@@ -32,15 +32,18 @@ public class App {
         String url = versionJson.getStr("url");
         String desc = versionJson.getStr("desc");
         Object version = versionJson.get("version");
-        boolean upload = NumberUtil.isGreater((BigDecimal) version, CommonConstants.VERSION);
-        if (upload){//检测到有新版
+        int update = versionJson.getInt("update");
+        boolean isUpdate = NumberUtil.isGreater((BigDecimal) version, CommonConstants.VERSION);
+        if (isUpdate){//检测到有新版
             CommonUI.setFont();//设置字体
             int btnNum = JOptionPane.showConfirmDialog(null, desc, "检测到有新版，是否更新？", JOptionPane.YES_NO_OPTION);
             if (btnNum==0){//选择是打开浏览器
                 openUrl(url);
                 return;
             }else {
-                //System.exit(0);
+                if (update==1){
+                    System.exit(0);
+                }
             }
         }
         boolean login = new AliYunPanUtil().getAliYunPanInfo();
