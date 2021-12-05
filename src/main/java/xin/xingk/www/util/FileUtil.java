@@ -1,14 +1,21 @@
 package xin.xingk.www.util;
 
+import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import xin.xingk.www.common.CommonConstants;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
+import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousFileChannel;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 /**
  * Description: 文件操作工具类
@@ -173,7 +180,34 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         map.put("type",type);
         map.put("content_type",contentType);
         map.put("content_hash",DigestUtil.sha1Hex(file).toUpperCase());
+        long max = file.length() / CommonConstants.DEFAULT_SIZE;
+        if (max%10480000!=0) max++;
+        map.put("max",max+"");
         return map;
+    }
+
+    /**
+     * 分片读取文件块
+     *
+     * @param path      文件路径
+     * @param position  角标
+     * @param blockSize 文件块大小
+     * @return 文件块内容
+     */
+    public static byte[] readByte(String path, long position, int blockSize){
+        // ----- 校验文件，当文件不存在时，抛出文件不存在异常
+        // ----- 读取文件
+        ByteBuffer block = ByteBuffer.allocate(blockSize);
+        try (AsynchronousFileChannel channel = AsynchronousFileChannel.open(Paths.get(path), StandardOpenOption.READ)) {
+            Future<Integer> read = channel.read(block, position);
+            while (!read.isDone()) {
+                // ----- 睡1毫秒， 不抢占资源
+                Thread.sleep(1L);
+            }
+        }catch (Exception e){
+            throw new IORuntimeException("读取文件流，发生异常...请联系作者..."+e);
+        }
+        return block.array();
     }
 
 }

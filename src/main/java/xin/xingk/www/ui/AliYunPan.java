@@ -16,12 +16,10 @@ import xin.xingk.www.util.FileUtil;
 import xin.xingk.www.util.UploadLogUtil;
 
 import javax.swing.*;
-import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.awt.event.*;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
-import java.util.Enumeration;
 
 /**
  * Description: GUI
@@ -102,6 +100,10 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         this.setVisible(true);
         //开启定时任务
         CronTasks.startTask();
+        //开启目录检测
+        if (ConfigUtil.getMonitorFolder()){
+            startMonitorFolder();
+        }
     }
 
     /**
@@ -109,14 +111,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
      */
     private void initConfig() {
         // 设置界面使用字体
-        FontUIResource fontUIResource = new FontUIResource(new Font("宋体", Font.PLAIN, 13));
-        for (Enumeration keys = UIManager.getDefaults().keys(); keys.hasMoreElements();) {
-            Object key = keys.nextElement();
-            Object value = UIManager.get(key);
-            if (value instanceof FontUIResource) {
-                UIManager.put(key, fontUIResource);
-            }
-        }
+        CommonUI.setFont();
         //设置显示窗口标题
         setTitle("备份助手");
         //设置标题栏的图标
@@ -161,11 +156,11 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         /**
          * 左侧标题
          */
-        JLabel pathTitle = new JLabel("选择目录");
+        JLabel pathTitle = new JLabel("本地目录");
         pathText = new JTextField();
         JLabel tokenTitle = new JLabel("阿里云Token");
         //tokenText = new JTextField();
-        JLabel folderTitle = new JLabel("备份目录名称");
+        JLabel folderTitle = new JLabel("云盘备份目录");
         folderText = new JTextField();
         JLabel backTitle = new JLabel("备份模式");
         backTitle.setBounds(title_left, 150, title_width, title_high);
@@ -280,9 +275,6 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         saveTime = new JButton("保存");
         saveTime.setBounds(305, 62, 60, 25);
         saveTime.addActionListener(this);
-        if (ConfigUtil.getMonitorFolder()){
-            startMonitorFolder();
-        }
         container.add(saveTime);
         return container;
     }
@@ -350,6 +342,9 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
             //开启目录监控
             if (e.getSource() == startMonitor) {
                 startMonitorFolder();
+                if (ConfigUtil.getInt(CommonConstants.MONITOR_FOLDER)==1){
+                    JOptionPane.showMessageDialog(null, "已开启目录检测", "提示", JOptionPane.INFORMATION_MESSAGE);
+                }
             }
 
             //关闭目录监控
@@ -478,11 +473,10 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
             stopMonitor.setSelected(true);
             return;
         }else {
-            JOptionPane.showMessageDialog(null, "已开启目录检测", "提示", JOptionPane.INFORMATION_MESSAGE);
             ConfigUtil.set(CommonConstants.MONITOR_FOLDER,"1");
         }
         //开启目录检测 开始获取文件夹
-        CommonUI.console("开启目录检测");
+        CommonUI.console("目录检测已开启");
         CommonConstants.monitor = WatchMonitor.createAll(ConfigUtil.getPath(), new DelayWatcher(new Watcher() {
             @Override
             public void onModify(WatchEvent<?> event, Path currentPath) {
@@ -490,7 +484,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
                 String fileName = event.context().toString();//文件名
                 String fileSuffix = FileUtil.getSuffix(fileName);//文件后缀
                 //备份方法不执行时候执行监听
-                if (!CommonConstants.BACK_STATE && fileSuffix.length()<=8 && !fileName.startsWith("~$")){
+                if (!CommonConstants.BACK_STATE && fileSuffix.length()<=8 && !fileName.startsWith("~$") && !"tmp".equals(fileSuffix)){
                     String fileId = UploadLogUtil.getFileUploadFileId(path + FileUtil.FILE_SEPARATOR + fileName);
                     if (StrUtil.isNotEmpty(fileId)){
                         String filePath = path + FileUtil.FILE_SEPARATOR + fileName;

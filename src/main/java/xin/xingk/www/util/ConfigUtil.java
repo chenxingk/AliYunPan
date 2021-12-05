@@ -63,8 +63,8 @@ public class ConfigUtil {
     }
 
     /**
-     * 获取备份目录名称
-     * @return 备份目录名称
+     * 获取云盘备份目录
+     * @return 云盘备份目录
      */
     public static String getBackName() {
         return getStr(CommonConstants.BACKUP_NAME);
@@ -78,7 +78,7 @@ public class ConfigUtil {
         if (ObjectUtil.isEmpty(getInt(CommonConstants.BACKUP_TYPE))){
             return false;
         }else {
-            return getInt(CommonConstants.BACKUP_TYPE) ==1;
+            return getInt(CommonConstants.BACKUP_TYPE) == 0;
         }
     }
 

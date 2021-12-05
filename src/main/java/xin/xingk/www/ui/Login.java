@@ -5,13 +5,12 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.qrcode.QrCodeUtil;
 import cn.hutool.json.JSONObject;
 import xin.xingk.www.common.CommonConstants;
+import xin.xingk.www.common.CommonUI;
 import xin.xingk.www.util.ConfigUtil;
 import xin.xingk.www.util.OkHttpUtil;
 
 import javax.swing.*;
-import javax.swing.plaf.FontUIResource;
 import java.awt.*;
-import java.util.Enumeration;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -45,15 +44,7 @@ public class Login extends JFrame{
 
     private void initConfig() {
         // 设置界面使用字体
-        FontUIResource fontUIResource = new FontUIResource(new Font("宋体", Font.PLAIN, 12));
-        for (Enumeration keys = UIManager.getDefaults().keys(); keys.hasMoreElements();) {
-            Object key = keys.nextElement();
-            Object value = UIManager.get(key);
-            if (value instanceof FontUIResource) {
-                UIManager.put(key, fontUIResource);
-            }
-        }
-
+        CommonUI.setFont();
         setSize(380, 270);
         setTitle("备份助手-登录");
         setResizable(false);

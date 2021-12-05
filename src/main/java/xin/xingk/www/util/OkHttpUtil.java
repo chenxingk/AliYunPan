@@ -101,7 +101,7 @@ public class OkHttpUtil {
                     .addHeader("Content-Type", "multipart/form-data").build();
             Response response = client.newCall(request).execute();
             String result = response.body().string();
-            CommonUI.console("新文件请求状态码：{}",response.code());
+            CommonUI.console("文件请求状态码：{}",response.code());
             //System.out.println("result：>>>>>>>>>>>>>>>>>>>"+result);
             JSONObject json = JSONUtil.parseObj(result);
             errNum=0;
@@ -139,25 +139,27 @@ public class OkHttpUtil {
      * @return
      * @throws Exception
      */
-    public void uploadFileBytes(String url,byte[] fileBytes){
+    public int uploadFileBytes(String url, byte[] fileBytes){
         try {
             RequestBody body = RequestBody.create(fileBytes);
             Request request = new Request.Builder().url(url).method("PUT",body).build();
             Response response = client.newCall(request).execute();
             //String result=response.body().string();
-            CommonUI.console("上传文件请求状态码：{}",response.code());
+            //CommonUI.console("上传文件请求状态码：{}",response.code());
             errNum=0;
+            return response.code();
         } catch (Exception e) {
             errNum++;
             CommonUI.console("上传文件遇到异常：{}",e.toString());
             if (errNum>5){
                 CommonUI.console("上传文件失败次数超过：{} 次....已停止",errNum);
-                return;
+                return 0;
             }else{
                 CommonUI.console("上传文件发起第：{} 次重试",errNum);
                 uploadFileBytes(url,fileBytes);
             }
         }
+        return 0;
     }
 
 

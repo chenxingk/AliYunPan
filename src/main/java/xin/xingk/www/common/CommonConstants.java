@@ -4,6 +4,7 @@ package xin.xingk.www.common;
 import cn.hutool.core.io.watch.WatchMonitor;
 
 import java.io.File;
+import java.math.BigDecimal;
 
 /**
  * Description: 公共变量
@@ -36,7 +37,7 @@ public class CommonConstants {
     public static String REFRESH_TOKEN = "tokenText";
     //上传目录
     public static String PATH = "pathText";
-    //备份目录名称
+    //云盘备份目录
     public static String BACKUP_NAME = "folderText";
     //备份模式
     public static String BACKUP_TYPE = "backType";//0是普通备份 1是分类备份
@@ -53,5 +54,9 @@ public class CommonConstants {
     public static boolean IS_CONSOLE = false;
     //文件监听
     public static WatchMonitor monitor;
+    //默认大小
+    public static final Integer DEFAULT_SIZE = 10480000;
+    //软件版本
+    public static final BigDecimal VERSION = new BigDecimal(1.0);
 
 }

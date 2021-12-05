@@ -1,5 +1,6 @@
 package xin.xingk.www.util;
 
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
@@ -43,7 +44,7 @@ public class AliYunPanUtil{
      * 上传文件
      */
     private void uploadFiles(String fileId,String rootPath) {
-        if (!ConfigUtil.getBackType()){//普通备份
+        if (ConfigUtil.getBackType()){//普通备份
             this.scanFolders(rootPath,fileId,true);
         }else {
             //开始获取文件
@@ -76,8 +77,11 @@ public class AliYunPanUtil{
         List<String> fileList = FileUtil.fileFolderList(path,FileUtil.FILE);//本地文件夹下文件
         uploadFileList(fileList,fileId,true);
         String folderFileId = this.getFileId(fileId, "文件夹");//微信备份-文件夹
-        String dateFileId = this.getFileId(folderFileId, getFolderName(path));//微信备份-文件夹-folderName
-        this.scanFolders(path,dateFileId,false);
+        String folderName = getFolderName(path);
+        if (FileUtil.isDirectory(folderName)){
+            folderFileId = this.getFileId(folderFileId, folderName);//微信备份-文件夹-folderName
+        }
+        this.scanFolders(path,folderFileId,false);
     }
 
     /**
@@ -160,15 +164,18 @@ public class AliYunPanUtil{
      */
     public JSONObject uploadFile(String fileId, Map<String, String> fileInfo){
         JSONObject data = new JSONObject();
-        JSONObject list = new JSONObject();
         JSONArray array = new JSONArray();
-        list.set("part_number",1);
-        array.add(list);
+        long max = Long.parseLong(fileInfo.get("max"));
+        for (int i = 1; i <= max; i++) {
+            JSONObject list = new JSONObject();
+            list.set("part_number",i);
+            array.add(list);
+        }
         data.set("drive_id",CommonConstants.DriveId);
         data.set("name",fileInfo.get("name"));
         data.set("type","file");
         data.set("content_type",fileInfo.get("content_type"));
-        data.set("size",Integer.parseInt(fileInfo.get("size")));
+        data.set("size",Long.valueOf(fileInfo.get("size")));
         data.set("parent_file_id",fileId);
         data.set("part_info_list",array);
         data.set("content_hash_name","sha1");
@@ -245,18 +252,38 @@ public class AliYunPanUtil{
         if (StrUtil.isEmpty(id)){
             CommonUI.console("开始上传：{}",fileInfo.get("path"));
             JSONObject uploadFile = uploadFile(fileId,fileInfo);
-            if(ObjectUtil.isNotNull(uploadFile.getJSONArray("part_info_list"))){//上传新文件
-                byte[] fileBytes = FileUtil.readBytes(fileInfo.get("path"));
-                String uploadUrl = uploadFile.getJSONArray("part_info_list").getJSONObject(0).getStr("upload_url");
-                okHttpUtil.uploadFileBytes(uploadUrl,fileBytes);
+            JSONArray part_info_list = uploadFile.getJSONArray("part_info_list");
+            if(ObjectUtil.isNotEmpty(part_info_list)){//上传新文件
+                int position = 0;//文件流位置
+                Long size = Long.parseLong(fileInfo.get("size"));//文件大小
+                for (int i = 0; i < part_info_list.size(); i++) {
+                    byte[] fileBytes;
+                    if (size>CommonConstants.DEFAULT_SIZE.longValue()){
+                        fileBytes = FileUtil.readByte(fileInfo.get("path"), position, CommonConstants.DEFAULT_SIZE);
+                    }else{
+                        fileBytes = FileUtil.readByte(fileInfo.get("path"), position, size.intValue());
+                    }
+                    String uploadUrl = part_info_list.getJSONObject(i).getStr("upload_url");
+                    int code = okHttpUtil.uploadFileBytes(uploadUrl, fileBytes);
+                    double progress = ((double) (i+1) / part_info_list.size()) * 100;
+                    CommonUI.console("文件：{} 上传进度：{}% 状态码： {}",fileInfo.get("name"), NumberUtil.roundStr(progress,2),code);
+                    position += CommonConstants.DEFAULT_SIZE;
+                    size -= CommonConstants.DEFAULT_SIZE;
+                }
+                //byte[] fileBytes = FileUtil.readBytes(fileInfo.get("path"));
             }
             String upFileId = uploadFile.getStr("file_id");//文件id
             String uploadId = uploadFile.getStr("upload_id");//上传ID
             if (StrUtil.isEmpty(uploadFile.getStr("exist"))){//上传完成
-                completeFile(upFileId, uploadId);
+                JSONObject result = completeFile(upFileId, uploadId);
+                if ("available".equals(result.getStr("status")) || StrUtil.isNotEmpty(result.getStr("created_at"))){
+                    UploadLogUtil.addFileUploadLog(fileInfo.get("path"),upFileId);
+                    CommonUI.console("上传文件成功：{}",fileInfo.get("name"));
+                }
+            }else if ("available".equals(uploadFile.getStr("status"))){//已经存在的文件
+                UploadLogUtil.addFileUploadLog(fileInfo.get("path"),upFileId);
+                CommonUI.console("上传文件成功：{}",fileInfo.get("name"));
             }
-            UploadLogUtil.addFileUploadLog(fileInfo.get("path"),upFileId);
-            CommonUI.console("上传文件成功：{}",fileInfo.get("name"));
         }else {
             CommonUI.console("{} 已上传 跳过",fileInfo.get("path"));
         }
@@ -308,9 +335,12 @@ public class AliYunPanUtil{
                 Map<String, String> map = FileUtil.getFileInfo(filePath);
                 if (backType){//开启分类
                     String type = map.get("type");
-                    String typeFileId=this.getFileId(pathId,type);//微信备份-类型
-                    String dateFileId=this.getFileId(typeFileId,getFolderName(filePath));//微信备份-类型-文件夹
-                    doUploadFile(dateFileId,map);
+                    String fileId=this.getFileId(pathId,type);//微信备份-类型
+                    String folderName = getFolderName(filePath);
+                    if (FileUtil.isDirectory(folderName)){
+                        fileId = this.getFileId(fileId,folderName);//微信备份-类型-文件夹
+                    }
+                    doUploadFile(fileId,map);
                 }else {
                     doUploadFile(pathId,map);
                 }
