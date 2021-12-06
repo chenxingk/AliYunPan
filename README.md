@@ -35,8 +35,8 @@ Java Swing + Hutool + Okhttp3 自动备份文件到【阿里云盘】的小工�
 
 #### 下载安装
 1.  windows系统  **含JDK安装包，适合没有JDK环境的** 使用：[v1.0点击下载](http://yunpan.xingk.xin/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B%E5%AE%89%E8%A3%85%E5%8C%85v1.0.exe)
-2.  windows系统  **不含JDK安装包，适合有JDK环境的** 可以直接运行：[v0.3点击下载](https://gitee.com/xingk-code/AliYunPan/attach_files/902827/download/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B.exe)
-2.  windows、macos、等系统有JDK的可以直接下载jar运行：[v0.3点击下载](https://gitee.com/xingk-code/AliYunPan/attach_files/902828/download/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B.jar)
+2.  windows系统  **不含JDK安装包，适合有JDK环境的** 可以直接运行：[v1.0点击下载](https://gitee.com/xingk-code/AliYunPan/attach_files/902827/download/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B.exe)
+2.  windows、macos、等系统有JDK的可以直接下载jar运行：[v1.0点击下载](https://gitee.com/xingk-code/AliYunPan/attach_files/902828/download/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B.jar)
 
 #### 更新日志
 ##### 2021-11-28
@@ -72,8 +72,9 @@ Java Swing + Hutool + Okhttp3 自动备份文件到【阿里云盘】的小工�
 PS：如需修改执行时间请到back_config.setting文件中修改backupTime参数，注意格式不要写错哦~如【20:30:00】
 6.  登录状态：自动保存登录状态，减少登录次数，提升用户体验
 #### 开发计划....
-1.  开机启动。
-2.  按关键字、按类型上传。
+1.生成上传日志文件
+2.是否开启压缩后备份
+3.按关键字、按类型上传
 #### 使用说明
 
 1.  双击打开程序，登录阿里云盘账号
