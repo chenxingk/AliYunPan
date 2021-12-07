@@ -39,6 +39,14 @@ Java Swing + Hutool + Okhttp3 自动备份文件到【阿里云盘】的小工�
 2.  windows、macos、等系统有JDK的可以直接下载jar运行：[v1.0点击下载](https://gitee.com/xingk-code/AliYunPan/attach_files/902828/download/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B.jar)
 
 #### 更新日志
+##### 2021-12-5
+
+- 优化用户界面
+- 新增检测是否更新
+- 优化上传逻辑,新增分片上传
+- 支持大文件上传,显示文件上传进度
+- 修复开启目录检测不准确bug
+
 ##### 2021-11-28
 
 - 新增更多设置界面，配置自动备份时间
