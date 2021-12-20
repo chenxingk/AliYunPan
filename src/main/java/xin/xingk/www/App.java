@@ -1,7 +1,7 @@
 package xin.xingk.www;
 
+import cn.hutool.core.swing.DesktopUtil;
 import cn.hutool.core.util.NumberUtil;
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
@@ -13,9 +13,7 @@ import xin.xingk.www.ui.Login;
 import xin.xingk.www.util.AliYunPanUtil;
 
 import javax.swing.*;
-import java.awt.*;
 import java.math.BigDecimal;
-import java.net.URI;
 
 /**
  * 备份程序
@@ -38,7 +36,7 @@ public class App {
             CommonUI.setFont();//设置字体
             int btnNum = JOptionPane.showConfirmDialog(null, desc, "检测到有新版，是否更新？", JOptionPane.YES_NO_OPTION);
             if (btnNum==0){//选择是打开浏览器
-                openUrl(url);
+                DesktopUtil.browse(url);
                 return;
             }else {
                 if (update==1){
@@ -46,6 +44,7 @@ public class App {
                 }
             }
         }
+
         boolean login = new AliYunPanUtil().getAliYunPanInfo();
         if(login){
             new AliYunPan();
@@ -53,31 +52,5 @@ public class App {
             new Login();
         }
     }
-
-
-
-    /**
-     * 打开默认浏览器
-     * @param url
-     */
-    private static void openUrl(String url){
-        try {
-            //创建一个URI实例
-            URI uri = URI.create(url);
-            //判断当前系统是否支持Java AWT Desktop扩展
-            if(Desktop.isDesktopSupported()) {
-                //获取当前系统桌面扩展
-                Desktop desktop = Desktop.getDesktop();
-                //判断系统桌面是否支持要执行的功能
-                if (ObjectUtil.isNotEmpty(desktop) && desktop.isSupported(Desktop.Action.BROWSE)){
-                    //获取系统默认浏览器打开链接
-                    desktop.browse(uri);
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("无法打开默认浏览器，"+e.getMessage());
-        }
-    }
-
 
 }

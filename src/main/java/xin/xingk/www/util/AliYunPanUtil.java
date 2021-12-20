@@ -9,6 +9,7 @@ import xin.xingk.www.common.CommonConstants;
 import xin.xingk.www.common.CommonUI;
 
 import javax.swing.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +24,8 @@ public class AliYunPanUtil{
     JTextField tokenText = CommonUI.tokenText;
     //请求工具类
     OkHttpUtil okHttpUtil = new OkHttpUtil();
+    //二级目录ID存放
+    Map<String, String> fileIdMap = new HashMap<>();
 
     /**
      * 开始备份
@@ -34,54 +37,169 @@ public class AliYunPanUtil{
         if (!login) return;
         if (!checkConfig()) return;
         String fileId = this.getFileId(CommonConstants.ROOT, ConfigUtil.getBackName());//备份目录ID
-        uploadFiles(fileId,ConfigUtil.getPath());
+        fileIdMap.put(ConfigUtil.getPath(),fileId);//备份目录的文件夹ID
+        scanFolders(ConfigUtil.getPath(),fileId,ConfigUtil.getBackupType());
+        fileIdMap = new HashMap<>();
         CommonUI.console("本次备份：{} 下所有文件成功！...",ConfigUtil.getPath());
         CommonUI.modifyStartBtnStatus("开始备份",true);
         CommonConstants.BACK_STATE = false;
     }
 
     /**
-     * 上传文件
+     * 扫描子目录
+     * @param path 路径
+     * @param fileId 文件夹ID
+     * @param backupType true 普通备份 false 分类备份 是否分类备份
      */
-    private void uploadFiles(String fileId,String rootPath) {
-        if (ConfigUtil.getBackType()){//普通备份
-            this.scanFolders(rootPath,fileId,true);
-        }else {
-            //开始获取文件
-            List<String> folderList = FileUtil.fileFolderList(rootPath,FileUtil.FOLDER);//获取用户目录下所有目录
-            List<String> folderFileList = FileUtil.fileFolderList(rootPath,FileUtil.FILE);//本地文件夹下文件
-
-            //上传文件夹下文件
-            if (folderFileList.size()!=0){
-                CommonUI.console("获取：{} 下所有文件成功",rootPath);
-                uploadFileList(folderFileList,fileId,true);
-            }
-
-            //上传文件夹下所有目录
-            if (folderList.size()!=0){
-                for (String folderName :  folderList) {
-                    String path = rootPath + FileUtil.FILE_SEPARATOR + folderName;//路径
-                    uploadTwoLevelFolder(fileId,path);
+    public void scanFolders(String path,String fileId,int backupType){
+        CommonUI.console("开始获取：{}",path);
+        //获取文件夹下所有文件
+        List<String> fileList = FileUtil.getFileList(path);
+        //上传文件
+        uploadFileList(fileList,fileId,backupType);
+        //获得目录下所有文件夹
+        List<String> folderList = FileUtil.getFileFolder(path);
+        //循环文件夹
+        for (String folder : folderList){
+            String filePath = path + FileUtil.FILE_SEPARATOR + folder;//完整路径
+            if (backupType==0){//普通备份
+                fileId = getPathFileId(path,fileId,folder);
+            }else if (backupType==2){//微信备份
+                //获取月份文件夹
+                String month = getMonth(filePath);
+                if (StrUtil.isNotEmpty(month)){
+                    //备份目录ID
+                    String rootId = fileIdMap.get(ConfigUtil.getPath());
+                    //获取月份文件夹ID
+                    fileId = getPathFileId(ConfigUtil.getPath()+FileUtil.FILE_SEPARATOR+month,rootId,month);
                 }
+                if (twoFolder(path)){//微信下的二级目录
+                    fileId = getPathFileId(path,fileId,"文件夹");
+                    backupType = 0;
+                }else{
+                    backupType = 2;
+                }
+            }
+            scanFolders(filePath,fileId,backupType);
+        }
+    }
+
+    /**
+     * 获取月份文件夹
+     * @param path
+     * @return
+     */
+    public String getMonth(String path) {
+        if (twoFolder(path)){
+            return StrUtil.subBetween(path, ConfigUtil.getPath()+ FileUtil.FILE_SEPARATOR,FileUtil.FILE_SEPARATOR);
+        }else{
+            return StrUtil.subSuf(path, ConfigUtil.getPath().length()+1);
+        }
+    }
+
+    /**
+     * 根据path 获取文件夹ID
+     * @param path 路径
+     * @param fileId 当前文件夹ID
+     * @param folder 文件夹名称
+     * @return
+     */
+    public String getPathFileId(String path, String fileId, String folder) {
+        //普通备份
+        if (StrUtil.isEmpty(fileIdMap.get(path))){
+            fileIdMap.put(path,fileId);
+            fileId = getFileId(fileId, folder);//获取文件夹ID
+        }else{
+            fileId = getFileId(fileIdMap.get(path), folder);
+        }
+        return fileId;
+    }
+
+    /**
+     * 是否为二级目录
+     * @param path
+     * @return
+     */
+    public boolean twoFolder(String path) {
+        String str = StrUtil.subAfter(path, ConfigUtil.getPath(), false);
+        return StrUtil.count(str, FileUtil.FILE_SEPARATOR)>1;
+    }
+
+    /**
+     * 上传文件夹下文件到某个目录
+     * @param fileList 文件list
+     * @param pathId 文件夹ID
+     * @param backupType true 普通备份 false 分类备份 是否分类备份
+     */
+    public void uploadFileList(List<String> fileList, String pathId,int backupType){
+        if (ObjectUtil.isEmpty(fileList)) return;
+        List<String> logList = UploadLogUtil.getFileUploadList();
+        fileList.removeAll(logList);
+        for (String filePath :  fileList) {
+            String fileSuffix = FileUtil.getSuffix(filePath);//文件后缀
+            if (FileUtil.getPrefix(filePath).startsWith("~$") || fileSuffix.length()>=8){
+                continue;
+            }
+            try {
+                Map<String, String> map = FileUtil.getFileInfo(filePath);
+                if (backupType==0){//普通备份
+                    doUploadFile(pathId,map);
+                }else {
+                    String type = map.get("type");
+                    String fileId=this.getFileId(pathId,type);//微信备份-类型
+                    doUploadFile(fileId,map);
+                }
+            } catch (Exception e) {
+                CommonUI.console("遇到异常情况：{}",e.toString());
             }
         }
     }
 
     /**
-     * 上传二级文件夹
-     * @param fileId
-     * @param path
+     * 上传监控目录
+     * @param path 文件路径
+     * @param fileName 文件名称
      */
-    private void uploadTwoLevelFolder(String fileId, String path) {
-        //CommonConstants.addConsole("开始获取："+path);
-        List<String> fileList = FileUtil.fileFolderList(path,FileUtil.FILE);//本地文件夹下文件
-        uploadFileList(fileList,fileId,true);
-        String folderFileId = this.getFileId(fileId, "文件夹");//微信备份-文件夹
-        String folderName = getFolderName(path);
-        if (FileUtil.isDirectory(folderName)){
-            folderFileId = this.getFileId(folderFileId, folderName);//微信备份-文件夹-folderName
+    public void monitorUpload(String path,String fileName) {
+        CommonUI.console("检测到：{} 目录有新文件...",path);
+        if (checkConfig()){
+            Thread backup = new Thread(() -> {
+                boolean login = getAliYunPanInfo();//登录阿里云
+                if (!login){
+                    return;
+                }
+                String fileId = this.getFileId(CommonConstants.ROOT, ConfigUtil.getBackName());//备份目录ID
+                //uploadFiles(fileId,ConfigUtil.getPath());
+            });
+            backup.start();
         }
-        this.scanFolders(path,folderFileId,false);
+    }
+
+    /**
+     * 验证配置文件
+     */
+    public Boolean checkConfig(){
+        if (StrUtil.isEmpty(ConfigUtil.getPath())){
+            CommonUI.console("您没有选择需要备份的目录");
+            return false;
+        }
+        if (StrUtil.isEmpty(ConfigUtil.getRefreshToken())){
+            CommonUI.console( "您没有输入阿里云token");
+            return false;
+        }
+        if (StrUtil.isEmpty(ConfigUtil.getBackName())){
+            CommonUI.console("您没有输入需要备份到阿里云的目录");
+            return false;
+        }
+        if (ConfigUtil.getRefreshToken().length()!=32){
+            CommonUI.console("您输入的token不正确");
+            return false;
+        }
+        if (!FileUtil.isDirectory(ConfigUtil.getPath())){
+            CommonUI.console("请选择正确目录");
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -221,7 +339,6 @@ public class AliYunPanUtil{
      * @return
      */
     public String getFileId(String parentFileId,String folderName){
-        //CommonConstants.addConsole("开始获取文件夹："+folderName);
         String fileId="";
         JSONObject fileList = getFileList(parentFileId);//获取文件目录
         JSONArray fileArray = fileList.getJSONArray("items");
@@ -229,14 +346,13 @@ public class AliYunPanUtil{
             for (int i = 0; i < fileArray.size(); i++) {
                 JSONObject folder = fileArray.getJSONObject(i);
                 if ("folder".equals(folder.getStr("type")) && folderName.equals(folder.getStr("name"))){
-                    fileId = folder.getStr("file_id");
-                    return fileId;
+                    return folder.getStr("file_id");
                 }
             }
         }
         if (StrUtil.isEmpty(fileId)){
             JSONObject folder = createFolder(parentFileId, folderName); //创建备份目录
-            fileId=folder.getStr("file_id");
+            return folder.getStr("file_id");
         }
         return fileId;
     }
@@ -270,7 +386,6 @@ public class AliYunPanUtil{
                     position += CommonConstants.DEFAULT_SIZE;
                     size -= CommonConstants.DEFAULT_SIZE;
                 }
-                //byte[] fileBytes = FileUtil.readBytes(fileInfo.get("path"));
             }
             String upFileId = uploadFile.getStr("file_id");//文件id
             String uploadId = uploadFile.getStr("upload_id");//上传ID
@@ -288,129 +403,6 @@ public class AliYunPanUtil{
             CommonUI.console("{} 已上传 跳过",fileInfo.get("path"));
         }
         return;
-    }
-
-    /**
-     * 扫描子目录
-     * @param path 本地路径
-     * @param pathId 备份目录 ID
-     * @param isUploadFile 是否上传文件
-     */
-    public void scanFolders(String path,String pathId,Boolean isUploadFile){
-        CommonUI.console("开始获取：{}",path);
-        //获取文件夹下所有文件
-        List<String> fileList = FileUtil.fileFolderList(path,FileUtil.FILE);
-        //CommonConstants.addConsole("获取："+path+" 下所有文件成功");
-        if (isUploadFile){
-            uploadFileList(fileList,pathId,false);
-        }
-        //获得目录下所有文件夹
-        List<String> folderList = FileUtil.fileFolderList(path,FileUtil.FOLDER);
-        //循环文件夹
-        for (String folder : folderList){
-            String fileId = getFileId(pathId, folder);//创建文件夹-文件夹ID
-            String filePath = path + FileUtil.FILE_SEPARATOR + folder;//路径
-            fileList = FileUtil.fileFolderList(path,FileUtil.FILE);//获取当前文件夹下所有文件
-            uploadFileList(fileList,fileId,false);//上传当前文件夹内的文件
-            //CommonConstants.addConsole("扫描新文件夹："+filePath);
-            scanFolders(filePath,fileId,true);
-        }
-    }
-
-    /**
-     * 上传文件夹下文件到某个目录
-     * @param fileList 文件list
-     * @param pathId 阿里云文件夹ID
-     * @param backType 是否开启分类
-     */
-    public void uploadFileList(List<String> fileList, String pathId,Boolean backType){
-        List<String> logList = UploadLogUtil.getFileUploadList();
-        fileList.removeAll(logList);
-        for (String filePath :  fileList) {
-            String fileSuffix = FileUtil.getSuffix(filePath);//文件后缀
-            if (FileUtil.getPrefix(filePath).startsWith("~$") || fileSuffix.length()>=8){
-                continue;
-            }
-            try {
-                Map<String, String> map = FileUtil.getFileInfo(filePath);
-                if (backType){//开启分类
-                    String type = map.get("type");
-                    String fileId=this.getFileId(pathId,type);//微信备份-类型
-                    String folderName = getFolderName(filePath);
-                    if (FileUtil.isDirectory(folderName)){
-                        fileId = this.getFileId(fileId,folderName);//微信备份-类型-文件夹
-                    }
-                    doUploadFile(fileId,map);
-                }else {
-                    doUploadFile(pathId,map);
-                }
-            } catch (Exception e) {
-                CommonUI.console("遇到异常情况：{}",e.toString());
-            }
-        }
-    }
-
-    /**
-     * 获取文件夹名称
-     * @param thisPath
-     * @return
-     */
-    public String getFolderName(String thisPath) {
-        String folderName = StrUtil.subAfter(thisPath , ConfigUtil.getPath()+"\\", false);
-        if (StrUtil.isNotEmpty(folderName) && !folderName.contains("\\")){
-            //写入文件目录
-            //writerLog.append(CommonConstants.PATH + FileUtil.FILE_SEPARATOR+folderName + "");
-        }else{
-            folderName = StrUtil.subBefore(folderName , "\\", false);
-        }
-        return folderName;
-    }
-
-    /**
-     * 上传监控目录
-     * @param path 文件路径
-     * @param fileName 文件名称
-     */
-    public void monitorUpload(String path,String fileName) {
-        CommonUI.console("检测到：{} 目录有新文件...",path);
-        if (checkConfig()){
-            Thread backup = new Thread(() -> {
-                boolean login = getAliYunPanInfo();//登录阿里云
-                if (!login){
-                    return;
-                }
-                String fileId = this.getFileId(CommonConstants.ROOT, ConfigUtil.getBackName());//备份目录ID
-                uploadFiles(fileId,ConfigUtil.getPath());
-            });
-            backup.start();
-        }
-    }
-
-    /**
-     * 验证配置文件
-     */
-    public Boolean checkConfig(){
-        if (StrUtil.isEmpty(ConfigUtil.getPath())){
-            CommonUI.console("您没有选择需要备份的目录");
-            return false;
-        }
-        if (StrUtil.isEmpty(ConfigUtil.getRefreshToken())){
-            CommonUI.console( "您没有输入阿里云token");
-            return false;
-        }
-        if (StrUtil.isEmpty(ConfigUtil.getBackName())){
-            CommonUI.console("您没有输入需要备份到阿里云的目录");
-            return false;
-        }
-        if (ConfigUtil.getRefreshToken().length()!=32){
-            CommonUI.console("您输入的token不正确");
-            return false;
-        }
-        if (!FileUtil.isDirectory(ConfigUtil.getPath())){
-            CommonUI.console("请选择正确目录");
-            return false;
-        }
-        return true;
     }
     
     

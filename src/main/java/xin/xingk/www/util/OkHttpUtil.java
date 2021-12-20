@@ -44,9 +44,6 @@ public class OkHttpUtil {
      * @throws Exception
      */
     public JSONObject doPost(String url, JSONObject data){
-//        if (CommonConstants.FILE_LIST_URL.equals(url)){
-//            ThreadUtil.sleep(2000);//防止429频繁
-//        }
         try {
             body = RequestBody.create(mediaType,data.toString());
             request = new Request.Builder()
@@ -58,7 +55,6 @@ public class OkHttpUtil {
             String result = response.body().string();
             CommonUI.console("请求状态码：{}",response.code());
             if (429==response.code()){
-                System.out.println("请求频繁了，休息一下。。。。正在准备重试中。。。："+result);
                 CommonUI.console("请求频繁了，休息一下。。。。正在准备重试中。。。");
                 ThreadUtil.sleep(3000);
                 return doPost(url,data);

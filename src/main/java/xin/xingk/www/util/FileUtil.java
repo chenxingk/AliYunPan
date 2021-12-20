@@ -23,9 +23,6 @@ import java.util.concurrent.Future;
  * Date: 2021/05/10
  */
 public class FileUtil extends cn.hutool.core.io.FileUtil {
-
-    public static final String FILE="File";//文件
-    public static final String FOLDER="Folder";//文件夹
     static List<String> docTypes = new ArrayList<>();//文档类型
     static List<String> compressTypes = new ArrayList<>();//压缩包类型
     static List<String> imageTypes = new ArrayList<>();//图片类型
@@ -144,27 +141,6 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
     }
 
     /**
-     * 读取目录下的文件 或 文件夹
-     * 不含子目录
-     * @param path 目录绝对路径或者相对路径
-     * @param type 文件或文件夹 为空默认返回文件夹
-     * @return 列表
-     */
-    public static List<String> fileFolderList(String path,String type) {
-        List<String> List = new ArrayList<>();
-        final File[] files = ls(path);
-        for (File file : files) {
-            if(FILE.equals(type) && file.isFile()){
-                List.add(file.getPath());
-            }
-            if (FOLDER.equals(type) && file.isDirectory()){
-                List.add(file.getName());
-            }
-        }
-        return List;
-    }
-
-    /**
      * 获取文件信息
      * @param path 文件路径
      */
@@ -208,6 +184,30 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
             throw new IORuntimeException("读取文件流，发生异常...请联系作者..."+e);
         }
         return block.array();
+    }
+
+    /**
+     * 获取目录下所有文件
+     * @param path
+     * @return
+     */
+    public static List<String> getFileList(String path) {
+        List<String> List = new ArrayList<>();
+        File[] files = ls(path);
+        for (File file : files) if (file.isFile()) List.add(file.getPath());
+        return List;
+    }
+
+    /**
+     * 获取目录下所有文件夹
+     * @param path
+     * @return
+     */
+    public static List<String> getFileFolder(String path) {
+        List<String> List = new ArrayList<>();
+        File[] files = ls(path);
+        for (File file : files) if (file.isDirectory()) List.add(file.getName());
+        return List;
     }
 
 }

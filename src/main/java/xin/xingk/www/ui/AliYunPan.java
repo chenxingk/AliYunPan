@@ -64,6 +64,8 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
     private JRadioButton puTongRadio;
     // 分类备份
     private JRadioButton fenLeiRadio;
+    // 微信备份
+    private JRadioButton weChatRadio;
     // 开始备份
     private JButton startBackup = CommonUI.startBackup;
     // 退出登录
@@ -200,20 +202,26 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         container.add(selectBtn);
 
         //模式选择
-        puTongRadio = new JRadioButton("普通备份",ConfigUtil.getBackType());
+        puTongRadio = new JRadioButton("普通备份",ConfigUtil.getBackupType()==0);
         puTongRadio.setBounds(100, radio_top, radio_width, radio_high);
         puTongRadio.setBackground(container.getBackground());
         puTongRadio.addActionListener(this);
         container.add(puTongRadio);
-        fenLeiRadio = new JRadioButton("分类备份",!ConfigUtil.getBackType());
+        fenLeiRadio = new JRadioButton("分类备份",ConfigUtil.getBackupType()==1);
         fenLeiRadio.setBounds(250, radio_top, radio_width, radio_high);
         fenLeiRadio.setBackground(container.getBackground());
         fenLeiRadio.addActionListener(this);
         container.add(fenLeiRadio);
+        weChatRadio = new JRadioButton("微信备份",ConfigUtil.getBackupType()==2);
+        weChatRadio.setBounds(400, radio_top, radio_width, radio_high);
+        weChatRadio.setBackground(container.getBackground());
+        weChatRadio.addActionListener(this);
+        container.add(weChatRadio);
         //设置为单选
         ButtonGroup typeGroup = new ButtonGroup();
         typeGroup.add(puTongRadio);
         typeGroup.add(fenLeiRadio);
+        typeGroup.add(weChatRadio);
 
         startBackup.setFont(new Font("宋体", Font.PLAIN, 13));
         startBackup.setBounds(100, 195, 100, 30);
@@ -309,7 +317,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
                 //获取用户输入的目录名称
                 ConfigUtil.set(CommonConstants.BACKUP_NAME,folderText.getText());
                 //获取上传模式
-                ConfigUtil.set(CommonConstants.BACKUP_TYPE,puTongRadio.isSelected() ? "0" : "1");
+                //ConfigUtil.set(CommonConstants.BACKUP_TYPE,puTongRadio.isSelected() ? "0" : "1");
                 //输出模式
                 CommonUI.console("备份模式：{}",(puTongRadio.isSelected() ? "普通模式" : "分类模式"));
                 //执行上传文件操作
@@ -337,6 +345,11 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
             //分类模式
             if (e.getSource() == fenLeiRadio) {
                 ConfigUtil.set(CommonConstants.BACKUP_TYPE, 1 + "");
+            }
+
+            //微信备份
+            if (e.getSource() == weChatRadio) {
+                ConfigUtil.set(CommonConstants.BACKUP_TYPE, 2 + "");
             }
 
             //开启目录监控
