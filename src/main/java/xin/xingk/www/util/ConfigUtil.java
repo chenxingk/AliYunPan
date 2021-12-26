@@ -75,6 +75,10 @@ public class ConfigUtil {
      * @return 备份模式
      */
     public static Integer getBackupType() {
+        Integer type = getInt(CommonConstants.BACKUP_TYPE);
+        if (ObjectUtil.isEmpty(type)){
+            return 0;
+        }
         return getInt(CommonConstants.BACKUP_TYPE);
     }
 
