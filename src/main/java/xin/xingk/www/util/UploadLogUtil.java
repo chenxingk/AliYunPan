@@ -18,8 +18,12 @@ public class UploadLogUtil {
 
     //上传文件日志
     public static String UPLOAD_LOG = CommonConstants.SYSTEM_PATH + "uploadLog.json";
+    //上传文件日志
+    public static String RUN_LOG = CommonConstants.SYSTEM_PATH + "run_log.log";
     //写入日志
-    public static FileWriter writerLog = FileWriter.create(FileUtil.touch(UPLOAD_LOG), CharsetUtil.CHARSET_UTF_8);
+    public static FileWriter uploadLog = FileWriter.create(FileUtil.touch(UPLOAD_LOG), CharsetUtil.CHARSET_UTF_8);
+    //写入日志
+    public static FileWriter runLog = FileWriter.create(FileUtil.touch(RUN_LOG), CharsetUtil.CHARSET_UTF_8);
     //读日志
     public static FileReader readerLog = new FileReader(UPLOAD_LOG);
     //日志对象
@@ -53,7 +57,7 @@ public class UploadLogUtil {
         fileInfo.set(path,fileId);
         logObject.set("fileInfo",fileInfo);
         logObject.set("fileList",fileList);
-        writerLog.write(logObject.toString());
+        uploadLog.write(logObject.toString());
     }
 
     /**
@@ -64,7 +68,7 @@ public class UploadLogUtil {
         load();
         fileInfo.remove(path);
         fileList.remove(path);
-        writerLog.write(logObject.toString());
+        uploadLog.write(logObject.toString());
     }
 
     /**

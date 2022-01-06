@@ -2,6 +2,7 @@ package xin.xingk.www.common;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import xin.xingk.www.util.UploadLogUtil;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
@@ -48,9 +49,11 @@ public class CommonUI {
         }
         if (CommonConstants.CLEAN_CONSOLE==0){
             console.setText(date+"开始运行"+"\n");
+            UploadLogUtil.runLog.append(date+"开始运行"+"\n");
         }else {
             String format = StrUtil.format(date+text,params);
             console.append(format+"\n");
+            UploadLogUtil.runLog.append(format+"\n");
             console.setCaretPosition(console.getText().length());
             //console.selectAll();
             //console.paintImmediately(console.getBounds());

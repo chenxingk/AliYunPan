@@ -11,6 +11,8 @@ import xin.xingk.www.common.CommonUI;
 import xin.xingk.www.ui.AliYunPan;
 import xin.xingk.www.ui.Login;
 import xin.xingk.www.util.AliYunPanUtil;
+import xin.xingk.www.util.FileUtil;
+import xin.xingk.www.util.UploadLogUtil;
 
 import javax.swing.*;
 import java.math.BigDecimal;
@@ -23,6 +25,8 @@ public class App {
 
 
     public static void main( String[] args ) {
+        //删除旧的运行日志
+        FileUtil.del(UploadLogUtil.RUN_LOG);
         //检查是否有更新
         if (checkForUpdate()) return;
         boolean login = new AliYunPanUtil().getAliYunPanInfo();
