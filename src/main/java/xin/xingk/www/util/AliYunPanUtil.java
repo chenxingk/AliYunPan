@@ -215,7 +215,7 @@ public class AliYunPanUtil{
         CommonConstants.TOKEN="";
         JSONObject data = new JSONObject().set("refresh_token",ConfigUtil.getRefreshToken());
         JSONObject aliYunPanInfo = okHttpUtil.doPost(CommonConstants.TOKEN_URL, data);
-        if (ObjectUtil.isNull(aliYunPanInfo)){
+        if (ObjectUtil.isNull(aliYunPanInfo) || "InvalidParameter.RefreshToken".equals(aliYunPanInfo.getStr("code"))){
             CommonUI.console("登录失败...请检查Token填写是否正确...");
             CommonUI.modifyStartBtnStatus("开始备份",true);
             return false;

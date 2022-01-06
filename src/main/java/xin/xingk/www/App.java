@@ -21,10 +21,25 @@ import java.math.BigDecimal;
  */
 public class App {
 
+
     public static void main( String[] args ) {
-        String result = HttpUtil.get("http://yunpan.xingk.xin/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B/upload.json");
+        //检查是否有更新
+        if (checkForUpdate()) return;
+        boolean login = new AliYunPanUtil().getAliYunPanInfo();
+        if(login){
+            new AliYunPan();
+        }else{
+            new Login();
+        }
+    }
+
+    /**
+     * 检查更新
+     */
+    private static boolean checkForUpdate() {
+        String result = HttpUtil.get("http://yunpan.xingk.xin/备份助手/upload.json");
         while (StrUtil.isEmpty(result)){
-            result = HttpUtil.get("http://yunpan.xingk.xin/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B/upload.json");
+            result = HttpUtil.get("http://yunpan.xingk.xin/备份助手/upload.json");
         }
         JSONObject versionJson = JSONUtil.parseObj(result);
         String url = versionJson.getStr("url");
@@ -34,23 +49,17 @@ public class App {
         boolean isUpdate = NumberUtil.isGreater((BigDecimal) version, CommonConstants.VERSION);
         if (isUpdate){//检测到有新版
             CommonUI.setFont();//设置字体
-            int btnNum = JOptionPane.showConfirmDialog(null, desc, "检测到有新版，是否更新？", JOptionPane.YES_NO_OPTION);
-            if (btnNum==0){//选择是打开浏览器
+            int button = JOptionPane.showConfirmDialog(null, desc, "检测到有新版，是否更新？", JOptionPane.YES_NO_OPTION);
+            if (button==0){//选择是打开浏览器
                 DesktopUtil.browse(url);
-                return;
+                return true;
             }else {
-                if (update==1){
+                if (update==1){//强更新
                     System.exit(0);
                 }
             }
         }
-
-        boolean login = new AliYunPanUtil().getAliYunPanInfo();
-        if(login){
-            new AliYunPan();
-        }else{
-            new Login();
-        }
+        return false;
     }
 
 }
