@@ -57,6 +57,6 @@ public class CommonConstants {
     //默认大小
     public static final Integer DEFAULT_SIZE = 10480000;
     //软件版本
-    public static final BigDecimal VERSION = new BigDecimal(1.0);
+    public static final BigDecimal VERSION = new BigDecimal(1.1);
 
 }
