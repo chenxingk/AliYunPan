@@ -36,13 +36,17 @@ public class AliYunPanUtil{
         boolean login = this.getAliYunPanInfo();//登录阿里云
         if (!login) return;
         if (!checkConfig()) return;
+        this.backupDirectory();//备份目录
+        CommonUI.modifyStartBtnStatus("开始备份",true);
+        CommonConstants.BACK_STATE = false;
+    }
+
+    public void backupDirectory() {
         String fileId = this.getFileId(CommonConstants.ROOT, ConfigUtil.getBackName());//备份目录ID
         fileIdMap.put(ConfigUtil.getPath(),fileId);//备份目录的文件夹ID
         scanFolders(ConfigUtil.getPath(),fileId,ConfigUtil.getBackupType());
         fileIdMap = new HashMap<>();
         CommonUI.console("本次备份：{} 下所有文件成功！...",ConfigUtil.getPath());
-        CommonUI.modifyStartBtnStatus("开始备份",true);
-        CommonConstants.BACK_STATE = false;
     }
 
     /**
@@ -168,7 +172,9 @@ public class AliYunPanUtil{
                 if (!login){
                     return;
                 }
-                String fileId = this.getFileId(CommonConstants.ROOT, ConfigUtil.getBackName());//备份目录ID
+                //备份目录
+                this.backupDirectory();
+                //String fileId = this.getFileId(CommonConstants.ROOT, ConfigUtil.getBackName());//备份目录ID
                 //uploadFiles(fileId,ConfigUtil.getPath());
             });
             backup.start();
