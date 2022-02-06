@@ -1,5 +1,7 @@
 package xin.xingk.www.util;
 
+import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -9,6 +11,7 @@ import xin.xingk.www.common.CommonConstants;
 import xin.xingk.www.common.CommonUI;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +27,6 @@ public class AliYunPanUtil{
     JTextField tokenText = CommonUI.tokenText;
     //请求工具类
     OkHttpUtil okHttpUtil = new OkHttpUtil();
-    //二级目录ID存放
-    Map<String, String> fileIdMap = new HashMap<>();
 
     /**
      * 开始备份
@@ -36,17 +37,11 @@ public class AliYunPanUtil{
         boolean login = this.getAliYunPanInfo();//登录阿里云
         if (!login) return;
         if (!checkConfig()) return;
-        this.backupDirectory();//备份目录
+        String fileId = this.getFileId(CommonConstants.ROOT, ConfigUtil.getBackName());//备份目录ID
+        scanFolders(ConfigUtil.getPath(),fileId,ConfigUtil.getBackupType());
+        CommonUI.console("本次备份：{} 下所有文件成功！...",ConfigUtil.getPath());
         CommonUI.modifyStartBtnStatus("开始备份",true);
         CommonConstants.BACK_STATE = false;
-    }
-
-    public void backupDirectory() {
-        String fileId = this.getFileId(CommonConstants.ROOT, ConfigUtil.getBackName());//备份目录ID
-        fileIdMap.put(ConfigUtil.getPath(),fileId);//备份目录的文件夹ID
-        scanFolders(ConfigUtil.getPath(),fileId,ConfigUtil.getBackupType());
-        fileIdMap = new HashMap<>();
-        CommonUI.console("本次备份：{} 下所有文件成功！...",ConfigUtil.getPath());
     }
 
     /**
@@ -66,26 +61,56 @@ public class AliYunPanUtil{
         //循环文件夹
         for (String folder : folderList){
             String filePath = path + FileUtil.FILE_SEPARATOR + folder;//完整路径
-            if (backupType==0){//普通备份
-                fileId = getPathFileId(path,fileId,folder);
-            }else if (backupType==2){//微信备份
-                //获取月份文件夹
-                String month = getMonth(filePath);
-                if (StrUtil.isNotEmpty(month)){
-                    //备份目录ID
-                    String rootId = fileIdMap.get(ConfigUtil.getPath());
-                    //获取月份文件夹ID
-                    fileId = getPathFileId(ConfigUtil.getPath()+FileUtil.FILE_SEPARATOR+month,rootId,month);
-                }
-                if (twoFolder(path)){//微信下的二级目录
-                    fileId = getPathFileId(path,fileId,"文件夹");
-                    backupType = 0;
-                }else{
-                    backupType = 2;
-                }
-            }
-            scanFolders(filePath,fileId,backupType);
+            Map<String, Object> result = this.getFileIdByPath(filePath);
+            scanFolders(filePath,Convert.toStr(result.get("fileId")),Convert.toInt(result.get("backupType")));
         }
+    }
+
+    /**
+     * 根据文件路径获取文件夹ID
+     * @param path 路径
+     * @return 文件夹ID
+     */
+    public Map<String, Object> getFileIdByPath(String path){
+        Map<String, Object> result = new HashMap<>();
+        String fileId = this.getFileId(CommonConstants.ROOT, ConfigUtil.getBackName());//备份目录ID
+        Integer backupType = ConfigUtil.getBackupType();
+        if (backupType==0){//普通备份
+            String[] folderArr = StrUtil.subAfter(path, ConfigUtil.getPath() + FileUtil.FILE_SEPARATOR, false).split("\\\\");
+            fileId = this.getFileIdByArr(fileId, folderArr);
+        }else if (backupType==2){//微信备份
+            //获取月份文件夹
+            String month = getMonth(path);
+            if (StrUtil.isNotEmpty(month)){
+                //获取月份文件夹ID
+                fileId = getFileId(fileId,month);
+            }
+            if (twoFolder(path)){//微信下的二级目录
+                fileId = getFileId(fileId,"文件夹");
+                String[] folderArr = StrUtil.subAfter(path, ConfigUtil.getPath() + FileUtil.FILE_SEPARATOR + month + FileUtil.FILE_SEPARATOR, false).split("\\\\");
+                fileId = this.getFileIdByArr(fileId, folderArr);
+                backupType = 0;
+            }else{
+                backupType = 2;
+            }
+        }
+        result.put("backupType",backupType);
+        result.put("fileId",fileId);
+        return result;
+    }
+
+    /**
+     * 根据文件夹数组获取上传文件夹ID
+     * @param fileId 上级文件夹ID
+     * @param folderArr 文件夹数组
+     * @return 文件夹ID
+     */
+    public String getFileIdByArr(String fileId, String[] folderArr) {
+        ArrayList<String> folderList = ListUtil.toList(folderArr);
+        for (String folder : folderList) {
+            fileId = getFileId(fileId, folder);
+        }
+        return fileId;
     }
 
     /**
@@ -99,24 +124,6 @@ public class AliYunPanUtil{
         }else{
             return StrUtil.subSuf(path, ConfigUtil.getPath().length()+1);
         }
-    }
-
-    /**
-     * 根据path 获取文件夹ID
-     * @param path 路径
-     * @param fileId 当前文件夹ID
-     * @param folder 文件夹名称
-     * @return
-     */
-    public String getPathFileId(String path, String fileId, String folder) {
-        //普通备份
-        if (StrUtil.isEmpty(fileIdMap.get(path))){
-            fileIdMap.put(path,fileId);
-            fileId = getFileId(fileId, folder);//获取文件夹ID
-        }else{
-            fileId = getFileId(fileIdMap.get(path), folder);
-        }
-        return fileId;
     }
 
     /**
@@ -165,19 +172,15 @@ public class AliYunPanUtil{
      * @param fileName 文件名称
      */
     public void monitorUpload(String path,String fileName) {
-        CommonUI.console("检测到：{} 目录有新文件...",path);
         if (checkConfig()){
-            Thread backup = new Thread(() -> {
-                boolean login = getAliYunPanInfo();//登录阿里云
-                if (!login){
-                    return;
-                }
-                //备份目录
-                this.backupDirectory();
-                //String fileId = this.getFileId(CommonConstants.ROOT, ConfigUtil.getBackName());//备份目录ID
-                //uploadFiles(fileId,ConfigUtil.getPath());
-            });
-            backup.start();
+            boolean login = getAliYunPanInfo();//登录阿里云
+            if (!login) return;
+            //获取文件ID
+            Map<String, Object> result = this.getFileIdByPath(path);
+            //上传文件
+            List<String> fileList = new ArrayList<>();
+            fileList.add(path+FileUtil.FILE_SEPARATOR+fileName);
+            uploadFileList(fileList, Convert.toStr(result.get("fileId")),Convert.toInt(result.get("backupType")));
         }
     }
 

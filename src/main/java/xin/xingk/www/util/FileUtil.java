@@ -5,7 +5,6 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import xin.xingk.www.common.CommonConstants;
 
-import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
@@ -145,7 +144,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
      * @param path 文件路径
      */
     public static Map<String, String> getFileInfo(String path) {
-        String contentType= new MimetypesFileTypeMap().getContentType(new File(path));
+        String contentType = getMimeType(path);
         if (StrUtil.isEmpty(contentType)) contentType="application/octet-stream";
         Map<String, String> map = new HashMap();
         File file = file(path);

@@ -492,25 +492,43 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         CommonUI.console("目录检测已开启");
         CommonConstants.monitor = WatchMonitor.createAll(ConfigUtil.getPath(), new DelayWatcher(new Watcher() {
             @Override
-            public void onModify(WatchEvent<?> event, Path currentPath) {
+            public void onModify(WatchEvent<?> event, Path currentPath) {//监听修改
                 String path = currentPath.toString();//文件路径
                 String fileName = event.context().toString();//文件名
-                String fileSuffix = FileUtil.getSuffix(fileName);//文件后缀
-                //备份方法不执行时候执行监听
-                if (!CommonConstants.BACK_STATE && fileSuffix.length()<=8 && !fileName.startsWith("~$") && !"tmp".equals(fileSuffix)){
-                    String fileId = UploadLogUtil.getFileUploadFileId(path + FileUtil.FILE_SEPARATOR + fileName);
-                    if (StrUtil.isNotEmpty(fileId)){
-                        String filePath = path + FileUtil.FILE_SEPARATOR + fileName;
-                        CommonUI.console("{} 发生变化，删除后上传新版",filePath);
-                        aliYunPanUtil.deleteFile(fileId);//如果文件存在 先删除在重新上传
-                        UploadLogUtil.removeFileUploadLog(filePath);//删除文件上传日志
+                String filePath = path + FileUtil.FILE_SEPARATOR + fileName;
+                if (FileUtil.isFile(filePath)){
+                    System.out.println("修改："+filePath);
+                    String fileSuffix = FileUtil.getSuffix(fileName);//文件后缀
+                    //备份方法不执行时候执行监听
+                    if (!CommonConstants.BACK_STATE && fileSuffix.length()<=8 && !fileName.startsWith("~$") && !"tmp".equals(fileSuffix)){
+                        String fileId = UploadLogUtil.getFileUploadFileId(path + FileUtil.FILE_SEPARATOR + fileName);
+                        if (StrUtil.isNotEmpty(fileId)){
+                            CommonUI.console("{} 发生变化，删除后上传新版",filePath);
+                            aliYunPanUtil.deleteFile(fileId);//如果文件存在 先删除在重新上传
+                            UploadLogUtil.removeFileUploadLog(filePath);//删除文件上传日志
+                        }
+                        aliYunPanUtil.monitorUpload(path,fileName);
                     }
-                    aliYunPanUtil.monitorUpload(path,fileName);
                 }
             }
 
             @Override
-            public void onCreate(WatchEvent<?> event, Path currentPath) {
+            public void onCreate(WatchEvent<?> event, Path currentPath) {//监听新增
+                /*String path = currentPath.toString();//文件路径
+                String fileName = event.context().toString();//文件名
+                String filePath = path + FileUtil.FILE_SEPARATOR + fileName;
+                if (FileUtil.isFile(filePath)){
+                    System.out.println("新增："+filePath);
+                    *//*String fileSuffix = FileUtil.getSuffix(fileName);//文件后缀
+                    //备份方法不执行时候执行监听
+                    if (!CommonConstants.BACK_STATE && fileSuffix.length()<=8 && !fileName.startsWith("~$") && !"tmp".equals(fileSuffix)){
+                        String fileId = UploadLogUtil.getFileUploadFileId(path + FileUtil.FILE_SEPARATOR + fileName);
+                        if (StrUtil.isEmpty(fileId)){
+                            CommonUI.console("{} 准备上传",filePath);
+                            aliYunPanUtil.monitorUpload(path,fileName);
+                        }
+                    }*//*
+                }*/
             }
 
             @Override
