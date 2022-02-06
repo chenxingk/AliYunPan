@@ -46,7 +46,7 @@ public class Login extends JFrame{
         // 设置界面使用字体
         CommonUI.setFont();
         setSize(380, 270);
-        setTitle("备份助手-登录");
+        setTitle(CommonConstants.TITLE+"-登录");
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //设置标题栏的图标

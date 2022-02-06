@@ -13,6 +13,8 @@ import java.math.BigDecimal;
  */
 public class CommonConstants {
 
+    public static String TITLE = "备份助手v1.2";
+
     //当前路径
     public static String SYSTEM_PATH = System.getProperty("user.dir") + File.separator;
 

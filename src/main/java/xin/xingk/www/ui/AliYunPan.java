@@ -115,7 +115,7 @@ public class AliYunPan extends JFrame implements ActionListener,FocusListener {
         // 设置界面使用字体
         CommonUI.setFont();
         //设置显示窗口标题
-        setTitle("备份助手");
+        setTitle(CommonConstants.TITLE);
         //设置标题栏的图标
         this.setIconImage(new ImageIcon(getClass().getResource("/images/logo.png")).getImage());
         //设置窗口显示尺寸
