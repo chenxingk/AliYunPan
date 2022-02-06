@@ -34,11 +34,17 @@ Java Swing + Hutool + Okhttp3 自动备份文件到【阿里云盘】的小工�
 | ![输入图片说明](https://images.gitee.com/uploads/images/2021/0524/152531_4b2a9fa5_4873209.png "屏幕截图.png")  | ![输入图片说明](https://images.gitee.com/uploads/images/2021/0524/152435_7c4a1340_4873209.png "屏幕截图.png")  |![输入图片说明](https://images.gitee.com/uploads/images/2021/0603/101943_e74e8ba2_9173799.png "屏幕截图.png")  |
 
 #### 下载安装
-1.  Windows系统  **含JDK安装包，适合没有JDK环境的** 使用：[v1.1点击下载](http://yunpan.xingk.xin/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B%E5%AE%89%E8%A3%85%E5%8C%85v1.1.exe)
-2.  Windows系统  **不含JDK安装包，适合有JDK环境的** 可以直接运行：[v1.1点击下载](https://gitee.com/xingk-code/AliYunPan/attach_files/945905/download/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B.exe)
-2.  Windows、Liunx、Macos、等系统有JDK的可以直接下载jar运行：[v1.1点击下载](https://gitee.com/xingk-code/AliYunPan/attach_files/945904/download/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B.jar)
+1.  Windows系统  **含JDK安装包，适合没有JDK环境的** 使用：[v1.2点击下载](http://yunpan.xingk.xin/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B%E5%AE%89%E8%A3%85%E5%8C%85v1.2.exe)
+2.  Windows系统  **不含JDK安装包，适合有JDK环境的** 可以直接运行：[v1.2点击下载](https://gitee.com/xingk-code/AliYunPan/attach_files/959151/download/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8Bv1.2%EF%BC%88%E4%B8%8D%E5%90%ABJDK%EF%BC%89.exe)
+2.  Windows、Liunx、Macos、等系统有JDK的可以直接下载jar运行：[v1.2点击下载](https://gitee.com/xingk-code/AliYunPan/attach_files/959145/download/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8Bv1.2.jar)
 
 #### 更新日志
+##### 2022-2-6
+
+- 优化扫描目录逻辑
+- 优化目录监听上传
+- 修改获取contentType方法
+
 ##### 2022-1-16
 
 - 新增微信备份模式(仅对一级目录分类，二级目录不分类)
