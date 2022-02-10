@@ -1,6 +1,5 @@
 package xin.xingk.www;
 
-import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatSVGUtils;
 
 import javax.swing.*;
@@ -18,8 +17,7 @@ public class MainFrame extends JFrame {
         TopMenuBar topMenuBar = TopMenuBar.getInstance();
         topMenuBar.init();
         UIManager.put( "TitlePane.unifiedBackground", false );
-//        FlatLaf.updateUI();
         setJMenuBar(topMenuBar);
-        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.3, 0.4);
+        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.2, 0.3);
     }
 }

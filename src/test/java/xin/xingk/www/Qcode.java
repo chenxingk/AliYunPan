@@ -1,9 +1,11 @@
 package xin.xingk.www;
 
+import cn.hutool.extra.qrcode.QrCodeUtil;
+import cn.hutool.json.JSONObject;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Data;
-import lombok.Getter;
+import xin.xingk.www.util.OkHttpUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,6 +19,12 @@ import java.awt.*;
 public class Qcode {
     private JPanel code;
     private JLabel jlebel;
+    //二维码
+    private ImageIcon qrCodeImg;
+    //CK码
+    private String ck;
+    //时间戳
+    private String t;
 
     private static Qcode qcode;
 
@@ -29,12 +37,19 @@ public class Qcode {
 
     public void init() {
         qcode = getInstance();
-        qcode.getJlebel().setText("123");
-        qcode.getCode().add(jlebel);
-    }
-
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
+        try {
+            JSONObject qrCodeUrl = OkHttpUtil.getQrCodeUrl();
+            //二维码地址
+            String codeContent = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("codeContent");
+            ck = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("ck");
+            t = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("t");
+            byte[] qrCode = QrCodeUtil.generatePng(codeContent, 180, 180);
+            qrCodeImg=new ImageIcon(qrCode);
+            qcode.getJlebel().setIcon(qrCodeImg);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.toString(), "获取二维码错误", JOptionPane.ERROR_MESSAGE);
+        }
+//        qcode.getJlebel().setText("123");
     }
 
     {
@@ -52,7 +67,7 @@ public class Qcode {
      * @noinspection ALL
      */
     private void $$$setupUI$$$() {
-        createUIComponents();
+        code = new JPanel();
         code.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         jlebel = new JLabel();
         jlebel.setText("Label");

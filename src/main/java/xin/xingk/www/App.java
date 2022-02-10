@@ -6,6 +6,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.formdev.flatlaf.FlatDarculaLaf;
 import xin.xingk.www.common.CommonConstants;
 import xin.xingk.www.common.CommonUI;
 import xin.xingk.www.ui.AliYunPan;
@@ -25,6 +26,11 @@ public class App {
 
 
     public static void main( String[] args ) {
+        try {
+            UIManager.setLookAndFeel( new FlatDarculaLaf());
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
         //删除旧的运行日志
         FileUtil.del(UploadLogUtil.RUN_LOG);
         //检查是否有更新
