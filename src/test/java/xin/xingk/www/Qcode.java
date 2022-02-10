@@ -2,6 +2,7 @@ package xin.xingk.www;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import lombok.Data;
 import lombok.Getter;
 
 import javax.swing.*;
@@ -12,16 +13,12 @@ import java.awt.*;
  * @Date: 2022/2/10 18:07
  * @Description:
  */
-@Getter
+@Data
 public class Qcode {
     private JPanel code;
     private JLabel jlebel;
 
     private static Qcode qcode;
-
-    private Qcode() {
-
-    }
 
     public static Qcode getInstance() {
         if (qcode == null) {
@@ -32,8 +29,8 @@ public class Qcode {
 
     public void init() {
         qcode = getInstance();
-        jlebel.setText("123");
-        code.add(jlebel);
+        qcode.getJlebel().setText("123");
+        qcode.getCode().add(jlebel);
     }
 
     private void createUIComponents() {
@@ -68,4 +65,5 @@ public class Qcode {
     public JComponent $$$getRootComponent$$$() {
         return code;
     }
+
 }
