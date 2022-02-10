@@ -18,7 +18,7 @@ public class MainFrame extends JFrame {
         TopMenuBar topMenuBar = TopMenuBar.getInstance();
         topMenuBar.init();
         UIManager.put( "TitlePane.unifiedBackground", false );
-        FlatLaf.updateUI();
+//        FlatLaf.updateUI();
         setJMenuBar(topMenuBar);
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.3, 0.4);
     }
