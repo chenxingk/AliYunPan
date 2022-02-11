@@ -3,6 +3,7 @@ package xin.xingk.www;
 import cn.hutool.extra.qrcode.QrCodeUtil;
 import cn.hutool.json.JSONObject;
 import com.formdev.flatlaf.FlatLaf;
+import com.formdev.flatlaf.ui.FlatUIUtils;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Data;
@@ -49,11 +50,8 @@ public class Qcode {
             byte[] qrCode = QrCodeUtil.generatePng(codeContent, preferHeight, preferHeight);
             qrCodeImg = new ImageIcon(qrCode);
             qcode.getJlebel().setIcon(qrCodeImg);
-            Font font = UIManager.getFont("defaultFont");
-            Font newFont = font.deriveFont((float) Math.max(font.getSize() - 2, 10));
-            info.setText("已扫码...");
-            info.setFont(newFont);
-            FlatLaf.updateUI();
+//            info.setText("已扫码...");
+//            info.setFont(FlatUIUtils.nonUIResource(UIManager.getFont("small.font")));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.toString(), "获取二维码错误", JOptionPane.ERROR_MESSAGE);
         }
