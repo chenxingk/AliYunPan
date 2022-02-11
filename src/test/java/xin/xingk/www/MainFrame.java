@@ -18,6 +18,6 @@ public class MainFrame extends JFrame {
         topMenuBar.init();
         UIManager.put( "TitlePane.unifiedBackground", false );
         setJMenuBar(topMenuBar);
-        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.2, 0.3);
+        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.3, 0.4);
     }
 }

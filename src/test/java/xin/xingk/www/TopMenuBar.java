@@ -1,19 +1,13 @@
 package xin.xingk.www;
 
-import cn.hutool.core.thread.ThreadUtil;
+import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
-import com.sun.deploy.ui.AboutDialog;
-import com.sun.org.apache.xml.internal.security.Init;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * The top menu bar
@@ -31,6 +25,8 @@ public class TopMenuBar extends JMenuBar {
     private static int initialThemeItemCount = -1;
 
     private static String[] themeNames = {"Flat Light","Flat Dark"};
+
+    private static String name;
 
     private TopMenuBar() {
     }
@@ -98,6 +94,7 @@ public class TopMenuBar extends JMenuBar {
         for (String themeName : themeNames) {
             JCheckBoxMenuItem item = new JCheckBoxMenuItem(themeName);
             //item.setSelected(themeName.equals(App.config.getTheme()));
+            item.setSelected(themeName.equals(name));
             item.addActionListener(this::themeChanged);
             themeMenu.add(item);
         }
@@ -105,7 +102,8 @@ public class TopMenuBar extends JMenuBar {
 
     private void themeChanged(ActionEvent actionEvent) {
         try {
-            String selectedThemeName = actionEvent.getActionCommand();
+//            String selectedThemeName = actionEvent.getActionCommand();
+            name = actionEvent.getActionCommand();
             FlatAnimatedLafChange.showSnapshot();
 
 //            App.config.setTheme(selectedThemeName);
@@ -114,9 +112,13 @@ public class TopMenuBar extends JMenuBar {
 //            Init.initTheme();
 //            SwingUtilities.updateComponentTreeUI(App.mainFrame);
 //            SwingUtilities.updateComponentTreeUI(MainWindow.getInstance().getTabbedPane());
-            FlatLightLaf.setup();
+            if ("Flat Light".equals(name)){
+                FlatLightLaf.setup();
+            }else {
+                FlatDarkLaf.setup();
+            }
+//            item.setSelected(false);
             FlatLaf.updateUI();
-
             FlatAnimatedLafChange.hideSnapshotWithAnimation();
 
             initThemesMenu();

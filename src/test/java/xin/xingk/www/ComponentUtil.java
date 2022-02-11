@@ -13,9 +13,9 @@ public class ComponentUtil {
 
     private static Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets(Test.mainFrame.getGraphicsConfiguration());
 
-    private static int screenWidth = screenSize.width - screenInsets.left - screenInsets.right;
+    public static int screenWidth = screenSize.width - screenInsets.left - screenInsets.right;
 
-    private static int screenHeight = screenSize.height - screenInsets.top - screenInsets.bottom;
+    public static int screenHeight = screenSize.height - screenInsets.top - screenInsets.bottom;
 
     /**
      * 设置组件大小并将其放置在屏幕中央

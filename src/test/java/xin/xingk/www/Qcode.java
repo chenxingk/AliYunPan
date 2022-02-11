@@ -19,6 +19,7 @@ import java.awt.*;
 public class Qcode {
     private JPanel code;
     private JLabel jlebel;
+    private JLabel info;
     //二维码
     private ImageIcon qrCodeImg;
     //CK码
@@ -43,9 +44,11 @@ public class Qcode {
             String codeContent = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("codeContent");
             ck = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("ck");
             t = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("t");
-            byte[] qrCode = QrCodeUtil.generatePng(codeContent, 180, 180);
-            qrCodeImg=new ImageIcon(qrCode);
+            int preferHeight = (int) (ComponentUtil.screenHeight * 0.25);
+            byte[] qrCode = QrCodeUtil.generatePng(codeContent, preferHeight, preferHeight);
+            qrCodeImg = new ImageIcon(qrCode);
             qcode.getJlebel().setIcon(qrCodeImg);
+            info.setText("已扫码...");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.toString(), "获取二维码错误", JOptionPane.ERROR_MESSAGE);
         }
@@ -68,10 +71,45 @@ public class Qcode {
      */
     private void $$$setupUI$$$() {
         code = new JPanel();
-        code.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        code.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
+        code.setInheritsPopupMenu(false);
         jlebel = new JLabel();
-        jlebel.setText("Label");
-        code.add(jlebel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        jlebel.setAlignmentY(1.0f);
+        jlebel.setAutoscrolls(true);
+        jlebel.setBackground(new Color(-12513998));
+        jlebel.setRequestFocusEnabled(true);
+        jlebel.setText("");
+        jlebel.setVerticalAlignment(0);
+        jlebel.setVerticalTextPosition(0);
+        jlebel.putClientProperty("html.disable", Boolean.FALSE);
+        code.add(jlebel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_SOUTH, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label1 = new JLabel();
+        label1.setText("注：请使用阿里云盘APP，扫描二维码");
+        code.add(label1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        info = new JLabel();
+        Font infoFont = this.$$$getFont$$$(null, -1, 22, info.getFont());
+        if (infoFont != null) info.setFont(infoFont);
+        info.setText("");
+        code.add(info, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_SOUTH, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+    }
+
+    /**
+     * @noinspection ALL
+     */
+    private Font $$$getFont$$$(String fontName, int style, int size, Font currentFont) {
+        if (currentFont == null) return null;
+        String resultName;
+        if (fontName == null) {
+            resultName = currentFont.getName();
+        } else {
+            Font testFont = new Font(fontName, Font.PLAIN, 10);
+            if (testFont.canDisplay('a') && testFont.canDisplay('1')) {
+                resultName = fontName;
+            } else {
+                resultName = currentFont.getName();
+            }
+        }
+        return new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
     }
 
     /**
