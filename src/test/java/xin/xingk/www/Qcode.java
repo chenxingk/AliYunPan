@@ -2,6 +2,7 @@ package xin.xingk.www;
 
 import cn.hutool.extra.qrcode.QrCodeUtil;
 import cn.hutool.json.JSONObject;
+import com.formdev.flatlaf.FlatLaf;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Data;
@@ -48,7 +49,11 @@ public class Qcode {
             byte[] qrCode = QrCodeUtil.generatePng(codeContent, preferHeight, preferHeight);
             qrCodeImg = new ImageIcon(qrCode);
             qcode.getJlebel().setIcon(qrCodeImg);
+            Font font = UIManager.getFont("defaultFont");
+            Font newFont = font.deriveFont((float) Math.max(font.getSize() - 2, 10));
             info.setText("已扫码...");
+            info.setFont(newFont);
+            FlatLaf.updateUI();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.toString(), "获取二维码错误", JOptionPane.ERROR_MESSAGE);
         }
@@ -87,29 +92,8 @@ public class Qcode {
         label1.setText("注：请使用阿里云盘APP，扫描二维码");
         code.add(label1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         info = new JLabel();
-        Font infoFont = this.$$$getFont$$$(null, -1, 22, info.getFont());
-        if (infoFont != null) info.setFont(infoFont);
         info.setText("");
         code.add(info, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_SOUTH, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-    }
-
-    /**
-     * @noinspection ALL
-     */
-    private Font $$$getFont$$$(String fontName, int style, int size, Font currentFont) {
-        if (currentFont == null) return null;
-        String resultName;
-        if (fontName == null) {
-            resultName = currentFont.getName();
-        } else {
-            Font testFont = new Font(fontName, Font.PLAIN, 10);
-            if (testFont.canDisplay('a') && testFont.canDisplay('1')) {
-                resultName = fontName;
-            } else {
-                resultName = currentFont.getName();
-            }
-        }
-        return new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
     }
 
     /**
