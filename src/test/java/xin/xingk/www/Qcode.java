@@ -46,7 +46,7 @@ public class Qcode {
             String codeContent = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("codeContent");
             ck = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("ck");
             t = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("t");
-            int preferHeight = (int) (ComponentUtil.screenHeight * 0.25);
+            int preferHeight = 300;//(int) (ComponentUtil.screenHeight * 0.25);
             byte[] qrCode = QrCodeUtil.generatePng(codeContent, preferHeight, preferHeight);
             qrCodeImg = new ImageIcon(qrCode);
             qcode.getJlebel().setIcon(qrCodeImg);

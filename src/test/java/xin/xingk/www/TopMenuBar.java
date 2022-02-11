@@ -113,9 +113,9 @@ public class TopMenuBar extends JMenuBar {
 //            SwingUtilities.updateComponentTreeUI(App.mainFrame);
 //            SwingUtilities.updateComponentTreeUI(MainWindow.getInstance().getTabbedPane());
             if ("Flat Light".equals(name)){
-                FlatLightLaf.setup();
+                UIManager.setLookAndFeel(new FlatLightLaf());
             }else {
-                FlatDarkLaf.setup();
+                UIManager.setLookAndFeel(new FlatDarkLaf());
             }
 //            item.setSelected(false);
             FlatLaf.updateUI();
