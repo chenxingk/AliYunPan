@@ -33,11 +33,11 @@
       <version>4.9.1</version>
     </dependency>
 
-    <!--工具类-->
+    <!--hutool工具类-->
     <dependency>
       <groupId>cn.hutool</groupId>
       <artifactId>hutool-all</artifactId>
-      <version>5.6.5</version>
+      <version>5.7.20</version>
     </dependency>
 
     <!--Jsoup-->
@@ -54,18 +54,21 @@
       <version>3.3.3</version>
     </dependency>
 
+    <!--flatlaf-->
     <dependency>
       <groupId>com.formdev</groupId>
       <artifactId>flatlaf</artifactId>
       <version>2.0.1</version>
     </dependency>
 
+    <!--flatlaf-->
     <dependency>
       <groupId>com.formdev</groupId>
       <artifactId>flatlaf-extras</artifactId>
       <version>2.0.1</version>
     </dependency>
 
+    <!--logback-->
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
@@ -86,6 +89,47 @@
       <version>7.0.3</version>
     </dependency>
 
+    <!--mybatis-plus-->
+    <dependency>
+      <groupId>com.baomidou</groupId>
+      <artifactId>mybatis-plus</artifactId>
+      <version>3.4.3</version>
+    </dependency>
+
+    <!--连接池-->
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>4.0.3</version>
+    </dependency>
+
+    <!--sqlite-->
+    <dependency>
+      <groupId>org.xerial</groupId>
+      <artifactId>sqlite-jdbc</artifactId>
+      <version>3.36.0.3</version>
+    </dependency>
+
   </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>**</include>
+        </includes>
+      </resource>
+    </resources>
+    <testResources>
+      <testResource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>**</include>
+        </includes>
+      </testResource>
+    </testResources>
+  </build>
+
 
 </project>

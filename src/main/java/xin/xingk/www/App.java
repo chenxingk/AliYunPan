@@ -9,9 +9,9 @@ import cn.hutool.json.JSONUtil;
 import com.formdev.flatlaf.FlatDarkLaf;
 import xin.xingk.www.common.CommonConstants;
 import xin.xingk.www.common.CommonUI;
+import xin.xingk.www.ui.Home;
 import xin.xingk.www.ui.Login;
 import xin.xingk.www.ui.MainFrame;
-import xin.xingk.www.ui.dialog.About;
 import xin.xingk.www.util.FileUtil;
 import xin.xingk.www.util.UploadLogUtil;
 
@@ -41,13 +41,11 @@ public class App {
         //boolean login = new AliYunPanUtil().getAliYunPanInfo();
 
         if(true){
-//            mainFrame.initHome();
-//            mainFrame.add(Home.getInstance().getHomePanel());
-//            Home.getInstance().initUi();
-
             mainFrame.initHome();
-            mainFrame.add(About.getInstance().getAboutPanel());
+            mainFrame.add(Home.getInstance().getHomePanel());
+            Home.getInstance().initUi();
 
+//            mainFrame.add(About.getInstance().getAboutPanel());
         }else{
             mainFrame.initLogin();
             mainFrame.add(Login.getInstance().getLoginPanel());
