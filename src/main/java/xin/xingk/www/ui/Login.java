@@ -1,13 +1,18 @@
 package xin.xingk.www.ui;
 
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.qrcode.QrCodeUtil;
 import cn.hutool.json.JSONObject;
+import com.formdev.flatlaf.ui.FlatUIUtils;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import lombok.Data;
 import xin.xingk.www.common.CommonConstants;
-import xin.xingk.www.common.CommonUI;
 import xin.xingk.www.util.ConfigUtil;
 import xin.xingk.www.util.OkHttpUtil;
+import xin.xingk.www.util.UIUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,78 +20,65 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * 登录-UI
+ * @author: Mr.chen
+ * @date: 2022/2/11 23:07
+ * @description: 登录窗口
  */
-public class Login extends JFrame{
+@Data
+public class Login {
+    //登录窗口面板
+    private JPanel loginPanel;
+    //二维码
+    private JLabel qrCodeLabel;
+    //提示
+    private JLabel tipsLabel;
+    //说明
+    private JLabel infoLabel;
 
-    //二维码
-    private JLabel qrCodeLab;
-    //二维码
-    private ImageIcon qrCodeImg;
     //CK码
     private String ck;
     //时间戳
     private String t;
-    //说明
-    private JLabel info;
-    //二维码定时刷新
-    Timer qrTimer;
 
-    //TAB面板
-    private final JTabbedPane mainTab = new JTabbedPane();
+    //当前对象
+    private static Login login;
 
-
-    public Login() {
-        initConfig();
-        initUi();
-        this.setVisible(true);
+    //初始化对象
+    public static Login getInstance() {
+        if (login == null) {
+            login = new Login();
+        }
+        return login;
     }
 
-    private void initConfig() {
-        // 设置界面使用字体
-        CommonUI.setFont();
-        setSize(380, 270);
-        setTitle(CommonConstants.TITLE+"-登录");
-        setResizable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //设置标题栏的图标
-        setIconImage(new ImageIcon(getClass().getResource("/images/logo.png")).getImage());
-        //默认居中显示
-        setLocationRelativeTo(null);
-    }
-
+    /**
+     * 初始化窗口UI
+     */
     public void initUi() {
-        //二维码登录
-        //二维码面板
-        Container qrCodeLogin = new Container();
-        qrCodeImg=new ImageIcon(getClass().getResource("/images/logo.png"));
+        login = getInstance();
+        login.getTipsLabel().setFont(FlatUIUtils.nonUIResource(UIManager.getFont("small.font")));
+        ThreadUtil.execute(this::initQrCode);
+    }
 
-        qrCodeLab = new JLabel(qrCodeImg);
-        qrCodeLab.setBounds(92, 3, 180, 180);
-        qrCodeLogin.add(qrCodeLab);
-
-        info=new JLabel("注：请使用阿里云盘APP，扫描二维码");
-        info.setBounds(10, 185, 380, 25);
-        qrCodeLogin.add(info);
-        mainTab.add("二维码登录", qrCodeLogin);
-        // 配置界面
-        this.setContentPane(mainTab);
-
+    /**
+     * 初始化二维码
+     */
+    public void initQrCode() {
+        //获取二维码
         getQrCodeImg();
-        qrTimer = new Timer();
-        qrTimer.schedule(new TimerTask() {
+        //定时刷新二维码
+        new Timer().schedule(new TimerTask() {
             public void run() {
                 JSONObject qrCode = OkHttpUtil.queryQrCode(t, ck);
                 String status = qrCode.getJSONObject("content").getJSONObject("data").getStr("qrCodeStatus");
-                if ("CONFIRMED".equals(status)){
+                if ("CONFIRMED".equals(status)) {
                     try {
                         JSONObject json = OkHttpUtil.doLogin(qrCode);
                         if (!checkLoginJson(json)) return;
                         String refreshToken = json.getStr("refresh_token");
-                        if (StrUtil.isNotEmpty(refreshToken)){
-                            info.setText("登录成功，正在跳转中，请稍后...");
-                            ConfigUtil.set(CommonConstants.REFRESH_TOKEN,refreshToken);
-                            setVisible(false);
+                        if (StrUtil.isNotEmpty(refreshToken)) {
+                            tipsLabel.setText("登录成功，正在跳转中，请稍后...");
+                            ConfigUtil.set(CommonConstants.REFRESH_TOKEN, refreshToken);
                             this.cancel();
                             new AliYunPan();
                         }
@@ -96,11 +88,11 @@ public class Login extends JFrame{
                     }
                 }
                 //二维码过期 刷新二维码
-                if ("EXPIRED".equals(status)){
+                if ("EXPIRED".equals(status)) {
                     getQrCodeImg();
                 }
-                if ("SCANED".equals(status)){
-                    info.setText("已扫描二维码，等待确认...（确认后需等待1-2s）");
+                if ("SCANED".equals(status)) {
+                    tipsLabel.setText("已扫描二维码，等待确认...（确认后需等待1-2s）");
                 }
             }
         }, 0, 500);
@@ -108,6 +100,7 @@ public class Login extends JFrame{
 
     /**
      * 验证JSON 是否有误
+     *
      * @param json
      * @return
      */
@@ -129,20 +122,58 @@ public class Login extends JFrame{
 
     /**
      * 获取二维码图片
-     * @throws Exception
      */
     private void getQrCodeImg() {
-        try {
-            JSONObject qrCodeUrl = OkHttpUtil.getQrCodeUrl();
-            //二维码地址
-            String codeContent = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("codeContent");
-            ck = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("ck");
-            t = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("t");
-            byte[] qrCode = QrCodeUtil.generatePng(codeContent, 180, 180);
-            qrCodeImg=new ImageIcon(qrCode);
-            qrCodeLab.setIcon(qrCodeImg);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e.toString(), "获取二维码错误", JOptionPane.ERROR_MESSAGE);
-        }
+        login = getInstance();
+        JSONObject qrCodeUrl = OkHttpUtil.getQrCodeUrl();
+        //二维码地址
+        String codeContent = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("codeContent");
+        ck = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("ck");
+        t = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("t");
+        int qrCodeSize = (int) (UIUtil.screenHeight * 0.25);
+        byte[] qrCode = QrCodeUtil.generatePng(codeContent, qrCodeSize, qrCodeSize);
+        //二维码图片
+        ImageIcon qrCodeImg = new ImageIcon(qrCode);
+        JLabel codeLabel = login.getQrCodeLabel();
+        codeLabel.setIcon(qrCodeImg);
+        codeLabel.setText(null);
     }
+
+
+    {
+// GUI initializer generated by IntelliJ IDEA GUI Designer
+// >>> IMPORTANT!! <<<
+// DO NOT EDIT OR ADD ANY CODE HERE!
+        $$$setupUI$$$();
+    }
+
+    /**
+     * Method generated by IntelliJ IDEA GUI Designer
+     * >>> IMPORTANT!! <<<
+     * DO NOT edit this method OR call it in your code!
+     *
+     * @noinspection ALL
+     */
+    private void $$$setupUI$$$() {
+        loginPanel = new JPanel();
+        loginPanel.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
+        qrCodeLabel = new JLabel();
+        qrCodeLabel.setIcon(new ImageIcon(getClass().getResource("/icons/loading_dark.gif")));
+        qrCodeLabel.setText("Loading……");
+        loginPanel.add(qrCodeLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_SOUTH, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        tipsLabel = new JLabel();
+        tipsLabel.setText("");
+        loginPanel.add(tipsLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        infoLabel = new JLabel();
+        infoLabel.setText("注：请使用阿里云盘APP，扫描二维码");
+        loginPanel.add(infoLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+    }
+
+    /**
+     * @noinspection ALL
+     */
+    public JComponent $$$getRootComponent$$$() {
+        return loginPanel;
+    }
+
 }

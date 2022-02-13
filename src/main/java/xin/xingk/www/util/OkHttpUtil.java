@@ -293,13 +293,18 @@ public class OkHttpUtil {
     /**
      * 获取阿里云二维码
      */
-    public static JSONObject getQrCodeUrl() throws Exception {
-        Request request = new Request.Builder()
-                .url("https://passport.aliyundrive.com/newlogin/qrcode/generate.do?appName=aliyun_drive")
-                .method("GET", null)
-                .build();
-        Response response = client.newCall(request).execute();
-        return JSONUtil.parseObj(response.body().string());
+    public static JSONObject getQrCodeUrl(){
+        try {
+            Request request = new Request.Builder()
+                    .url("https://passport.aliyundrive.com/newlogin/qrcode/generate.do?appName=aliyun_drive")
+                    .method("GET", null)
+                    .build();
+            Response response = client.newCall(request).execute();
+            return JSONUtil.parseObj(response.body().string());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**

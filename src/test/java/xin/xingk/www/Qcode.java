@@ -2,8 +2,6 @@ package xin.xingk.www;
 
 import cn.hutool.extra.qrcode.QrCodeUtil;
 import cn.hutool.json.JSONObject;
-import com.formdev.flatlaf.FlatLaf;
-import com.formdev.flatlaf.ui.FlatUIUtils;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Data;
