@@ -11,12 +11,13 @@ import xin.xingk.www.mybatis.MybatisPlusUtil;
  */
 public class UserService {
 
-    UserMapper userMapper = MybatisPlusUtil.getMapper(UserMapper.class);
+    UserMapper userMapper;
 
     public void insert(){
+        userMapper = MybatisPlusUtil.getMapper(UserMapper.class);
         User user = new User();
         user.setName("陈靖杰");
-        user.setToken("666666666");
+        user.setToken("888888");
         user.setTheme(0);
         int insert = userMapper.insert(user);
         System.out.println("更新了"+insert+"条");

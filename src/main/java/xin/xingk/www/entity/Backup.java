@@ -1,5 +1,8 @@
 package xin.xingk.www.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
@@ -8,7 +11,10 @@ import lombok.Data;
  * @description: 备份任务（实体类）
  */
 @Data
+@TableName(value = "backup")
 public class Backup extends BaseEntity{
+    @TableId(type = IdType.AUTO)
+    private String id;
     //本地目录
     private String localPath;
     //云盘目录

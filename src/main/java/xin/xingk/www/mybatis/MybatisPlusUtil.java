@@ -1,6 +1,6 @@
 package xin.xingk.www.mybatis;
 
-import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.aop.ProxyUtil;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
@@ -21,6 +21,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import xin.xingk.www.mybatis.config.CustomMetaObjectHandler;
 import xin.xingk.www.mybatis.config.CustomerIdGenerator;
+import xin.xingk.www.service.UserService;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -40,26 +41,34 @@ import java.util.jar.JarFile;
  */
 @Slf4j
 public class MybatisPlusUtil {
-
-    //SQLSession
-    public static SqlSession session;
+    //SQL会话工厂
+    public static SqlSessionFactory sqlSessionFactory;
+    //SqlSession
+    public static SqlSession sqlSession;
+    //
+    public static UserService userService = ProxyUtil.proxy(new UserService(), MybatisAspect.class);
 
     /**
-     * 获取SQLSession
-     * @return SqlSession
+     * 初始化 SqlSessionFactory
      */
-    public static void initSqlSession(){
-        if (ObjectUtil.isNotEmpty(session)) return;
+    static  {
         SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
         MybatisConfiguration configuration = initConfiguration();
-//        try {
-//            registryMapperXml(configuration, "mapper");
-//        } catch (IOException e) {
-//            log.error("解析mapper.xml文件发生异常{}",e.getMessage());
-//        }
-        //构建sqlSessionFactory
-        SqlSessionFactory sqlSessionFactory = builder.build(configuration);
-        session = sqlSessionFactory.openSession();
+        //解析mapper.xml文件
+        /*try {
+            registryMapperXml(configuration, "mapper");
+        } catch (IOException e) {
+            log.error("解析mapper.xml文件发生异常{}",e.getMessage());
+        }
+        */
+        sqlSessionFactory = builder.build(configuration);
+     }
+
+    /**
+     * 获取当前 SQLSession
+     */
+    public static void getSqlSession(){
+        sqlSession = sqlSessionFactory.openSession();
     }
 
     /**
@@ -69,16 +78,15 @@ public class MybatisPlusUtil {
      * @return
      */
     public static <T> T getMapper(Class<T> mapper){
-        if (session == null) initSqlSession();
-        return session.getMapper(mapper);
+        return sqlSession.getMapper(mapper);
     }
 
     /**
-     * 关闭SQLSession
+     * 关闭当前 SQLSession
      */
     public static void closeSqlSession() {
-        session.commit();
-        session.close();
+        sqlSession.commit();
+        sqlSession.close();
     }
 
     /**
@@ -129,7 +137,7 @@ public class MybatisPlusUtil {
         dataSource.setDriverClassName("org.sqlite.JDBC");
         dataSource.setIdleTimeout(60000);
         dataSource.setAutoCommit(true);
-        dataSource.setMaximumPoolSize(5);
+        dataSource.setMaximumPoolSize(1);
         dataSource.setMinimumIdle(1);
         dataSource.setMaxLifetime(60000 * 10);
         dataSource.setConnectionTestQuery("SELECT 1");

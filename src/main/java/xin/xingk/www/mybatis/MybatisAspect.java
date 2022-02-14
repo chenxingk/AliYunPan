@@ -9,14 +9,14 @@ import java.lang.reflect.Method;
 /**
  * Author: 陈靖杰
  * Date: 2022/2/14 11:00
- * Description: Mybatis切面用于SQLSession开启和关闭
+ * Description: Mybatis切面 用于SQLSession获取和关闭
  */
 @Slf4j
 public class MybatisAspect extends SimpleAspect {
 
     @Override
     public boolean before(Object target, Method method, Object[] args) {
-        MybatisPlusUtil.initSqlSession();
+        MybatisPlusUtil.getSqlSession();
         log.info(">>> SqlSession进行初始化。。。");
         return true;
     }

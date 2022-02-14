@@ -1,7 +1,6 @@
 package xin.xingk.www;
 
-import cn.hutool.aop.ProxyUtil;
-import xin.xingk.www.mybatis.MybatisAspect;
+import xin.xingk.www.mybatis.MybatisPlusUtil;
 import xin.xingk.www.service.UserService;
 import xin.xingk.www.ui.MainFrame;
 
@@ -11,14 +10,11 @@ import xin.xingk.www.ui.MainFrame;
  */
 public class App {
     public static MainFrame mainFrame;
+    static UserService userService = MybatisPlusUtil.userService;
 
     public static void main( String[] args ) {
-        UserService UserService = ProxyUtil.proxy(new UserService(), MybatisAspect.class);
-        UserService.insert();
-    }
-
-    public String say() {
-        return "World";
+        userService.insert();
+        userService.insert();
     }
 
     /*
