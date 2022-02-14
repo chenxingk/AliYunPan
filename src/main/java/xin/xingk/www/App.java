@@ -1,38 +1,39 @@
 package xin.xingk.www;
 
-import cn.hutool.core.swing.DesktopUtil;
-import cn.hutool.core.util.NumberUtil;
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.http.HttpUtil;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
-import com.formdev.flatlaf.FlatDarkLaf;
-import xin.xingk.www.common.CommonConstants;
-import xin.xingk.www.common.CommonUI;
-import xin.xingk.www.ui.Home;
-import xin.xingk.www.ui.Login;
+import cn.hutool.aop.ProxyUtil;
+import xin.xingk.www.mybatis.MybatisAspect;
+import xin.xingk.www.service.UserService;
 import xin.xingk.www.ui.MainFrame;
-import xin.xingk.www.util.FileUtil;
-import xin.xingk.www.util.UploadLogUtil;
-
-import javax.swing.*;
-import java.awt.*;
-import java.math.BigDecimal;
 
 /**
  * 备份程序
  *
  */
 public class App {
-
     public static MainFrame mainFrame;
+
+    public static void main( String[] args ) {
+        UserService UserService = ProxyUtil.proxy(new UserService(), MybatisAspect.class);
+        UserService.insert();
+    }
+
+    public String say() {
+        return "World";
+    }
+
+    /*
 
     public static void main( String[] args ) {
         FlatDarkLaf.setup();
         mainFrame = new MainFrame();
         mainFrame.init();
-
-
+        UserMapper userMapper = MybatisPlusUtil.getMapper(UserMapper.class);
+        User user = new User();
+        user.setName("陈靖杰");
+        user.setToken("666666666");
+        user.setTheme(0);
+        userMapper.insert(user);
+        MybatisPlusUtil.closeSqlSession();
 
         //删除旧的运行日志
         FileUtil.del(UploadLogUtil.RUN_LOG);
@@ -40,7 +41,7 @@ public class App {
         //if (checkForUpdate()) return;
         //boolean login = new AliYunPanUtil().getAliYunPanInfo();
 
-        if(true){
+        if(false){
             mainFrame.initHome();
             mainFrame.add(Home.getInstance().getHomePanel());
             Home.getInstance().initUi();
@@ -62,9 +63,9 @@ public class App {
         }
     }
 
-    /**
+    *//**
      * 检查更新
-     */
+     *//*
     private static boolean checkForUpdate() {
         String result = HttpUtil.get("http://yunpan.xingk.xin/备份助手/upload.json");
         while (StrUtil.isEmpty(result)){
@@ -89,6 +90,6 @@ public class App {
             }
         }
         return false;
-    }
+    }*/
 
 }

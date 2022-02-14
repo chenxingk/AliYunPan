@@ -8,7 +8,7 @@ import lombok.Data;
  * @description: 备份任务（实体类）
  */
 @Data
-public class Backup {
+public class Backup extends BaseEntity{
     //本地目录
     private String localPath;
     //云盘目录
