@@ -2,7 +2,6 @@ package xin.xingk.www.service;
 
 import xin.xingk.www.entity.User;
 import xin.xingk.www.mapper.UserMapper;
-import xin.xingk.www.mybatis.MybatisPlusUtil;
 
 /**
  * Author: 陈靖杰
@@ -11,10 +10,9 @@ import xin.xingk.www.mybatis.MybatisPlusUtil;
  */
 public class UserService {
 
-    UserMapper userMapper;
+    public static UserMapper userMapper;
 
     public void insert(){
-        userMapper = MybatisPlusUtil.getMapper(UserMapper.class);
         User user = new User();
         user.setName("陈靖杰");
         user.setToken("888888");

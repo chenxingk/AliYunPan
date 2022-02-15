@@ -45,6 +45,7 @@ public class MybatisPlusUtil {
     public static SqlSessionFactory sqlSessionFactory;
     //SqlSession
     public static SqlSession sqlSession;
+
     //
     public static UserService userService = ProxyUtil.proxy(new UserService(), MybatisAspect.class);
 

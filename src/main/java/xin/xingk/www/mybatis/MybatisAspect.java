@@ -3,6 +3,8 @@ package xin.xingk.www.mybatis;
 
 import cn.hutool.aop.aspects.SimpleAspect;
 import lombok.extern.slf4j.Slf4j;
+import xin.xingk.www.mapper.UserMapper;
+import xin.xingk.www.service.UserService;
 
 import java.lang.reflect.Method;
 
@@ -17,6 +19,7 @@ public class MybatisAspect extends SimpleAspect {
     @Override
     public boolean before(Object target, Method method, Object[] args) {
         MybatisPlusUtil.getSqlSession();
+        UserService.userMapper = MybatisPlusUtil.getMapper(UserMapper.class);
         log.info(">>> SqlSession进行初始化。。。");
         return true;
     }
