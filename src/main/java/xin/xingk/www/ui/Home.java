@@ -49,7 +49,7 @@ public class Home {
     /**
      * 初始化窗口UI
      */
-    public void initUi() {
+    public static void initUi() {
         home = getInstance();
         home.getTableTitle().setFont(FlatUIUtils.nonUIResource(UIManager.getFont("medium.font")));
         home.getLogTitle().setFont(FlatUIUtils.nonUIResource(UIManager.getFont("small.font")));
@@ -65,6 +65,7 @@ public class Home {
                 return this.getValueAt(0, columnIndex).getClass();
             }*/
         };
+        JTable table = home.getTable();
         table.setModel(model);
         table.setAutoCreateRowSorter(true);
         table.setShowVerticalLines(true);

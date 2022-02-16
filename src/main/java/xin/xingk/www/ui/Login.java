@@ -9,9 +9,9 @@ import com.formdev.flatlaf.ui.FlatUIUtils;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Data;
-import xin.xingk.www.common.CommonConstants;
+import xin.xingk.www.App;
+import xin.xingk.www.context.UserContextHolder;
 import xin.xingk.www.util.ComponentUtil;
-import xin.xingk.www.util.ConfigUtil;
 import xin.xingk.www.util.OkHttpUtil;
 
 import javax.swing.*;
@@ -58,6 +58,7 @@ public class Login {
         login = getInstance();
         login.getTipsLabel().setFont(FlatUIUtils.nonUIResource(UIManager.getFont("small.font")));
         ThreadUtil.execute(this::initQrCode);
+        ThreadUtil.execute(Home::initUi);
     }
 
     /**
@@ -78,9 +79,11 @@ public class Login {
                         String refreshToken = json.getStr("refresh_token");
                         if (StrUtil.isNotEmpty(refreshToken)) {
                             tipsLabel.setText("登录成功，正在跳转中，请稍后...");
-                            ConfigUtil.set(CommonConstants.REFRESH_TOKEN, refreshToken);
+                            UserContextHolder.updateUserToken(refreshToken);
                             this.cancel();
-                            new AliYunPan();
+                            App.mainFrame.initHome();
+                            App.mainFrame.add(Home.getInstance().getHomePanel());
+                            App.mainFrame.remove(Login.getInstance().getLoginPanel());
                         }
                     } catch (Exception exc) {
                         JOptionPane.showMessageDialog(null, exc.getMessage(), "二维码验证错误", JOptionPane.ERROR_MESSAGE);

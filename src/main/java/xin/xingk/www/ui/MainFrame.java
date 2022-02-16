@@ -27,7 +27,7 @@ public class MainFrame extends JFrame {
 
     public void initHome() {
         this.setTitle("备份助手V1.3，欢迎您：xxx");
-//        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.6, 0.8);
-        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.3, 0.5);
+        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.6, 0.8);
+//        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.3, 0.5);
     }
 }

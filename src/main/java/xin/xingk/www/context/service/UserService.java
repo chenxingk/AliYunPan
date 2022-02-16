@@ -37,21 +37,33 @@ public class UserService {
     }
 
     /**
-     * 获取用户使用的模板
-     * @return 模板名称
-     */
-    public String getUserTheme(){
-        return this.getUserInfo().getTheme();
-    }
-
-    /**
      * 更新用户主题
      * @param theme 主题名称
      */
     public void updateUserTheme(String theme){
-        User userInfo = this.getUserInfo();
-        userInfo.setTheme(theme);
-        userMapper.updateById(userInfo);
+        User user = new User();
+        user.setTheme(theme);
+        userMapper.update(user,null);
+    }
+
+    /**
+     * 更新用户昵称
+     * @param name 昵称
+     */
+    public void updateUserName(String name){
+        User user = new User();
+        user.setName(name);
+        userMapper.update(user,null);
+    }
+
+    /**
+     * 更新用户 token
+     * @param token token
+     */
+    public void updateUserToken(String token){
+        User user = new User();
+        user.setToken(token);
+        userMapper.update(user,null);
     }
 
 }
