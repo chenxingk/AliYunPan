@@ -34,13 +34,13 @@ public class About extends JDialog {
         setContentPane(aboutPanel);
         setModal(true);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        versionInfo.setText(CommonConstants.TITLE);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 dispose();
             }
         });
+        versionInfo.setText(CommonConstants.TITLE);
 
         gitHub.addMouseListener(new MouseAdapter() {
             @Override

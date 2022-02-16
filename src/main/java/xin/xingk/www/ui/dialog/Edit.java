@@ -3,9 +3,15 @@ package xin.xingk.www.ui.dialog;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Data;
+import xin.xingk.www.util.ComponentUtil;
+import xin.xingk.www.util.UIUtil;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import static xin.xingk.www.App.mainFrame;
 
 /**
  * @author: Mr.chen
@@ -13,19 +19,24 @@ import java.awt.*;
  * @description:
  */
 @Data
-public class Edit {
+public class Edit extends JDialog {
     private JPanel editPanel;
-    private JTextField textField1;
+    private JTextField localText;
     private JButton fileButton;
-    private JTextField textField2;
+    private JTextField cloudText;
     private JRadioButton ordinaryButton;
     private JRadioButton classifyRadioButton;
     private JRadioButton weChatRadioButton;
     private JRadioButton openRadioButton;
     private JRadioButton closeRadioButton;
-    private JTextField textField3;
+    private JTextField timeText;
     private JButton saveButton;
     private JButton cancelButton;
+    private JLabel localLabel;
+    private JLabel cloudLabel;
+    private JLabel typeLabel;
+    private JLabel monitorLabel;
+    private JLabel timeLable;
 
     //当前对象
     private static Edit edit;
@@ -36,6 +47,20 @@ public class Edit {
             edit = new Edit();
         }
         return edit;
+    }
+
+    public Edit() {
+        super(mainFrame, UIUtil.EDIT_TITLE);
+        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.35, 0.6);
+        setContentPane(editPanel);
+        setModal(true);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                dispose();
+            }
+        });
     }
 
     {
@@ -54,37 +79,37 @@ public class Edit {
      */
     private void $$$setupUI$$$() {
         editPanel = new JPanel();
-        editPanel.setLayout(new GridLayoutManager(6, 5, new Insets(10, 10, 10, 10), -1, -1));
-        final JLabel label1 = new JLabel();
-        label1.setText("本地目录");
-        editPanel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        textField1 = new JTextField();
-        editPanel.add(textField1, new GridConstraints(0, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        final JLabel label2 = new JLabel();
-        label2.setText("云盘备份目录");
-        editPanel.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        textField2 = new JTextField();
-        editPanel.add(textField2, new GridConstraints(1, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        final JLabel label3 = new JLabel();
-        label3.setText("备份模式");
-        editPanel.add(label3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        editPanel.setLayout(new GridLayoutManager(6, 5, new Insets(20, 20, 20, 20), -1, -1));
+        localLabel = new JLabel();
+        localLabel.setText("本地目录");
+        editPanel.add(localLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        localText = new JTextField();
+        editPanel.add(localText, new GridConstraints(0, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        cloudLabel = new JLabel();
+        cloudLabel.setText("云盘备份目录");
+        editPanel.add(cloudLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        cloudText = new JTextField();
+        editPanel.add(cloudText, new GridConstraints(1, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        typeLabel = new JLabel();
+        typeLabel.setText("备份模式");
+        editPanel.add(typeLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         ordinaryButton = new JRadioButton();
         ordinaryButton.setText("普通备份");
         editPanel.add(ordinaryButton, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         fileButton = new JButton();
         fileButton.setText("选择...");
         editPanel.add(fileButton, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label4 = new JLabel();
-        label4.setText("目录检测");
-        editPanel.add(label4, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        monitorLabel = new JLabel();
+        monitorLabel.setText("目录检测");
+        editPanel.add(monitorLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         openRadioButton = new JRadioButton();
         openRadioButton.setText("开启");
         editPanel.add(openRadioButton, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label5 = new JLabel();
-        label5.setText("自动备份时间");
-        editPanel.add(label5, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        textField3 = new JTextField();
-        editPanel.add(textField3, new GridConstraints(4, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        timeLable = new JLabel();
+        timeLable.setText("自动备份时间");
+        editPanel.add(timeLable, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        timeText = new JTextField();
+        editPanel.add(timeText, new GridConstraints(4, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         classifyRadioButton = new JRadioButton();
         classifyRadioButton.setText("分类备份");
         editPanel.add(classifyRadioButton, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

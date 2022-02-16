@@ -5,7 +5,10 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Data;
+import xin.xingk.www.ui.dialog.Edit;
 import xin.xingk.www.ui.menu.TableMenuBar;
+import xin.xingk.www.util.UIUtil;
+
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -94,6 +97,13 @@ public class Home {
         logArea.setLineWrap(true);
         //换行不断字
         logArea.setWrapStyleWord(true);
+
+        home.getAddButton().addActionListener(e -> {
+            UIUtil.EDIT_TITLE = "新增备份任务";
+            Edit edit = new Edit();
+            edit.pack();
+            edit.setVisible(true);
+        });
     }
 
     private static Object[][] parseInterfaces() {

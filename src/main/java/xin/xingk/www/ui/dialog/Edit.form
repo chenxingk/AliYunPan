@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="xin.xingk.www.ui.dialog.Edit">
   <grid id="27dc6" binding="editPanel" layout-manager="GridLayoutManager" row-count="6" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-    <margin top="10" left="10" bottom="10" right="10"/>
+    <margin top="20" left="20" bottom="20" right="20"/>
     <constraints>
       <xy x="20" y="20" width="522" height="400"/>
     </constraints>
     <properties/>
     <border type="none"/>
     <children>
-      <component id="b035f" class="javax.swing.JLabel">
+      <component id="b035f" class="javax.swing.JLabel" binding="localLabel">
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -16,7 +16,7 @@
           <text value="本地目录"/>
         </properties>
       </component>
-      <component id="a0591" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+      <component id="a0591" class="javax.swing.JTextField" binding="localText">
         <constraints>
           <grid row="0" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
@@ -24,7 +24,7 @@
         </constraints>
         <properties/>
       </component>
-      <component id="919a2" class="javax.swing.JLabel">
+      <component id="919a2" class="javax.swing.JLabel" binding="cloudLabel">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -32,7 +32,7 @@
           <text value="云盘备份目录"/>
         </properties>
       </component>
-      <component id="91e8" class="javax.swing.JTextField" binding="textField2" default-binding="true">
+      <component id="91e8" class="javax.swing.JTextField" binding="cloudText">
         <constraints>
           <grid row="1" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
@@ -40,7 +40,7 @@
         </constraints>
         <properties/>
       </component>
-      <component id="98181" class="javax.swing.JLabel">
+      <component id="98181" class="javax.swing.JLabel" binding="typeLabel">
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -64,7 +64,7 @@
           <text value="选择..."/>
         </properties>
       </component>
-      <component id="944eb" class="javax.swing.JLabel">
+      <component id="944eb" class="javax.swing.JLabel" binding="monitorLabel">
         <constraints>
           <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -80,7 +80,7 @@
           <text value="开启"/>
         </properties>
       </component>
-      <component id="12279" class="javax.swing.JLabel">
+      <component id="12279" class="javax.swing.JLabel" binding="timeLable">
         <constraints>
           <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -88,7 +88,7 @@
           <text value="自动备份时间"/>
         </properties>
       </component>
-      <component id="f9360" class="javax.swing.JTextField" binding="textField3" default-binding="true">
+      <component id="f9360" class="javax.swing.JTextField" binding="timeText">
         <constraints>
           <grid row="4" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>

@@ -34,12 +34,10 @@ public class App {
         //检查是否有更新
         //if (checkForUpdate()) return;
         //boolean login = new AliYunPanUtil().getAliYunPanInfo();
-
-        if(false){
+        if(true){
             mainFrame.initHome();
+            Home.initUi();
             mainFrame.add(Home.getInstance().getHomePanel());
-            Home.getInstance().initUi();
-
 //            mainFrame.add(About.getInstance().getAboutPanel());
         }else{
             mainFrame.initLogin();

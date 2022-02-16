@@ -11,6 +11,8 @@ import xin.xingk.www.context.UserContextHolder;
  */
 public class UIUtil {
 
+    public static String EDIT_TITLE;
+
     /**
      * 初始化主题
      */
