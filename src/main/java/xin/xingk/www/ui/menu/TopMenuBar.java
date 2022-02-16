@@ -1,10 +1,14 @@
 package xin.xingk.www.ui.menu;
 
-import com.formdev.flatlaf.FlatDarkLaf;
+import cn.hutool.core.exceptions.ExceptionUtil;
+import cn.hutool.core.swing.DesktopUtil;
 import com.formdev.flatlaf.FlatLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
 import lombok.extern.slf4j.Slf4j;
+import xin.xingk.www.App;
+import xin.xingk.www.context.UserContextHolder;
+import xin.xingk.www.ui.dialog.About;
+import xin.xingk.www.util.UIUtil;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -25,8 +29,6 @@ public class TopMenuBar extends JMenuBar {
     private static int initialThemeItemCount = -1;
 
     private static String[] themeNames = {"Flat Light","Flat Dark"};
-
-    private static String name;
 
     private TopMenuBar() {
     }
@@ -60,29 +62,29 @@ public class TopMenuBar extends JMenuBar {
         // Check for Updates
         JMenuItem checkForUpdatesItem = new JMenuItem();
         checkForUpdatesItem.setText("检查更新");
-        checkForUpdatesItem.addActionListener(e -> checkForUpdatesActionPerformed());
+        checkForUpdatesItem.addActionListener(e -> problemActionPerformed());
         aboutMenu.add(checkForUpdatesItem);
 
         JMenuItem problemItem = new JMenuItem();
         problemItem.setText("常见问题");
-        problemItem.addActionListener(e -> checkForUpdatesActionPerformed());
+        problemItem.addActionListener(e -> problemActionPerformed());
         aboutMenu.add(problemItem);
         aboutMenu.addSeparator();
 
         // About
         JMenuItem aboutMenuItem = new JMenuItem();
         aboutMenuItem.setText("关于");
-        //aboutMenuItem.addActionListener(e -> aboutActionPerformed());
+        aboutMenuItem.addActionListener(e -> aboutActionPerformed());
         aboutMenu.add(aboutMenuItem);
 
         topMenuBar.add(aboutMenu);
         UIManager.put("TitlePane.unifiedBackground", false);
     }
 
-    private void checkForUpdatesActionPerformed() {
-        //ThreadUtil.execute(() -> UpgradeUtil.checkUpdate(false));
-    }
 
+    /**
+     * 初始化主题菜单
+     */
     private void initThemesMenu() {
         if (initialThemeItemCount < 0)
             initialThemeItemCount = themeMenu.getItemCount();
@@ -93,52 +95,40 @@ public class TopMenuBar extends JMenuBar {
         }
         for (String themeName : themeNames) {
             JCheckBoxMenuItem item = new JCheckBoxMenuItem(themeName);
-            //item.setSelected(themeName.equals(App.config.getTheme()));
-            item.setSelected(themeName.equals(name));
+            item.setSelected(themeName.equals(UserContextHolder.getUserTheme()));
             item.addActionListener(this::themeChanged);
             themeMenu.add(item);
         }
     }
 
+    /**
+     * 选择主题事件
+     * @param actionEvent
+     */
     private void themeChanged(ActionEvent actionEvent) {
-        try {
-//            String selectedThemeName = actionEvent.getActionCommand();
-            name = actionEvent.getActionCommand();
-            FlatAnimatedLafChange.showSnapshot();
-
-//            App.config.setTheme(selectedThemeName);
-//            App.config.save();
-//
-//            Init.initTheme();
-//            SwingUtilities.updateComponentTreeUI(App.mainFrame);
-//            SwingUtilities.updateComponentTreeUI(MainWindow.getInstance().getTabbedPane());
-            if ("Flat Light".equals(name)){
-                UIManager.setLookAndFeel(new FlatLightLaf());
-            }else {
-                UIManager.setLookAndFeel(new FlatDarkLaf());
-            }
-//            item.setSelected(false);
-            FlatLaf.updateUI();
-            FlatAnimatedLafChange.hideSnapshotWithAnimation();
-
-            initThemesMenu();
-
-        } catch (Exception e1) {
-//            JOptionPane.showMessageDialog(MainWindow.getInstance().getMainPanel(), "Save failed!\n\n" + e1.getMessage(), "Failed",
-//                    JOptionPane.ERROR_MESSAGE);
-//            log.error(ExceptionUtils.getStackTrace(e1));
-        }
+        String selectedThemeName = actionEvent.getActionCommand();
+        FlatAnimatedLafChange.showSnapshot();
+        UserContextHolder.updateUserTheme(selectedThemeName);
+//        SwingUtilities.updateComponentTreeUI(MainWindow.getInstance().getTabbedPane());
+        SwingUtilities.updateComponentTreeUI(App.mainFrame);
+        UIUtil.initTheme();
+        FlatLaf.updateUI();
+        FlatAnimatedLafChange.hideSnapshotWithAnimation();
+        initThemesMenu();
     }
 
-//    private void aboutActionPerformed() {
-//        try {
-//            AboutDialog dialog = new AboutDialog();
-//
-//            dialog.pack();
-//            dialog.setVisible(true);
-//        } catch (Exception e2) {
-//            log.error(ExceptionUtils.getStackTrace(e2));
-//        }
-//    }
+    private void problemActionPerformed() {
+        DesktopUtil.browse("https://gitee.com/xingk-code/AliYunPan/wikis");
+    }
+
+    private void aboutActionPerformed() {
+        try {
+            About about = new About();
+            about.pack();
+            about.setVisible(true);
+        } catch (Exception e) {
+            log.error(ExceptionUtil.getMessage(e));
+        }
+    }
 
 }

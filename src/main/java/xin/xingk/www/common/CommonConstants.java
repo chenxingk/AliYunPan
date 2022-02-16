@@ -13,7 +13,10 @@ import java.math.BigDecimal;
  */
 public class CommonConstants {
 
-    public static String TITLE = "备份助手v1.2";
+    //软件版本
+    public static final double VERSION = 2.0f;
+
+    public static String TITLE = "备份助手v"+VERSION;
 
     //当前路径
     public static String SYSTEM_PATH = System.getProperty("user.dir") + File.separator;
@@ -58,7 +61,6 @@ public class CommonConstants {
     public static WatchMonitor monitor;
     //默认大小
     public static final Integer DEFAULT_SIZE = 10480000;
-    //软件版本
-    public static final BigDecimal VERSION = new BigDecimal(1.1);
+
 
 }

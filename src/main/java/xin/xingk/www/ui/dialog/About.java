@@ -1,11 +1,17 @@
 package xin.xingk.www.ui.dialog;
 
+import cn.hutool.core.swing.DesktopUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Data;
+import xin.xingk.www.common.CommonConstants;
+import xin.xingk.www.util.ComponentUtil;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
+
+import static xin.xingk.www.App.mainFrame;
 
 /**
  * @author: Mr.chen
@@ -13,19 +19,53 @@ import java.awt.*;
  * @description:
  */
 @Data
-public class About {
+public class About extends JDialog {
     private JPanel aboutPanel;
+    private JLabel rewardImg;
+    private JLabel thank;
+    private JLabel code;
+    private JLabel gitHub;
+    private JLabel gitee;
+    private JLabel versionInfo;
 
+    public About() {
+        super(mainFrame, "关于");
+        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.4, 0.5);
+        setContentPane(aboutPanel);
+        setModal(true);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        versionInfo.setText(CommonConstants.TITLE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                dispose();
+            }
+        });
 
-    //当前对象
-    private static About about;
+        gitHub.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                DesktopUtil.browse("https://github.com/chenxingk/AliYunPan");
+            }
 
-    //初始化对象
-    public static About getInstance() {
-        if (about == null) {
-            about = new About();
-        }
-        return about;
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                e.getComponent().setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+        });
+
+        gitee.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                DesktopUtil.browse("https://gitee.com/xingk-code/AliYunPan");
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                e.getComponent().setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+        });
+
     }
 
     {
@@ -44,23 +84,26 @@ public class About {
      */
     private void $$$setupUI$$$() {
         aboutPanel = new JPanel();
-        aboutPanel.setLayout(new GridLayoutManager(5, 1, new Insets(10, 10, 10, 10), -1, -1));
-        final JLabel label1 = new JLabel();
-        label1.setIcon(new ImageIcon(getClass().getResource("/icons/zs.png")));
-        label1.setText("");
-        aboutPanel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label2 = new JLabel();
-        label2.setText("感谢有您的支持，备份助手才能一直保持更新，增加更多功能。");
-        aboutPanel.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label3 = new JLabel();
-        label3.setText("项目源码");
-        aboutPanel.add(label3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label4 = new JLabel();
-        label4.setText("<html>GitHub：<a href=\"https://github.com/chenxingk/AliYunPan\">https://github.com/chenxingk/AliYunPan</a></html>");
-        aboutPanel.add(label4, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label5 = new JLabel();
-        label5.setText("<html>Gitee：<a href=\"https://gitee.com/xingk-code/AliYunPan\">https://gitee.com/xingk-code/AliYunPan</a></html>");
-        aboutPanel.add(label5, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        aboutPanel.setLayout(new GridLayoutManager(6, 1, new Insets(20, 20, 20, 20), -1, -1));
+        rewardImg = new JLabel();
+        rewardImg.setIcon(new ImageIcon(getClass().getResource("/icons/zs.png")));
+        rewardImg.setText("");
+        aboutPanel.add(rewardImg, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        thank = new JLabel();
+        thank.setText("感谢有您的支持，备份助手才能一直保持更新，增加更多功能。");
+        aboutPanel.add(thank, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        code = new JLabel();
+        code.setText("项目源码");
+        aboutPanel.add(code, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        gitHub = new JLabel();
+        gitHub.setText("<html>GitHub：<a href=\"https://github.com/chenxingk/AliYunPan\">https://github.com/chenxingk/AliYunPan</a></html>");
+        aboutPanel.add(gitHub, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        gitee = new JLabel();
+        gitee.setText("<html>Gitee：<a href=\"https://gitee.com/xingk-code/AliYunPan\">https://gitee.com/xingk-code/AliYunPan</a></html>");
+        aboutPanel.add(gitee, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        versionInfo = new JLabel();
+        versionInfo.setText("备份助手-V2.0");
+        aboutPanel.add(versionInfo, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

@@ -10,9 +10,9 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Data;
 import xin.xingk.www.common.CommonConstants;
+import xin.xingk.www.util.ComponentUtil;
 import xin.xingk.www.util.ConfigUtil;
 import xin.xingk.www.util.OkHttpUtil;
-import xin.xingk.www.util.UIUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -130,7 +130,7 @@ public class Login {
         String codeContent = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("codeContent");
         ck = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("ck");
         t = qrCodeUrl.getJSONObject("content").getJSONObject("data").getStr("t");
-        int qrCodeSize = (int) (UIUtil.screenHeight * 0.25);
+        int qrCodeSize = (int) (ComponentUtil.screenHeight * 0.25);
         byte[] qrCode = QrCodeUtil.generatePng(codeContent, qrCodeSize, qrCodeSize);
         //二维码图片
         ImageIcon qrCodeImg = new ImageIcon(qrCode);

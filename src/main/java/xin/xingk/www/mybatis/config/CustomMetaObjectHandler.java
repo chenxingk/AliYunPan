@@ -10,13 +10,14 @@ import org.apache.ibatis.reflection.MetaObject;
  * Description:自定义sql字段填充器，自动填充创建修改相关字段
  */
 public class CustomMetaObjectHandler implements MetaObjectHandler {
+
     @Override
     public void insertFill(MetaObject metaObject) {
-        this.strictInsertFill(metaObject, "createTime", String.class, DateUtil.now());
+        setFieldValByName("createTime",DateUtil.now(),metaObject);
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        this.strictInsertFill(metaObject, "updateTime", String.class, DateUtil.now());
+        setFieldValByName("updateTime",DateUtil.now(),metaObject);
     }
 }

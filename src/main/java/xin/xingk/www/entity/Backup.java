@@ -13,8 +13,9 @@ import lombok.Data;
 @Data
 @TableName(value = "backup")
 public class Backup extends BaseEntity{
+    //自增主键
     @TableId(type = IdType.AUTO)
-    private String id;
+    private Integer id;
     //本地目录
     private String localPath;
     //云盘目录

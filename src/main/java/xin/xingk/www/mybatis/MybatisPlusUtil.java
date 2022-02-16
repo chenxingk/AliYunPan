@@ -21,7 +21,6 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import xin.xingk.www.mybatis.config.CustomMetaObjectHandler;
 import xin.xingk.www.mybatis.config.CustomerIdGenerator;
-import xin.xingk.www.service.UserService;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -45,9 +44,6 @@ public class MybatisPlusUtil {
     public static SqlSessionFactory sqlSessionFactory;
     //SqlSession
     public static SqlSession sqlSession;
-
-    //
-    public static UserService userService = ProxyUtil.proxy(new UserService(), MybatisAspect.class);
 
     /**
      * 初始化 SqlSessionFactory

@@ -12,12 +12,13 @@ import lombok.Data;
 @Data
 @TableName(value = "user")
 public class User extends BaseEntity{
+    //自增主键
     @TableId(type = IdType.AUTO)
-    private String id;
-
+    private Integer id;
+    //用户昵称
     private String name;
-
+    //用户token
     private String token;
-
-    private Integer theme;
+    //主题名称
+    private String theme;
 }
