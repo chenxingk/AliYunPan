@@ -48,7 +48,7 @@
           <text value="备份模式"/>
         </properties>
       </component>
-      <component id="a681e" class="javax.swing.JRadioButton" binding="ordinaryButton">
+      <component id="a681e" class="javax.swing.JRadioButton" binding="ordinaryRadio">
         <constraints>
           <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -72,7 +72,7 @@
           <text value="目录检测"/>
         </properties>
       </component>
-      <component id="47df6" class="javax.swing.JRadioButton" binding="openRadioButton">
+      <component id="47df6" class="javax.swing.JRadioButton" binding="openRadio">
         <constraints>
           <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -96,7 +96,7 @@
         </constraints>
         <properties/>
       </component>
-      <component id="a0eeb" class="javax.swing.JRadioButton" binding="classifyRadioButton">
+      <component id="a0eeb" class="javax.swing.JRadioButton" binding="classifyRadio">
         <constraints>
           <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -104,7 +104,7 @@
           <text value="分类备份"/>
         </properties>
       </component>
-      <component id="5c748" class="javax.swing.JRadioButton" binding="closeRadioButton">
+      <component id="5c748" class="javax.swing.JRadioButton" binding="closeRadio">
         <constraints>
           <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -112,7 +112,7 @@
           <text value="关闭"/>
         </properties>
       </component>
-      <component id="1d06b" class="javax.swing.JRadioButton" binding="weChatRadioButton">
+      <component id="1d06b" class="javax.swing.JRadioButton" binding="weChatRadio">
         <constraints>
           <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>

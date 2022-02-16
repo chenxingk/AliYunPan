@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.common.CommonConstants;
 import xin.xingk.www.common.CommonUI;
 import xin.xingk.www.ui.Home;
@@ -16,11 +17,16 @@ import xin.xingk.www.util.UploadLogUtil;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * 备份程序
  *
  */
+@Slf4j
 public class App {
     public static MainFrame mainFrame;
 
@@ -52,6 +58,49 @@ public class App {
         if (screenSize.getWidth() <= 1366) {
             // The window is automatically maximized at low resolution
             mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        }
+
+        // 窗口最小化事件
+        mainFrame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+
+            public void windowIconified(WindowEvent e) {
+                mainFrame.setVisible(false);
+                miniTray();
+            }
+
+        });
+    }
+
+    /**
+     * 窗口最小化到任务栏托盘
+     */
+    private static void miniTray() {
+        SystemTray tray = SystemTray.getSystemTray();
+        ImageIcon trayImg = new ImageIcon(App.class.getClass().getResource("/icons/logo.png"));//托盘图标
+        TrayIcon trayIcon = new TrayIcon(trayImg.getImage(), "备份助手");
+        trayIcon.setImageAutoSize(true);
+
+        //鼠标点击事件处理器
+        trayIcon.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                // 鼠标点击一次打开软件
+                if (e.getClickCount() == 1) {
+                    // 移去托盘图标
+                    tray.remove(trayIcon);
+                    mainFrame.setVisible(true);
+                    //还原窗口
+                    mainFrame.setExtendedState(JFrame.NORMAL);
+                }
+            }
+        });
+
+        try {
+            tray.add(trayIcon);
+        } catch (Exception e) {
+            log.error(">>> 窗口最小化发生异常：{}",e.getMessage());
         }
     }
 

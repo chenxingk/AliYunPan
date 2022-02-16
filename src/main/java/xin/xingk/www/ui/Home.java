@@ -36,7 +36,13 @@ public class Home {
     private JTextArea logTextArea;
     private JScrollPane logPane;
 
+    //表头
     private static final String[] TABLE_HEAD = {"本地目录", "云盘备份目录", "备份模式", "目录检测", "自动备份时间", "状态", "备份数量"};
+
+    //编辑任务标题
+    public static String EDIT_TITLE;
+    //编辑任务ID
+    public static String EDIT_ID;
 
     //当前对象
     private static Home home;
@@ -54,6 +60,8 @@ public class Home {
      */
     public static void initUi() {
         home = getInstance();
+        //设置默认聚焦在面板上
+        home.getHomePanel().setFocusable(true);
         home.getTableTitle().setFont(FlatUIUtils.nonUIResource(UIManager.getFont("medium.font")));
         home.getLogTitle().setFont(FlatUIUtils.nonUIResource(UIManager.getFont("small.font")));
         TableModel model = new DefaultTableModel(parseInterfaces(), TABLE_HEAD) {
@@ -99,10 +107,24 @@ public class Home {
         logArea.setWrapStyleWord(true);
 
         home.getAddButton().addActionListener(e -> {
-            UIUtil.EDIT_TITLE = "新增备份任务";
+            EDIT_TITLE = "新增备份任务";
             Edit edit = new Edit();
             edit.pack();
             edit.setVisible(true);
+        });
+
+        home.getUpdateButton().addActionListener(e -> {
+            //先判断有没有选中
+            EDIT_TITLE = "修改备份任务";
+            Edit edit = new Edit();
+            edit.pack();
+            edit.setVisible(true);
+        });
+
+        home.getDelButton().addActionListener(e -> {
+            //先判断有没有选中
+            int button = JOptionPane.showConfirmDialog(null, "确定要删除吗？", "温馨提示", JOptionPane.YES_NO_OPTION);
+            System.out.println(button);
         });
     }
 
