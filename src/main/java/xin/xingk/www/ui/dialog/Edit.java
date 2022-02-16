@@ -1,5 +1,6 @@
 package xin.xingk.www.ui.dialog;
 
+import com.formdev.flatlaf.FlatClientProperties;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Data;
@@ -22,7 +23,6 @@ import static xin.xingk.www.App.mainFrame;
 public class Edit extends JDialog {
     private JPanel editPanel;
     private JTextField localText;
-    private JButton fileButton;
     private JTextField cloudText;
     private JRadioButton ordinaryRadio;
     private JRadioButton classifyRadio;
@@ -62,6 +62,22 @@ public class Edit extends JDialog {
             }
         });
 
+        JButton fileButton = new JButton();
+        fileButton.setText(" ");
+        fileButton.setIcon(UIManager.getIcon("Tree.openIcon"));
+        localText.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_COMPONENT, fileButton);
+
+        fileButton.addActionListener(e -> {
+            JFileChooser selectPathChooser = new JFileChooser();
+            selectPathChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int intRetVal = selectPathChooser.showOpenDialog(this);
+            if (intRetVal == JFileChooser.APPROVE_OPTION) {
+                localText.setText(selectPathChooser.getSelectedFile().getPath());
+                System.out.println(localText.getText());
+            }
+        });
+
+
         //备份模式 单选
         ButtonGroup typeGroup = new ButtonGroup();
         typeGroup.add(ordinaryRadio);
@@ -72,6 +88,7 @@ public class Edit extends JDialog {
         ButtonGroup monitorGroup = new ButtonGroup();
         monitorGroup.add(openRadio);
         monitorGroup.add(closeRadio);
+
 
         timeText.setForeground(Color.GRAY);
         timeText.setText("请输入时分秒，如:[20:30:00]");
@@ -99,11 +116,12 @@ public class Edit extends JDialog {
      */
     private void $$$setupUI$$$() {
         editPanel = new JPanel();
-        editPanel.setLayout(new GridLayoutManager(6, 5, new Insets(20, 20, 20, 20), -1, -1));
+        editPanel.setLayout(new GridLayoutManager(6, 4, new Insets(20, 20, 20, 20), -1, -1));
         localLabel = new JLabel();
         localLabel.setText("本地目录");
         editPanel.add(localLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         localText = new JTextField();
+        localText.setEditable(false);
         editPanel.add(localText, new GridConstraints(0, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         cloudLabel = new JLabel();
         cloudLabel.setText("云盘备份目录");
@@ -116,9 +134,6 @@ public class Edit extends JDialog {
         ordinaryRadio = new JRadioButton();
         ordinaryRadio.setText("普通备份");
         editPanel.add(ordinaryRadio, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        fileButton = new JButton();
-        fileButton.setText("选择...");
-        editPanel.add(fileButton, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         monitorLabel = new JLabel();
         monitorLabel.setText("目录检测");
         editPanel.add(monitorLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
