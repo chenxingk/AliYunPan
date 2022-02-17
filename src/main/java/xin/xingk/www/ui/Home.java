@@ -5,15 +5,17 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Data;
+import xin.xingk.www.context.BackupContextHolder;
+import xin.xingk.www.entity.Backup;
 import xin.xingk.www.ui.dialog.Edit;
 import xin.xingk.www.ui.menu.TableMenuBar;
-import xin.xingk.www.util.UIUtil;
 
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.util.List;
 
 /**
  * @author: Mr.chen
@@ -64,30 +66,7 @@ public class Home {
         home.getHomePanel().setFocusable(true);
         home.getTableTitle().setFont(FlatUIUtils.nonUIResource(UIManager.getFont("medium.font")));
         home.getLogTitle().setFont(FlatUIUtils.nonUIResource(UIManager.getFont("small.font")));
-        TableModel model = new DefaultTableModel(parseInterfaces(), TABLE_HEAD) {
-            public boolean isCellEditable(int row, int column) {
-//                if (column == 0) {
-//                    return true;
-//                }
-                return false;
-            }
-            /*@Override
-            public Class<?> getColumnClass(int columnIndex) {
-                return this.getValueAt(0, columnIndex).getClass();
-            }*/
-        };
-        JTable table = home.getTable();
-        table.setModel(model);
-        table.setAutoCreateRowSorter(true);
-        table.setShowVerticalLines(true);
-        table.setShowHorizontalLines(true);
-        //只能选中一行
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        //表格右键菜单
-        TableMenuBar tableMenuBar = TableMenuBar.getInstance();
-        tableMenuBar.init();
-        table.setComponentPopupMenu(tableMenuBar);
-
+        initTable();
         JTextArea logArea = home.getLogTextArea();
         String info = "温馨提示：云盘备份目录是要备份到阿里云盘那个目录下(不存在则自动创建)\n";
         info += "普通备份：会按本地目录结构上传文件\n";
@@ -128,18 +107,45 @@ public class Home {
         });
     }
 
-    private static Object[][] parseInterfaces() {
-        Object[][] dataArr = new Object[5][TABLE_HEAD.length];
-        for (int i = 0; i < dataArr.length; i++) {
-//            dataArr[i][0] = false;
-            dataArr[i][0] = "D:\\用户目录\\文档\\WeChat Files\\wxid_3wc96wg6zgf022\\FileStorage\\File";
-            dataArr[i][1] = "测试";
-            dataArr[i][2] = "测试";
-            dataArr[i][3] = "测试";
-            dataArr[i][4] = "测试";
-            dataArr[i][5] = "测试";
-            dataArr[i][6] = "测试";
-//            dataArr[i][7] = "测试";
+    public static void initTable() {
+        home = getInstance();
+        TableModel model = new DefaultTableModel(getBackupList(), TABLE_HEAD) {
+            public boolean isCellEditable(int row, int column) {
+//                if (column == 0) {
+//                    return true;
+//                }
+                return false;
+            }
+            /*@Override
+            public Class<?> getColumnClass(int columnIndex) {
+                return this.getValueAt(0, columnIndex).getClass();
+            }*/
+        };
+        JTable table = home.getTable();
+        table.setModel(model);
+        table.setAutoCreateRowSorter(true);
+        table.setShowVerticalLines(true);
+        table.setShowHorizontalLines(true);
+        //只能选中一行
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        //表格右键菜单
+        TableMenuBar tableMenuBar = TableMenuBar.getInstance();
+        tableMenuBar.init();
+        table.setComponentPopupMenu(tableMenuBar);
+    }
+
+    private static Object[][] getBackupList() {
+        List<Backup> backupList = BackupContextHolder.getBackupList();
+        Object[][] dataArr = new Object[backupList.size()][TABLE_HEAD.length];
+        for (int i = 0; i < backupList.size(); i++) {
+            //dataArr[i][0] = false;
+            dataArr[i][0] = backupList.get(i).getLocalPath();
+            dataArr[i][1] = backupList.get(i).getCloudDiskPath();
+            dataArr[i][2] = backupList.get(i).getBackupType();
+            dataArr[i][3] = backupList.get(i).getMonitor();
+            dataArr[i][4] = backupList.get(i).getBackupTime();
+            dataArr[i][5] = backupList.get(i).getStatus();
+            dataArr[i][6] = backupList.get(i).getFileNum();
         }
         return dataArr;
     }

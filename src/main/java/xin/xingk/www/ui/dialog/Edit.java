@@ -1,16 +1,20 @@
 package xin.xingk.www.ui.dialog;
 
+import cn.hutool.core.util.StrUtil;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Data;
+import xin.xingk.www.common.CommonConstants;
+import xin.xingk.www.context.BackupContextHolder;
+import xin.xingk.www.entity.Backup;
 import xin.xingk.www.ui.Home;
 import xin.xingk.www.util.ComponentUtil;
+import xin.xingk.www.util.FileUtil;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 
 import static xin.xingk.www.App.mainFrame;
 
@@ -20,7 +24,7 @@ import static xin.xingk.www.App.mainFrame;
  * @description:
  */
 @Data
-public class Edit extends JDialog {
+public class Edit extends JDialog implements FocusListener {
     private JPanel editPanel;
     private JTextField localText;
     private JTextField cloudText;
@@ -67,6 +71,7 @@ public class Edit extends JDialog {
         fileButton.setIcon(UIManager.getIcon("Tree.openIcon"));
         localText.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_COMPONENT, fileButton);
 
+        //打开文件夹窗口
         fileButton.addActionListener(e -> {
             JFileChooser selectPathChooser = new JFileChooser();
             selectPathChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -76,7 +81,6 @@ public class Edit extends JDialog {
                 System.out.println(localText.getText());
             }
         });
-
 
         //备份模式 单选
         ButtonGroup typeGroup = new ButtonGroup();
@@ -89,15 +93,109 @@ public class Edit extends JDialog {
         monitorGroup.add(openRadio);
         monitorGroup.add(closeRadio);
 
+        if ("新增备份任务".equals(Home.EDIT_TITLE)) {
+            ordinaryRadio.setSelected(true);
+            closeRadio.setSelected(true);
+            cloudText.addFocusListener(this);
+            timeText.addFocusListener(this);
+            localText.setForeground(Color.GRAY);
+            cloudText.setForeground(Color.GRAY);
+            timeText.setForeground(Color.GRAY);
+            localText.setText("请点击右侧文件夹图标选择目录");
+            cloudText.setText("请输入阿里云盘目录（多级请用\\分隔）");
+            timeText.setText("请输入时分秒，如:[20:30:00]");
+        }
 
-        timeText.setForeground(Color.GRAY);
-        timeText.setText("请输入时分秒，如:[20:30:00]");
+        //保存按钮
+        saveButton.addActionListener(e -> {
+            if (checkData()) {//校验数据
+                Backup backup = new Backup();
+                backup.setLocalPath(localText.getText());
+                backup.setCloudDiskPath(cloudText.getText());
+                backup.setBackupType(getBackupType());
+                backup.setMonitor(getMonitor());
+                backup.setBackupTime(timeText.getText());
+                backup.setStatus(1);
+                backup.setFileNum(0);
+                BackupContextHolder.addBackup(backup);
+                dispose();
+                Home.initTable();
+            }
+        });
 
         //取消按钮
         cancelButton.addActionListener(e -> {
             dispose();
         });
 
+    }
+
+    //获得焦点的时候
+    @Override
+    public void focusGained(FocusEvent e) {
+        JTextField textField = (JTextField) e.getSource();
+        textField.setForeground(Color.BLACK);
+        if (textField == cloudText) {
+            textField.setText("");
+        } else if (textField == timeText) {
+            textField.setText("20:30:00");
+        }
+    }
+
+    //失去焦点的时候
+    @Override
+    public void focusLost(FocusEvent e) {
+        JTextField textField = (JTextField) e.getSource();
+//        if (StrUtil.isEmpty(textField.getText())) {
+//            textField.setForeground(Color.GRAY);
+//            if (textField == cloudText) {
+//                textField.setText("请输入阿里云盘目录（多级请用\\分隔）");
+//            } else if (textField == timeText) {
+//                textField.setText("请输入时分秒，如:[20:30:00]");
+//            }
+//        }
+    }
+
+    /**
+     * 获取当前备份模式
+     *
+     * @return 备份模式
+     */
+    private Integer getBackupType() {
+        if (ordinaryRadio.isSelected()) return CommonConstants.BACKUP_TYPE_ORDINARY;
+        if (classifyRadio.isSelected()) return CommonConstants.BACKUP_TYPE_CLASSIFY;
+        if (weChatRadio.isSelected()) return CommonConstants.BACKUP_TYPE_WECHAT;
+        return CommonConstants.BACKUP_TYPE_ORDINARY;
+    }
+
+    /**
+     * 获取是否开启目录检测
+     *
+     * @return 目录检测
+     */
+    private Integer getMonitor() {
+        if (openRadio.isSelected()) return CommonConstants.MONITOR_OPEN;
+        if (closeRadio.isSelected()) return CommonConstants.MONITOR_CLOSE;
+        return CommonConstants.MONITOR_OPEN;
+    }
+
+    /**
+     * 验证文本框输入
+     */
+    private Boolean checkData() {
+        if (StrUtil.isEmpty(localText.getText())) {
+            JOptionPane.showMessageDialog(null, "您没有选择本地目录", "错误", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if (StrUtil.isEmpty(cloudText.getText())) {
+            JOptionPane.showMessageDialog(null, "您没有输入云盘备份目录", "错误", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if (!FileUtil.isDirectory(localText.getText())) {
+            JOptionPane.showMessageDialog(null, "请选择正确的目录", "错误", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
     }
 
     {

@@ -18,6 +18,24 @@ public class CommonConstants {
 
     public static String TITLE = "备份助手v"+VERSION;
 
+    /**
+     * 备份模式
+     */
+    //普通备份
+    public static Integer BACKUP_TYPE_ORDINARY = 0;
+    //分类备份
+    public static Integer BACKUP_TYPE_CLASSIFY = 1;
+    //微信备份
+    public static Integer BACKUP_TYPE_WECHAT = 2;
+
+    /**
+     * 目录检测
+     */
+    //开启目录检测
+    public static Integer MONITOR_OPEN = 0;
+    //关闭目录检测
+    public static Integer MONITOR_CLOSE = 1;
+
     //当前路径
     public static String SYSTEM_PATH = System.getProperty("user.dir") + File.separator;
 

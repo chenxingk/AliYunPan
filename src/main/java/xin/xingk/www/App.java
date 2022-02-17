@@ -59,49 +59,6 @@ public class App {
             // The window is automatically maximized at low resolution
             mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         }
-
-        // 窗口最小化事件
-        mainFrame.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                System.exit(0);
-            }
-
-            public void windowIconified(WindowEvent e) {
-                mainFrame.setVisible(false);
-                miniTray();
-            }
-
-        });
-    }
-
-    /**
-     * 窗口最小化到任务栏托盘
-     */
-    private static void miniTray() {
-        SystemTray tray = SystemTray.getSystemTray();
-        ImageIcon trayImg = new ImageIcon(App.class.getClass().getResource("/icons/logo.png"));//托盘图标
-        TrayIcon trayIcon = new TrayIcon(trayImg.getImage(), "备份助手");
-        trayIcon.setImageAutoSize(true);
-
-        //鼠标点击事件处理器
-        trayIcon.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                // 鼠标点击一次打开软件
-                if (e.getClickCount() == 1) {
-                    // 移去托盘图标
-                    tray.remove(trayIcon);
-                    mainFrame.setVisible(true);
-                    //还原窗口
-                    mainFrame.setExtendedState(JFrame.NORMAL);
-                }
-            }
-        });
-
-        try {
-            tray.add(trayIcon);
-        } catch (Exception e) {
-            log.error(">>> 窗口最小化发生异常：{}",e.getMessage());
-        }
     }
 
     /**
