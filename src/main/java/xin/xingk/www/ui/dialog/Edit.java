@@ -48,6 +48,8 @@ public class Edit extends JDialog implements FocusListener {
 
     //当前对象
     private static Edit edit;
+    //字体默认颜色
+    private static Color defaultColor;
 
     //初始化对象
     public static Edit getInstance() {
@@ -86,7 +88,7 @@ public class Edit extends JDialog implements FocusListener {
                 System.out.println(localText.getText());
             }
         });
-
+        defaultColor = localText.getForeground();
         localText.setForeground(Color.GRAY);
 
         //备份模式 单选
@@ -158,7 +160,7 @@ public class Edit extends JDialog implements FocusListener {
     @Override
     public void focusGained(FocusEvent e) {
         JTextField textField = (JTextField) e.getSource();
-        textField.setForeground(Color.BLACK);
+        textField.setForeground(defaultColor);
         if (textField == cloudText) {
             textField.setText("");
         } else if (textField == timeText) {
@@ -207,11 +209,11 @@ public class Edit extends JDialog implements FocusListener {
      * 验证文本框输入
      */
     private Boolean checkData() {
-        if (StrUtil.isEmpty(localText.getText())) {
+        if (StrUtil.isEmpty(localText.getText()) || "请点击右侧文件夹图标选择目录".equals(localText.getText())) {
             JOptionPane.showMessageDialog(null, "您没有选择本地目录", "错误", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        if (StrUtil.isEmpty(cloudText.getText())) {
+        if (StrUtil.isEmpty(cloudText.getText()) || "请输入阿里云盘目录（多级请用\\分隔）".equals(cloudText.getText())) {
             JOptionPane.showMessageDialog(null, "您没有输入云盘备份目录", "错误", JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -219,7 +221,7 @@ public class Edit extends JDialog implements FocusListener {
             JOptionPane.showMessageDialog(null, "请选择正确的目录", "错误", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        if (ReUtil.contains("^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$", timeText.getText())){
+        if (!ReUtil.contains("^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$", timeText.getText())) {
             JOptionPane.showMessageDialog(null, "请按格式输入定时备份时间", "错误", JOptionPane.ERROR_MESSAGE);
             return false;
         }
