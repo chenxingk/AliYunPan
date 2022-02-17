@@ -1,5 +1,7 @@
 package xin.xingk.www.ui.menu;
 
+import xin.xingk.www.ui.Home;
+
 import javax.swing.*;
 
 /**
@@ -27,12 +29,15 @@ public class TableMenuBar extends JPopupMenu {
 
     public void init() {
         tableMenuBar = getInstance();
+        tableMenuBar.removeAll();
         //---- 修改 ----
         update.setText("修改");
+        update.addActionListener(e -> Home.updateTable());
         tableMenuBar.add(update);
 
         //---- 删除 ----
         delete.setText("删除");
+        delete.addActionListener(e -> Home.delTable());
         tableMenuBar.add(delete);
         tableMenuBar.addSeparator();
 
@@ -40,5 +45,8 @@ public class TableMenuBar extends JPopupMenu {
         startBackUp.setText("开始备份");
         tableMenuBar.add(startBackUp);
     }
+
+
+
 
 }

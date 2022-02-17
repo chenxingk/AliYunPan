@@ -43,17 +43,17 @@ public class TopMenuBar extends JMenuBar {
     public void init() {
         TopMenuBar topMenuBar = getInstance();
         // ---------设置
-        JMenu appearanceMenu = new JMenu();
-        appearanceMenu.setText("设置");
+        JMenu setUp = new JMenu();
+        setUp.setText("设置");
 
         themeMenu = new JMenu();
         themeMenu.setText("主题");
 
         initThemesMenu();
 
-        appearanceMenu.add(themeMenu);
+        setUp.add(themeMenu);
 
-        topMenuBar.add(appearanceMenu);
+        topMenuBar.add(setUp);
 
         // ---------帮助
         JMenu aboutMenu = new JMenu();

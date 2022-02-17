@@ -1,6 +1,5 @@
 package xin.xingk.www.mybatis;
 
-import cn.hutool.aop.ProxyUtil;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
@@ -130,7 +129,7 @@ public class MybatisPlusUtil {
      */
     private static DataSource initDataSource() {
         HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl("jdbc:sqlite:D:\\用户目录\\下载\\init.db");
+        dataSource.setJdbcUrl("jdbc:sqlite:E:\\用户目录\\桌面\\init.db");
         dataSource.setDriverClassName("org.sqlite.JDBC");
         dataSource.setIdleTimeout(60000);
         dataSource.setAutoCommit(true);

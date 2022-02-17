@@ -19,7 +19,7 @@ public class Backup extends BaseEntity{
     //本地目录
     private String localPath;
     //云盘目录
-    private String cloudDiskPath;
+    private String cloudPath;
     //备份模式 0普通 1分类 2微信
     private Integer backupType;
     //目录检测 0关闭 1开始

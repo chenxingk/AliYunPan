@@ -4,7 +4,8 @@ package xin.xingk.www.common;
 import cn.hutool.core.io.watch.WatchMonitor;
 
 import java.io.File;
-import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Description: 公共变量
@@ -12,6 +13,9 @@ import java.math.BigDecimal;
  * Date: 2021/05/10
  */
 public class CommonConstants {
+
+
+
 
     //软件版本
     public static final double VERSION = 2.0f;
@@ -21,6 +25,7 @@ public class CommonConstants {
     /**
      * 备份模式
      */
+    public static Map<Integer, String> BACKUP_TYPE_DICT = new HashMap<>();
     //普通备份
     public static Integer BACKUP_TYPE_ORDINARY = 0;
     //分类备份
@@ -31,6 +36,7 @@ public class CommonConstants {
     /**
      * 目录检测
      */
+    public static Map<Integer, String> MONITOR_DICT = new HashMap<>();
     //开启目录检测
     public static Integer MONITOR_OPEN = 0;
     //关闭目录检测
@@ -79,6 +85,16 @@ public class CommonConstants {
     public static WatchMonitor monitor;
     //默认大小
     public static final Integer DEFAULT_SIZE = 10480000;
+
+
+    static {
+        BACKUP_TYPE_DICT.put(BACKUP_TYPE_ORDINARY,"普通备份");
+        BACKUP_TYPE_DICT.put(BACKUP_TYPE_CLASSIFY,"分类备份");
+        BACKUP_TYPE_DICT.put(BACKUP_TYPE_WECHAT,"微信备份");
+
+        MONITOR_DICT.put(MONITOR_OPEN,"开启");
+        MONITOR_DICT.put(MONITOR_CLOSE,"关闭");
+    }
 
 
 }

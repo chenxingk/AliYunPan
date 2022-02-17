@@ -1,5 +1,6 @@
 package xin.xingk.www.ui.dialog;
 
+import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -14,7 +15,10 @@ import xin.xingk.www.util.FileUtil;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import static xin.xingk.www.App.mainFrame;
 
@@ -74,6 +78,7 @@ public class Edit extends JDialog implements FocusListener {
         //打开文件夹窗口
         fileButton.addActionListener(e -> {
             JFileChooser selectPathChooser = new JFileChooser();
+            selectPathChooser.setDialogTitle("选择文件夹");
             selectPathChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int intRetVal = selectPathChooser.showOpenDialog(this);
             if (intRetVal == JFileChooser.APPROVE_OPTION) {
@@ -81,6 +86,8 @@ public class Edit extends JDialog implements FocusListener {
                 System.out.println(localText.getText());
             }
         });
+
+        localText.setForeground(Color.GRAY);
 
         //备份模式 单选
         ButtonGroup typeGroup = new ButtonGroup();
@@ -98,12 +105,24 @@ public class Edit extends JDialog implements FocusListener {
             closeRadio.setSelected(true);
             cloudText.addFocusListener(this);
             timeText.addFocusListener(this);
-            localText.setForeground(Color.GRAY);
             cloudText.setForeground(Color.GRAY);
             timeText.setForeground(Color.GRAY);
             localText.setText("请点击右侧文件夹图标选择目录");
             cloudText.setText("请输入阿里云盘目录（多级请用\\分隔）");
             timeText.setText("请输入时分秒，如:[20:30:00]");
+        } else {
+            Integer id = Home.EDIT_ID;
+            Backup backup = BackupContextHolder.getBackupById(id);
+            localText.setText(backup.getLocalPath());
+            cloudText.setText(backup.getCloudPath());
+            timeText.setText(backup.getBackupTime());
+            Integer backupType = backup.getBackupType();
+            if (backupType == 0) ordinaryRadio.setSelected(true);
+            if (backupType == 1) classifyRadio.setSelected(true);
+            if (backupType == 2) weChatRadio.setSelected(true);
+            Integer monitor = backup.getMonitor();
+            if (monitor == 0) openRadio.setSelected(true);
+            if (monitor == 1) closeRadio.setSelected(true);
         }
 
         //保存按钮
@@ -111,13 +130,18 @@ public class Edit extends JDialog implements FocusListener {
             if (checkData()) {//校验数据
                 Backup backup = new Backup();
                 backup.setLocalPath(localText.getText());
-                backup.setCloudDiskPath(cloudText.getText());
+                backup.setCloudPath(cloudText.getText());
                 backup.setBackupType(getBackupType());
                 backup.setMonitor(getMonitor());
                 backup.setBackupTime(timeText.getText());
                 backup.setStatus(1);
                 backup.setFileNum(0);
-                BackupContextHolder.addBackup(backup);
+                if (Home.EDIT_ID != 0) {//修改
+                    backup.setId(Home.EDIT_ID);
+                    BackupContextHolder.updateBackup(backup);
+                } else {//新增
+                    BackupContextHolder.addBackup(backup);
+                }
                 dispose();
                 Home.initTable();
             }
@@ -193,6 +217,10 @@ public class Edit extends JDialog implements FocusListener {
         }
         if (!FileUtil.isDirectory(localText.getText())) {
             JOptionPane.showMessageDialog(null, "请选择正确的目录", "错误", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if (ReUtil.contains("^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$", timeText.getText())){
+            JOptionPane.showMessageDialog(null, "请按格式输入定时备份时间", "错误", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;

@@ -5,14 +5,16 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Data;
+import xin.xingk.www.common.CommonConstants;
 import xin.xingk.www.context.BackupContextHolder;
 import xin.xingk.www.entity.Backup;
 import xin.xingk.www.ui.dialog.Edit;
 import xin.xingk.www.ui.menu.TableMenuBar;
 
-
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.util.List;
@@ -39,12 +41,13 @@ public class Home {
     private JScrollPane logPane;
 
     //表头
-    private static final String[] TABLE_HEAD = {"本地目录", "云盘备份目录", "备份模式", "目录检测", "自动备份时间", "状态", "备份数量"};
+//    private static final String[] TABLE_HEAD = {"ID", "本地目录", "云盘备份目录", "备份模式", "目录检测", "自动备份时间", "状态", "备份数量"};
+    private static final String[] TABLE_HEAD = {"ID", "本地目录", "云盘备份目录", "备份模式", "目录检测", "自动备份时间"};
 
     //编辑任务标题
     public static String EDIT_TITLE;
     //编辑任务ID
-    public static String EDIT_ID;
+    public static Integer EDIT_ID = 0;
 
     //当前对象
     private static Home home;
@@ -67,6 +70,29 @@ public class Home {
         home.getTableTitle().setFont(FlatUIUtils.nonUIResource(UIManager.getFont("medium.font")));
         home.getLogTitle().setFont(FlatUIUtils.nonUIResource(UIManager.getFont("small.font")));
         initTable();
+        initConsole();
+
+        //新增
+        home.getAddButton().addActionListener(e -> {
+            initTable();
+            EDIT_TITLE = "新增备份任务";
+            Edit edit = new Edit();
+            edit.pack();
+            edit.setVisible(true);
+        });
+
+        //修改
+        home.getUpdateButton().addActionListener(e -> updateTable());
+
+        //删除
+        home.getDelButton().addActionListener(e -> delTable());
+    }
+
+    /**
+     * 初始化控制台
+     */
+    public static void initConsole() {
+        home = getInstance();
         JTextArea logArea = home.getLogTextArea();
         String info = "温馨提示：云盘备份目录是要备份到阿里云盘那个目录下(不存在则自动创建)\n";
         info += "普通备份：会按本地目录结构上传文件\n";
@@ -84,27 +110,6 @@ public class Home {
         logArea.setLineWrap(true);
         //换行不断字
         logArea.setWrapStyleWord(true);
-
-        home.getAddButton().addActionListener(e -> {
-            EDIT_TITLE = "新增备份任务";
-            Edit edit = new Edit();
-            edit.pack();
-            edit.setVisible(true);
-        });
-
-        home.getUpdateButton().addActionListener(e -> {
-            //先判断有没有选中
-            EDIT_TITLE = "修改备份任务";
-            Edit edit = new Edit();
-            edit.pack();
-            edit.setVisible(true);
-        });
-
-        home.getDelButton().addActionListener(e -> {
-            //先判断有没有选中
-            int button = JOptionPane.showConfirmDialog(null, "确定要删除吗？", "温馨提示", JOptionPane.YES_NO_OPTION);
-            System.out.println(button);
-        });
     }
 
     public static void initTable() {
@@ -126,6 +131,18 @@ public class Home {
         table.setAutoCreateRowSorter(true);
         table.setShowVerticalLines(true);
         table.setShowHorizontalLines(true);
+        //设置表数据居中显示
+        DefaultTableCellRenderer center = new DefaultTableCellRenderer();
+        center.setHorizontalAlignment(JLabel.CENTER);
+        table.setDefaultRenderer(Object.class, center);
+        //隐藏ID列
+        TableColumn idColumn = table.getColumnModel().getColumn(0);
+        idColumn.setWidth(0);
+        idColumn.setMaxWidth(0);
+        idColumn.setMinWidth(0);
+        //设置表的标题的宽高度也为0
+        table.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(0);
+        table.getTableHeader().getColumnModel().getColumn(0).setMinWidth(0);
         //只能选中一行
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         //表格右键菜单
@@ -134,20 +151,64 @@ public class Home {
         table.setComponentPopupMenu(tableMenuBar);
     }
 
+    /**
+     * 获取备份任务列表
+     *
+     * @return 获取备份任务列表
+     */
     private static Object[][] getBackupList() {
         List<Backup> backupList = BackupContextHolder.getBackupList();
         Object[][] dataArr = new Object[backupList.size()][TABLE_HEAD.length];
         for (int i = 0; i < backupList.size(); i++) {
             //dataArr[i][0] = false;
-            dataArr[i][0] = backupList.get(i).getLocalPath();
-            dataArr[i][1] = backupList.get(i).getCloudDiskPath();
-            dataArr[i][2] = backupList.get(i).getBackupType();
-            dataArr[i][3] = backupList.get(i).getMonitor();
-            dataArr[i][4] = backupList.get(i).getBackupTime();
-            dataArr[i][5] = backupList.get(i).getStatus();
-            dataArr[i][6] = backupList.get(i).getFileNum();
+            dataArr[i][0] = backupList.get(i).getId();
+            dataArr[i][1] = backupList.get(i).getLocalPath();
+            dataArr[i][2] = backupList.get(i).getCloudPath();
+            dataArr[i][3] = CommonConstants.BACKUP_TYPE_DICT.get(backupList.get(i).getBackupType());
+            dataArr[i][4] = CommonConstants.MONITOR_DICT.get(backupList.get(i).getMonitor());
+            dataArr[i][5] = backupList.get(i).getBackupTime();
+//            dataArr[i][6] = backupList.get(i).getStatus();
+//            dataArr[i][7] = backupList.get(i).getFileNum();
         }
         return dataArr;
+    }
+
+    /**
+     * 修改表格数据
+     */
+    public static void updateTable() {
+        JTable table = Home.getInstance().getTable();
+        //获取选中的行
+        int row = table.getSelectedRow();
+        if (row > -1) {
+            Home.EDIT_TITLE = "修改备份任务";
+            Home.EDIT_ID = (int) table.getValueAt(row, 0);
+            Edit edit = new Edit();
+            edit.pack();
+            edit.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(null, "请您先选中一行", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    /**
+     * 删除表格数据
+     */
+    public static void delTable() {
+        //先判断有没有选中
+        JTable table = Home.getInstance().getTable();
+        //获取选中的行
+        int row = table.getSelectedRow();
+        if (row > -1) {
+            int id = (int) table.getValueAt(row, 0);
+            int button = JOptionPane.showConfirmDialog(null, "确定要删除吗？", "温馨提示", JOptionPane.YES_NO_OPTION);
+            if (button == 0) {
+                BackupContextHolder.delBackup(id);
+                Home.initTable();
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "请您先选中一行", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     {
