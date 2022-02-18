@@ -42,6 +42,24 @@ public class TopMenuBar extends JMenuBar {
 
     public void init() {
         TopMenuBar topMenuBar = getInstance();
+
+        // ---------应用
+        JMenu application = new JMenu();
+        application.setText("应用");
+
+        //---------退出登录
+        JMenuItem logOut = new JMenuItem();
+        logOut.setText("退出登录");
+        logOut.addActionListener(e -> problemActionPerformed());
+        application.add(logOut);
+
+        //---------查看日志
+        JMenuItem viewLog = new JMenuItem();
+        viewLog.setText("查看日志");
+        viewLog.addActionListener(e -> problemActionPerformed());
+        application.add(viewLog);
+        topMenuBar.add(application);
+
         // ---------设置
         JMenu setUp = new JMenu();
         setUp.setText("设置");
