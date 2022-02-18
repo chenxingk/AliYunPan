@@ -23,14 +23,14 @@ public class MybatisAspect extends SimpleAspect {
         MybatisPlusUtil.getSqlSession();
         UserService.userMapper = MybatisPlusUtil.getMapper(UserMapper.class);
         BackupService.backupMapper = MybatisPlusUtil.getMapper(BackupMapper.class);
-        log.info(">>> SqlSession进行初始化。。。");
+        log.debug(">>> SqlSession进行初始化。。。");
         return true;
     }
 
     @Override
     public boolean after(Object target, Method method, Object[] args, Object returnVal) {
         MybatisPlusUtil.closeSqlSession();
-        log.info(">>> SqlSession关闭。。。");
+        log.debug(">>> SqlSession关闭。。。");
         return true;
     }
 }

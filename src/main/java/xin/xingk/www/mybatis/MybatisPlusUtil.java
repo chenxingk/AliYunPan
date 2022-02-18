@@ -1,5 +1,7 @@
 package xin.xingk.www.mybatis;
 
+import cn.hutool.core.io.file.FileWriter;
+import cn.hutool.core.io.resource.ResourceUtil;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
@@ -18,8 +20,11 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
+import xin.xingk.www.App;
+import xin.xingk.www.common.CommonConstants;
 import xin.xingk.www.mybatis.config.CustomMetaObjectHandler;
 import xin.xingk.www.mybatis.config.CustomerIdGenerator;
+import xin.xingk.www.util.FileUtil;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -28,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -44,10 +50,16 @@ public class MybatisPlusUtil {
     //SqlSession
     public static SqlSession sqlSession;
 
+    //DB文件
+    private static File dbFile = new File(CommonConstants.CONFIG_HOME + "backupAider.db");
+
     /**
      * 初始化 SqlSessionFactory
      */
     static  {
+        if (!dbFile.exists()) {
+            initDbFile();
+        }
         SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
         MybatisConfiguration configuration = initConfiguration();
         //解析mapper.xml文件
@@ -129,7 +141,7 @@ public class MybatisPlusUtil {
      */
     private static DataSource initDataSource() {
         HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl("jdbc:sqlite:E:\\用户目录\\桌面\\init.db");
+        dataSource.setJdbcUrl("jdbc:sqlite:"+dbFile.getAbsolutePath());
         dataSource.setDriverClassName("org.sqlite.JDBC");
         dataSource.setIdleTimeout(60000);
         dataSource.setAutoCommit(true);
@@ -194,6 +206,15 @@ public class MybatisPlusUtil {
                 }
             }
         }
+    }
+
+    /**
+     * 初始化数据库文件
+     */
+    public static void initDbFile(){
+        InputStream dbStream = ResourceUtil.getStream("db_init.db");
+        FileWriter writer = new FileWriter(dbFile);
+        writer.writeFromStream(dbStream);
     }
 
 
