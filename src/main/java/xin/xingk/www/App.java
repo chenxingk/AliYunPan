@@ -65,27 +65,27 @@ public class App {
      * 检查更新
      */
     private static boolean checkForUpdate() {
-        String result = HttpUtil.get("http://yunpan.xingk.xin/备份助手/upload.json");
-        while (StrUtil.isEmpty(result)){
-            result = HttpUtil.get("http://yunpan.xingk.xin/备份助手/upload.json");
-        }
-        JSONObject versionJson = JSONUtil.parseObj(result);
-        String url = versionJson.getStr("url");
-        String desc = versionJson.getStr("desc");
-        double version = (double) versionJson.get("version");
-        int update = versionJson.getInt("update");
-        if (version > CommonConstants.VERSION){//检测到有新版
-            CommonUI.setFont();//设置字体
-            int button = JOptionPane.showConfirmDialog(null, desc, "检测到有新版，是否更新？", JOptionPane.YES_NO_OPTION);
-            if (button==0){//选择是打开浏览器
-                DesktopUtil.browse(url);
-                return true;
-            }else {
-                if (update==1){//强更新
-                    System.exit(0);
-                }
-            }
-        }
+//        String result = HttpUtil.get("http://yunpan.xingk.xin/备份助手/upload.json");
+//        while (StrUtil.isEmpty(result)){
+//            result = HttpUtil.get("http://yunpan.xingk.xin/备份助手/upload.json");
+//        }
+//        JSONObject versionJson = JSONUtil.parseObj(result);
+//        String url = versionJson.getStr("url");
+//        String desc = versionJson.getStr("desc");
+//        double version = (double) versionJson.get("version");
+//        int update = versionJson.getInt("update");
+//        if (version > CommonConstants.VERSION){//检测到有新版
+//            CommonUI.setFont();//设置字体
+//            int button = JOptionPane.showConfirmDialog(null, desc, "检测到有新版，是否更新？", JOptionPane.YES_NO_OPTION);
+//            if (button==0){//选择是打开浏览器
+//                DesktopUtil.browse(url);
+//                return true;
+//            }else {
+//                if (update==1){//强更新
+//                    System.exit(0);
+//                }
+//            }
+//        }
         return false;
     }
 

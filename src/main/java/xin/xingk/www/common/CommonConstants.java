@@ -15,12 +15,16 @@ import java.util.Map;
 public class CommonConstants {
 
 
-
-
     //软件版本
-    public static final double VERSION = 2.0f;
+    public static final String VERSION = "v_2.0.0_220218";
+    public static final String TITLE = "备份助手v"+VERSION;
+    private static final String USER_HOME = System.getProperty("user.home");
+    public static final String CONFIG_HOME = USER_HOME + File.separator + ".backupAider" + File.separator;
+    /**
+     * 日志文件路径
+     */
+    public final static String LOG_DIR = USER_HOME + File.separator + ".backupAider" + File.separator + "logs" + File.separator;
 
-    public static String TITLE = "备份助手v"+VERSION;
 
     /**
      * 备份模式
