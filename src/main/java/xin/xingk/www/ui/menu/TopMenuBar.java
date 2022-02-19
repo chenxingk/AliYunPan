@@ -6,12 +6,14 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.App;
+import xin.xingk.www.common.CommonConstants;
 import xin.xingk.www.context.UserContextHolder;
 import xin.xingk.www.ui.dialog.About;
 import xin.xingk.www.util.UIUtil;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 /**
  * The top menu bar
@@ -56,7 +58,7 @@ public class TopMenuBar extends JMenuBar {
         //---------查看日志
         JMenuItem viewLog = new JMenuItem();
         viewLog.setText("查看日志");
-        viewLog.addActionListener(e -> problemActionPerformed());
+        viewLog.addActionListener(e -> DesktopUtil.open(new File(CommonConstants.LOG_DIR)));
         application.add(viewLog);
         topMenuBar.add(application);
 
