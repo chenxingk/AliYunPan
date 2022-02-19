@@ -9,6 +9,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import xin.xingk.www.common.CommonConstants;
 import xin.xingk.www.common.CommonUI;
+import xin.xingk.www.context.UserContextHolder;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -216,23 +217,23 @@ public class AliYunPanUtil{
      * @return
      */
     public boolean getAliYunPanInfo(){
-        if (StrUtil.isEmpty(ConfigUtil.getRefreshToken())){
-            CommonUI.modifyStartBtnStatus("开始备份",true);
+//        if (StrUtil.isEmpty(ConfigUtil.getRefreshToken())){
+//            CommonUI.modifyStartBtnStatus("开始备份",true);
+//            return false;
+//        }
+//        CommonUI.console("开始登录阿里云盘...");
+//        CommonConstants.TOKEN="";
+        JSONObject data = new JSONObject().set("refresh_token", UserContextHolder.getToken());
+        JSONObject aliYunLoginInfo = okHttpUtil.doPost(CommonConstants.TOKEN_URL, data);
+        if (ObjectUtil.isNull(aliYunLoginInfo) || "InvalidParameter.RefreshToken".equals(aliYunLoginInfo.getStr("code"))){
+//            CommonUI.console("登录失败...请检查Token填写是否正确...");
+//            CommonUI.modifyStartBtnStatus("开始备份",true);
             return false;
         }
-        CommonUI.console("开始登录阿里云盘...");
-        CommonConstants.TOKEN="";
-        JSONObject data = new JSONObject().set("refresh_token",ConfigUtil.getRefreshToken());
-        JSONObject aliYunPanInfo = okHttpUtil.doPost(CommonConstants.TOKEN_URL, data);
-        if (ObjectUtil.isNull(aliYunPanInfo) || "InvalidParameter.RefreshToken".equals(aliYunPanInfo.getStr("code"))){
-            CommonUI.console("登录失败...请检查Token填写是否正确...");
-            CommonUI.modifyStartBtnStatus("开始备份",true);
-            return false;
-        }
-        doSetAliYunInfo(aliYunPanInfo);
-        if (StrUtil.isNotEmpty(CommonConstants.TOKEN)){
-            CommonUI.console("登录阿里云盘成功...");
-        }
+        doSetAliYunLoginInfo(aliYunLoginInfo);
+//        if (StrUtil.isNotEmpty(CommonConstants.TOKEN)){
+//            CommonUI.console("登录阿里云盘成功...");
+//        }
         return true;
     }
 
@@ -240,11 +241,12 @@ public class AliYunPanUtil{
      * 设置阿里云盘登录信息
      * @param json
      */
-    private void doSetAliYunInfo(JSONObject json) {
+    private void doSetAliYunLoginInfo(JSONObject json) {
         CommonConstants.TOKEN = json.getStr("token_type") + " " + json.getStr("access_token");
         CommonConstants.DriveId = json.getStr("default_drive_id");
-        ConfigUtil.set(CommonConstants.REFRESH_TOKEN, json.getStr("refresh_token"));
-        tokenText.setText(StrUtil.hide(ConfigUtil.getRefreshToken(),10,20));
+        UserContextHolder.updateUserToken(json.getStr("refresh_token"));
+//        ConfigUtil.set(CommonConstants.REFRESH_TOKEN, json.getStr("refresh_token"));
+//        tokenText.setText(StrUtil.hide(ConfigUtil.getRefreshToken(),10,20));
     }
 
     /**

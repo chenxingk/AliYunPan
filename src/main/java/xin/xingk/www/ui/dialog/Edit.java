@@ -6,7 +6,7 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Data;
-import xin.xingk.www.common.CommonConstants;
+import xin.xingk.www.common.DictConstants;
 import xin.xingk.www.context.BackupContextHolder;
 import xin.xingk.www.entity.Backup;
 import xin.xingk.www.ui.Home;
@@ -145,7 +145,7 @@ public class Edit extends JDialog implements FocusListener {
                     BackupContextHolder.addBackup(backup);
                 }
                 dispose();
-                Home.initTable();
+                Home.initTableData();
             }
         });
 
@@ -188,10 +188,10 @@ public class Edit extends JDialog implements FocusListener {
      * @return 备份模式
      */
     private Integer getBackupType() {
-        if (ordinaryRadio.isSelected()) return CommonConstants.BACKUP_TYPE_ORDINARY;
-        if (classifyRadio.isSelected()) return CommonConstants.BACKUP_TYPE_CLASSIFY;
-        if (weChatRadio.isSelected()) return CommonConstants.BACKUP_TYPE_WECHAT;
-        return CommonConstants.BACKUP_TYPE_ORDINARY;
+        if (ordinaryRadio.isSelected()) return DictConstants.BACKUP_TYPE_ORDINARY;
+        if (classifyRadio.isSelected()) return DictConstants.BACKUP_TYPE_CLASSIFY;
+        if (weChatRadio.isSelected()) return DictConstants.BACKUP_TYPE_WECHAT;
+        return DictConstants.BACKUP_TYPE_ORDINARY;
     }
 
     /**
@@ -200,9 +200,9 @@ public class Edit extends JDialog implements FocusListener {
      * @return 目录检测
      */
     private Integer getMonitor() {
-        if (openRadio.isSelected()) return CommonConstants.MONITOR_OPEN;
-        if (closeRadio.isSelected()) return CommonConstants.MONITOR_CLOSE;
-        return CommonConstants.MONITOR_OPEN;
+        if (openRadio.isSelected()) return DictConstants.MONITOR_OPEN;
+        if (closeRadio.isSelected()) return DictConstants.MONITOR_CLOSE;
+        return DictConstants.MONITOR_OPEN;
     }
 
     /**

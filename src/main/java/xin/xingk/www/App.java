@@ -1,26 +1,14 @@
 package xin.xingk.www;
 
-import cn.hutool.core.swing.DesktopUtil;
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.http.HttpUtil;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.common.CommonConstants;
-import xin.xingk.www.common.CommonUI;
 import xin.xingk.www.ui.Home;
 import xin.xingk.www.ui.Login;
 import xin.xingk.www.ui.MainFrame;
-import xin.xingk.www.util.FileUtil;
+import xin.xingk.www.util.AliYunPanUtil;
 import xin.xingk.www.util.UIUtil;
-import xin.xingk.www.util.UploadLogUtil;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 /**
  * 备份程序
@@ -33,32 +21,25 @@ public class App {
 
     public static void main( String[] args ) {
         UIUtil.initTheme();
+        CommonConstants.LOGIN_STATUS = new AliYunPanUtil().getAliYunPanInfo();
         mainFrame = new MainFrame();
-        mainFrame.init();
-        //删除旧的运行日志
-        FileUtil.del(UploadLogUtil.RUN_LOG);
+        Home.initUi();
+        Login.initUi();
+//        ThreadUtil.execute(Home::initUi);
+//        ThreadUtil.execute(Login::initUi);
         //检查是否有更新
         //if (checkForUpdate()) return;
-        //boolean login = new AliYunPanUtil().getAliYunPanInfo();
-        if(true){
+        //初始化俩页面 回头只做切换
+        //生成二维码和获取表格单独调用
+        if(CommonConstants.LOGIN_STATUS){
             mainFrame.initHome();
-            Home.initUi();
-            mainFrame.add(Home.getInstance().getHomePanel());
-//            mainFrame.add(About.getInstance().getAboutPanel());
         }else{
             mainFrame.initLogin();
-            mainFrame.add(Login.getInstance().getLoginPanel());
-            Login.getInstance().initUi();
         }
+
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.pack();
         mainFrame.setVisible(true);
-
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        if (screenSize.getWidth() <= 1366) {
-            // The window is automatically maximized at low resolution
-            mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        }
     }
 
     /**

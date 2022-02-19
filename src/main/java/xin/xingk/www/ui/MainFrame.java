@@ -41,13 +41,21 @@ public class MainFrame extends JFrame {
     }
 
     public void initLogin() {
+        this.init();
         this.setTitle("扫码登录");
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.3, 0.4);
+        this.add(Login.getInstance().getLoginPanel());
+        this.remove(Home.getInstance().getHomePanel());
+        Login.initQrCode();
     }
 
     public void initHome() {
+        this.init();
         this.setTitle(CommonConstants.TITLE +"，欢迎您："+ UserContextHolder.getUserName());
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.6, 0.8);
+        this.add(Home.getInstance().getHomePanel());
+        this.remove(Login.getInstance().getLoginPanel());
+        Home.initTableData();
 //        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.3, 0.5);
     }
 

@@ -5,7 +5,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Data;
-import xin.xingk.www.common.CommonConstants;
+import xin.xingk.www.common.DictConstants;
 import xin.xingk.www.context.BackupContextHolder;
 import xin.xingk.www.entity.Backup;
 import xin.xingk.www.ui.dialog.Edit;
@@ -69,12 +69,26 @@ public class Home {
         home.getHomePanel().setFocusable(true);
         home.getTableTitle().setFont(FlatUIUtils.nonUIResource(UIManager.getFont("medium.font")));
         home.getLogTitle().setFont(FlatUIUtils.nonUIResource(UIManager.getFont("small.font")));
-        initTable();
+        //设置表格基本样式
+        JTable table = home.getTable();
+        table.setAutoCreateRowSorter(true);
+        table.setShowVerticalLines(true);
+        table.setShowHorizontalLines(true);
+        //设置表数据居中显示
+        DefaultTableCellRenderer center = new DefaultTableCellRenderer();
+        center.setHorizontalAlignment(JLabel.CENTER);
+        table.setDefaultRenderer(Object.class, center);
+        //只能选中一行
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        //表格右键菜单
+        TableMenuBar tableMenuBar = TableMenuBar.getInstance();
+        tableMenuBar.init();
+        table.setComponentPopupMenu(tableMenuBar);
         initConsole();
 
         //新增
         home.getAddButton().addActionListener(e -> {
-            initTable();
+            initTableData();
             EDIT_TITLE = "新增备份任务";
             Edit edit = new Edit();
             edit.pack();
@@ -112,7 +126,7 @@ public class Home {
         logArea.setWrapStyleWord(true);
     }
 
-    public static void initTable() {
+    public static void initTableData() {
         home = getInstance();
         TableModel model = new DefaultTableModel(getBackupList(), TABLE_HEAD) {
             public boolean isCellEditable(int row, int column) {
@@ -128,13 +142,6 @@ public class Home {
         };
         JTable table = home.getTable();
         table.setModel(model);
-        table.setAutoCreateRowSorter(true);
-        table.setShowVerticalLines(true);
-        table.setShowHorizontalLines(true);
-        //设置表数据居中显示
-        DefaultTableCellRenderer center = new DefaultTableCellRenderer();
-        center.setHorizontalAlignment(JLabel.CENTER);
-        table.setDefaultRenderer(Object.class, center);
         //隐藏ID列
         TableColumn idColumn = table.getColumnModel().getColumn(0);
         idColumn.setWidth(0);
@@ -143,12 +150,6 @@ public class Home {
         //设置表的标题的宽高度也为0
         table.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(0);
         table.getTableHeader().getColumnModel().getColumn(0).setMinWidth(0);
-        //只能选中一行
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        //表格右键菜单
-        TableMenuBar tableMenuBar = TableMenuBar.getInstance();
-        tableMenuBar.init();
-        table.setComponentPopupMenu(tableMenuBar);
     }
 
     /**
@@ -164,8 +165,8 @@ public class Home {
             dataArr[i][0] = backupList.get(i).getId();
             dataArr[i][1] = backupList.get(i).getLocalPath();
             dataArr[i][2] = backupList.get(i).getCloudPath();
-            dataArr[i][3] = CommonConstants.BACKUP_TYPE_DICT.get(backupList.get(i).getBackupType());
-            dataArr[i][4] = CommonConstants.MONITOR_DICT.get(backupList.get(i).getMonitor());
+            dataArr[i][3] = DictConstants.BACKUP_TYPE_DICT.get(backupList.get(i).getBackupType());
+            dataArr[i][4] = DictConstants.MONITOR_DICT.get(backupList.get(i).getMonitor());
             dataArr[i][5] = backupList.get(i).getBackupTime();
 //            dataArr[i][6] = backupList.get(i).getStatus();
 //            dataArr[i][7] = backupList.get(i).getFileNum();
@@ -204,7 +205,7 @@ public class Home {
             int button = JOptionPane.showConfirmDialog(null, "确定要删除吗？", "温馨提示", JOptionPane.YES_NO_OPTION);
             if (button == 0) {
                 BackupContextHolder.delBackup(id);
-                Home.initTable();
+                Home.initTableData();
             }
         } else {
             JOptionPane.showMessageDialog(null, "请您先选中一行", "温馨提示", JOptionPane.INFORMATION_MESSAGE);

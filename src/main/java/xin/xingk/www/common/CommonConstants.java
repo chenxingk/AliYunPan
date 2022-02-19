@@ -4,8 +4,6 @@ package xin.xingk.www.common;
 import cn.hutool.core.io.watch.WatchMonitor;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Description: 公共变量
@@ -14,38 +12,16 @@ import java.util.Map;
  */
 public class CommonConstants {
 
-
     //软件版本
     public static final String VERSION = "v_2.0.0_220218";
+    //软件标题
     public static final String TITLE = "备份助手"+VERSION;
+    //用户目录
     private static final String USER_HOME = System.getProperty("user.home");
+    //配置文件路径
     public static final String CONFIG_HOME = USER_HOME + File.separator + ".backupAider" + File.separator;
-    /**
-     * 日志文件路径
-     */
+    //日志文件路径
     public final static String LOG_DIR = USER_HOME + File.separator + ".backupAider" + File.separator + "logs" + File.separator;
-
-
-    /**
-     * 备份模式
-     */
-    public static Map<Integer, String> BACKUP_TYPE_DICT = new HashMap<>();
-    //普通备份
-    public static Integer BACKUP_TYPE_ORDINARY = 0;
-    //分类备份
-    public static Integer BACKUP_TYPE_CLASSIFY = 1;
-    //微信备份
-    public static Integer BACKUP_TYPE_WECHAT = 2;
-
-    /**
-     * 目录检测
-     */
-    public static Map<Integer, String> MONITOR_DICT = new HashMap<>();
-    //开启目录检测
-    public static Integer MONITOR_OPEN = 0;
-    //关闭目录检测
-    public static Integer MONITOR_CLOSE = 1;
-
     //当前路径
     public static String SYSTEM_PATH = System.getProperty("user.dir") + File.separator;
 
@@ -65,6 +41,8 @@ public class CommonConstants {
     public static String DriveId="";
     //根目录
     public final static String ROOT="root";
+    //登录状态
+    public static boolean LOGIN_STATUS = false;
 
     //refresh_token
     public static String REFRESH_TOKEN = "tokenText";
@@ -91,14 +69,7 @@ public class CommonConstants {
     public static final Integer DEFAULT_SIZE = 10480000;
 
 
-    static {
-        BACKUP_TYPE_DICT.put(BACKUP_TYPE_ORDINARY,"普通备份");
-        BACKUP_TYPE_DICT.put(BACKUP_TYPE_CLASSIFY,"分类备份");
-        BACKUP_TYPE_DICT.put(BACKUP_TYPE_WECHAT,"微信备份");
 
-        MONITOR_DICT.put(MONITOR_OPEN,"开启");
-        MONITOR_DICT.put(MONITOR_CLOSE,"关闭");
-    }
 
 
 }

@@ -44,16 +44,18 @@ public class TopMenuBar extends JMenuBar {
 
     public void init() {
         TopMenuBar topMenuBar = getInstance();
-
+        topMenuBar.removeAll();
         // ---------应用
         JMenu application = new JMenu();
         application.setText("应用");
 
         //---------退出登录
-        JMenuItem logOut = new JMenuItem();
-        logOut.setText("退出登录");
-        logOut.addActionListener(e -> problemActionPerformed());
-        application.add(logOut);
+        if (CommonConstants.LOGIN_STATUS){
+            JMenuItem logOut = new JMenuItem();
+            logOut.setText("退出登录");
+            logOut.addActionListener(e -> logOutActionPerformed());
+            application.add(logOut);
+        }
 
         //---------查看日志
         JMenuItem viewLog = new JMenuItem();
@@ -139,6 +141,15 @@ public class TopMenuBar extends JMenuBar {
 
     private void problemActionPerformed() {
         DesktopUtil.browse("https://gitee.com/xingk-code/AliYunPan/wikis");
+    }
+
+    /**
+     * 退出登录
+     */
+    private void logOutActionPerformed() {
+        CommonConstants.LOGIN_STATUS = false;
+        UserContextHolder.updateUserToken(null);
+        App.mainFrame.initLogin();
     }
 
     private void aboutActionPerformed() {

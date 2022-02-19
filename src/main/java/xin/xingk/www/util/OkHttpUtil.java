@@ -30,11 +30,11 @@ public class OkHttpUtil {
     //错误次数
     int errNum=0;
 
-   static OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(5, TimeUnit.MINUTES).build();
-   static MediaType mediaType = MediaType.parse("application/json");
-   static RequestBody body;
-   static Request request;
-   static String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36 Edg/90.0.818.66";
+    static OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(5, TimeUnit.MINUTES).build();
+    static MediaType mediaType = MediaType.parse("application/json");
+    static RequestBody body;
+    static Request request;
+    static String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36 Edg/90.0.818.66";
 
 
     /**

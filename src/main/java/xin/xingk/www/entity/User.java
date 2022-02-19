@@ -18,6 +18,7 @@ public class User extends BaseEntity{
     //用户昵称
     private String name;
     //用户token
+    @TableField(updateStrategy = FieldStrategy.IGNORED )
     private String token;
     //主题名称
     private String theme;

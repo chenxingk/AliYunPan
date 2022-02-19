@@ -28,7 +28,7 @@ public class TableMenuBar extends JPopupMenu {
     }
 
     public void init() {
-        tableMenuBar = getInstance();
+        TableMenuBar tableMenuBar = getInstance();
         tableMenuBar.removeAll();
         //---- 修改 ----
         update.setText("修改");

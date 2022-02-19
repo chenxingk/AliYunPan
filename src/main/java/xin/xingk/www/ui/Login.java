@@ -1,6 +1,5 @@
 package xin.xingk.www.ui;
 
-import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.qrcode.QrCodeUtil;
@@ -10,6 +9,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Data;
 import xin.xingk.www.App;
+import xin.xingk.www.common.CommonConstants;
 import xin.xingk.www.context.UserContextHolder;
 import xin.xingk.www.util.ComponentUtil;
 import xin.xingk.www.util.OkHttpUtil;
@@ -36,9 +36,9 @@ public class Login {
     private JLabel infoLabel;
 
     //CK码
-    private String ck;
+    private static String ck;
     //时间戳
-    private String t;
+    private static String t;
 
     //当前对象
     private static Login login;
@@ -54,22 +54,22 @@ public class Login {
     /**
      * 初始化窗口UI
      */
-    public void initUi() {
+    public static void initUi() {
         login = getInstance();
         login.getTipsLabel().setFont(FlatUIUtils.nonUIResource(UIManager.getFont("small.font")));
-        ThreadUtil.execute(this::initQrCode);
-        ThreadUtil.execute(Home::initUi);
     }
 
     /**
      * 初始化二维码
      */
-    public void initQrCode() {
+    public static void initQrCode() {
         //获取二维码
         getQrCodeImg();
         //定时刷新二维码
         new Timer().schedule(new TimerTask() {
             public void run() {
+                login = getInstance();
+                JLabel tipsLabel = login.getTipsLabel();
                 JSONObject qrCode = OkHttpUtil.queryQrCode(t, ck);
                 String status = qrCode.getJSONObject("content").getJSONObject("data").getStr("qrCodeStatus");
                 if ("CONFIRMED".equals(status)) {
@@ -81,9 +81,8 @@ public class Login {
                             tipsLabel.setText("登录成功，正在跳转中，请稍后...");
                             UserContextHolder.updateUserToken(refreshToken);
                             this.cancel();
+                            CommonConstants.LOGIN_STATUS = true;
                             App.mainFrame.initHome();
-                            App.mainFrame.add(Home.getInstance().getHomePanel());
-                            App.mainFrame.remove(Login.getInstance().getLoginPanel());
                         }
                     } catch (Exception exc) {
                         JOptionPane.showMessageDialog(null, exc.getMessage(), "二维码验证错误", JOptionPane.ERROR_MESSAGE);
@@ -107,7 +106,7 @@ public class Login {
      * @param json
      * @return
      */
-    private boolean checkLoginJson(JSONObject json) {
+    private static boolean checkLoginJson(JSONObject json) {
         if (ObjectUtil.isNotNull(json.getJSONObject("content"))) {
             String titleMsg = json.getJSONObject("content").getJSONObject("data").getStr("titleMsg");
             if (StrUtil.isNotEmpty(titleMsg)) {
@@ -126,7 +125,7 @@ public class Login {
     /**
      * 获取二维码图片
      */
-    private void getQrCodeImg() {
+    private static void getQrCodeImg() {
         login = getInstance();
         JSONObject qrCodeUrl = OkHttpUtil.getQrCodeUrl();
         //二维码地址
