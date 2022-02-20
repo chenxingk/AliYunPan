@@ -169,12 +169,12 @@ public class AliYunUtil {
             fileId = getFileIdByArr(fileId, folderArr);
         }else if (backupType==2){//微信备份
             //获取月份文件夹
-            String month = getMonth(path,backup);
+            String month = getMonth(path,backup.getLocalPath());
             if (StrUtil.isNotEmpty(month)){
                 //获取月份文件夹ID
                 fileId = AliYunUtil.getFileId(fileId,month);
             }
-            if (twoFolder(path,backup)){//微信下的二级目录
+            if (twoFolder(path,backup.getLocalPath())){//微信下的二级目录
                 fileId = AliYunUtil.getFileId(fileId,"文件夹");
                 String[] folderArr = StrUtil.subAfter(path, backup.getLocalPath() + FileUtil.FILE_SEPARATOR + month + FileUtil.FILE_SEPARATOR, false).split("\\\\");
                 fileId = getFileIdByArr(fileId, folderArr);
@@ -207,11 +207,11 @@ public class AliYunUtil {
      * @param path
      * @return
      */
-    public static String getMonth(String path,Backup backup) {
-        if (twoFolder(path,backup)){
-            return StrUtil.subBetween(path, backup.getLocalPath()+ FileUtil.FILE_SEPARATOR,FileUtil.FILE_SEPARATOR);
+    public static String getMonth(String path,String localPath) {
+        if (twoFolder(path,localPath)){
+            return StrUtil.subBetween(path, localPath + FileUtil.FILE_SEPARATOR,FileUtil.FILE_SEPARATOR);
         }else{
-            return StrUtil.subSuf(path, backup.getLocalPath().length()+1);
+            return StrUtil.subSuf(path, localPath.length()+1);
         }
     }
 
@@ -220,8 +220,8 @@ public class AliYunUtil {
      * @param path
      * @return
      */
-    public static boolean twoFolder(String path,Backup backup) {
-        String str = StrUtil.subAfter(path, backup.getLocalPath(), false);
+    public static boolean twoFolder(String path,String localPath) {
+        String str = StrUtil.subAfter(path, localPath, false);
         return StrUtil.count(str, FileUtil.FILE_SEPARATOR)>1;
     }
 }
