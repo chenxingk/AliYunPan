@@ -6,6 +6,7 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Data;
+import xin.xingk.www.common.CronTasks;
 import xin.xingk.www.common.DictConstants;
 import xin.xingk.www.context.BackupContextHolder;
 import xin.xingk.www.entity.Backup;
@@ -136,7 +137,7 @@ public class Edit extends JDialog implements FocusListener {
                 backup.setBackupType(getBackupType());
                 backup.setMonitor(getMonitor());
                 backup.setBackupTime(timeText.getText());
-                backup.setStatus(1);
+                backup.setStatus(0);
                 backup.setFileNum(0);
                 if (Home.EDIT_ID != 0) {//修改
                     backup.setId(Home.EDIT_ID);
@@ -144,6 +145,8 @@ public class Edit extends JDialog implements FocusListener {
                 } else {//新增
                     BackupContextHolder.addBackup(backup);
                 }
+                //设置定时任务
+                CronTasks.setTimeTask(backup);
                 dispose();
                 Home.initTableData();
             }
@@ -200,9 +203,9 @@ public class Edit extends JDialog implements FocusListener {
      * @return 目录检测
      */
     private Integer getMonitor() {
-        if (openRadio.isSelected()) return DictConstants.MONITOR_OPEN;
-        if (closeRadio.isSelected()) return DictConstants.MONITOR_CLOSE;
-        return DictConstants.MONITOR_OPEN;
+        if (openRadio.isSelected()) return DictConstants.MONITOR_ENABLE;
+        if (closeRadio.isSelected()) return DictConstants.MONITOR_DISABLE;
+        return DictConstants.MONITOR_ENABLE;
     }
 
     /**
@@ -221,7 +224,7 @@ public class Edit extends JDialog implements FocusListener {
             JOptionPane.showMessageDialog(null, "请选择正确的目录", "错误", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        if (!ReUtil.contains("^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$", timeText.getText())) {
+        if (StrUtil.isNotEmpty(timeText.getText()) && !ReUtil.contains("^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$", timeText.getText())) {
             JOptionPane.showMessageDialog(null, "请按格式输入定时备份时间", "错误", JOptionPane.ERROR_MESSAGE);
             return false;
         }

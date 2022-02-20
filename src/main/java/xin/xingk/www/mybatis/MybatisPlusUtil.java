@@ -106,7 +106,7 @@ public class MybatisPlusUtil {
         configuration.setUseGeneratedKeys(true);
         configuration.addInterceptor(initInterceptor());
         //扫描mapper接口所在包
-        configuration.addMappers("xin.xingk.www.mapper");
+        configuration.addMappers("xin.xingk.www.mybatis.mapper");
         //配置日志实现
         configuration.setLogImpl(Slf4jImpl.class);
         //设置数据源

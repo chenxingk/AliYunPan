@@ -1,15 +1,21 @@
 package xin.xingk.www.ui;
 
+import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.cron.CronUtil;
 import com.formdev.flatlaf.ui.FlatUIUtils;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Data;
 import xin.xingk.www.common.DictConstants;
+import xin.xingk.www.common.DirWatcher;
 import xin.xingk.www.context.BackupContextHolder;
 import xin.xingk.www.entity.Backup;
 import xin.xingk.www.ui.dialog.Edit;
 import xin.xingk.www.ui.menu.TableMenuBar;
+import xin.xingk.www.util.BackupUtil;
+import xin.xingk.www.util.CacheUtil;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -42,7 +48,7 @@ public class Home {
 
     //表头
 //    private static final String[] TABLE_HEAD = {"ID", "本地目录", "云盘备份目录", "备份模式", "目录检测", "自动备份时间", "状态", "备份数量"};
-    private static final String[] TABLE_HEAD = {"ID", "本地目录", "云盘备份目录", "备份模式", "目录检测", "自动备份时间"};
+    private static final String[] TABLE_HEAD = {"ID", "本地目录", "云盘备份目录", "备份模式", "目录检测", "自动备份时间", "状态"};
 
     //编辑任务标题
     public static String EDIT_TITLE;
@@ -100,6 +106,13 @@ public class Home {
 
         //删除
         home.getDelButton().addActionListener(e -> delTable());
+
+        //开始备份
+        home.getStartButton().addActionListener(e -> {
+            JButton startButton = home.getStartButton();
+            startButton.setEnabled(false);
+            ThreadUtil.execute(() -> BackupUtil.startBackup(null));
+        });
     }
 
     /**
@@ -168,7 +181,7 @@ public class Home {
             dataArr[i][3] = DictConstants.BACKUP_TYPE_DICT.get(backupList.get(i).getBackupType());
             dataArr[i][4] = DictConstants.MONITOR_DICT.get(backupList.get(i).getMonitor());
             dataArr[i][5] = backupList.get(i).getBackupTime();
-//            dataArr[i][6] = backupList.get(i).getStatus();
+            dataArr[i][6] = DictConstants.STATUS_DICT.get(backupList.get(i).getStatus());
 //            dataArr[i][7] = backupList.get(i).getFileNum();
         }
         return dataArr;
@@ -206,6 +219,32 @@ public class Home {
             if (button == 0) {
                 BackupContextHolder.delBackup(id);
                 Home.initTableData();
+                //删除定时任务
+                CronUtil.remove(String.valueOf(id));
+                //删除目录检测
+                DirWatcher.remove(id);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "请您先选中一行", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    /**
+     * 备份表格数据
+     */
+    public static void backupTable() {
+        //先判断有没有选中
+        JTable table = Home.getInstance().getTable();
+        //获取选中的行
+        int row = table.getSelectedRow();
+        if (row > -1) {
+            int id = (int) table.getValueAt(row, 0);
+            String key = CacheUtil.BACKUP_ID_KEY + "_" + id;
+            if (ObjectUtil.isNotEmpty(CacheUtil.get(key))) {
+                JOptionPane.showMessageDialog(null, "此任务当前正在备份中。。。", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                CacheUtil.set(key, id);
+                BackupUtil.startBackup(id);
             }
         } else {
             JOptionPane.showMessageDialog(null, "请您先选中一行", "温馨提示", JOptionPane.INFORMATION_MESSAGE);

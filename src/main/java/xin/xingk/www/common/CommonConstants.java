@@ -1,8 +1,6 @@
 package xin.xingk.www.common;
 
 
-import cn.hutool.core.io.watch.WatchMonitor;
-
 import java.io.File;
 
 /**
@@ -58,13 +56,9 @@ public class CommonConstants {
     public static String MONITOR_FOLDER= "monitorFolder";//0是关闭 1是开启
 
     //输出日志模式 0是覆盖 1追加
-    public static int CLEAN_CONSOLE=1;
+    public static int CLEAN_CONSOLE = 1;
     //备份状态
     public static boolean BACK_STATE = false;
-    //是否打印日志
-    public static boolean IS_CONSOLE = false;
-    //文件监听
-    public static WatchMonitor monitor;
     //默认大小
     public static final Integer DEFAULT_SIZE = 10480000;
 

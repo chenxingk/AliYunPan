@@ -4,9 +4,9 @@ package xin.xingk.www.mybatis;
 import cn.hutool.aop.aspects.SimpleAspect;
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.context.service.BackupService;
-import xin.xingk.www.mapper.BackupMapper;
-import xin.xingk.www.mapper.UserMapper;
 import xin.xingk.www.context.service.UserService;
+import xin.xingk.www.mybatis.mapper.BackupMapper;
+import xin.xingk.www.mybatis.mapper.UserMapper;
 
 import java.lang.reflect.Method;
 

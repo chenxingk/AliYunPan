@@ -43,6 +43,7 @@ public class TableMenuBar extends JPopupMenu {
 
         //---- 开始备份 ----
         startBackUp.setText("开始备份");
+        startBackUp.addActionListener(e -> Home.backupTable());
         tableMenuBar.add(startBackUp);
     }
 

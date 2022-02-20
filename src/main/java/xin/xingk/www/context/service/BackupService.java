@@ -2,7 +2,7 @@ package xin.xingk.www.context.service;
 
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.entity.Backup;
-import xin.xingk.www.mapper.BackupMapper;
+import xin.xingk.www.mybatis.mapper.BackupMapper;
 
 import java.util.List;
 

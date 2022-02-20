@@ -2,7 +2,7 @@ package xin.xingk.www.context.service;
 
 import cn.hutool.core.util.ObjectUtil;
 import xin.xingk.www.entity.User;
-import xin.xingk.www.mapper.UserMapper;
+import xin.xingk.www.mybatis.mapper.UserMapper;
 
 /**
  * Author: 陈靖杰

@@ -1,11 +1,14 @@
 package xin.xingk.www;
 
+import cn.hutool.core.thread.ThreadUtil;
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.common.CommonConstants;
+import xin.xingk.www.common.CronTasks;
+import xin.xingk.www.common.DirWatcher;
 import xin.xingk.www.ui.Home;
 import xin.xingk.www.ui.Login;
 import xin.xingk.www.ui.MainFrame;
-import xin.xingk.www.util.AliYunPanUtil;
+import xin.xingk.www.util.AliYunUtil;
 import xin.xingk.www.util.UIUtil;
 
 import javax.swing.*;
@@ -21,16 +24,12 @@ public class App {
 
     public static void main( String[] args ) {
         UIUtil.initTheme();
-        CommonConstants.LOGIN_STATUS = new AliYunPanUtil().getAliYunPanInfo();
+        CommonConstants.LOGIN_STATUS = AliYunUtil.login();
         mainFrame = new MainFrame();
         Home.initUi();
         Login.initUi();
-//        ThreadUtil.execute(Home::initUi);
-//        ThreadUtil.execute(Login::initUi);
         //检查是否有更新
-        //if (checkForUpdate()) return;
-        //初始化俩页面 回头只做切换
-        //生成二维码和获取表格单独调用
+        if (checkForUpdate()) return;
         if(CommonConstants.LOGIN_STATUS){
             mainFrame.initHome();
         }else{
@@ -40,6 +39,11 @@ public class App {
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.pack();
         mainFrame.setVisible(true);
+
+        //开启定时任务
+        ThreadUtil.execute(CronTasks::startTask);
+        //开启目录检测
+        ThreadUtil.execute(DirWatcher::startWatcher);
     }
 
     /**

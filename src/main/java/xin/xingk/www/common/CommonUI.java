@@ -1,9 +1,5 @@
 package xin.xingk.www.common;
 
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.StrUtil;
-import xin.xingk.www.util.UploadLogUtil;
-
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import java.awt.*;
@@ -37,30 +33,6 @@ public class CommonUI {
             }
         }
     }
-
-    /**
-     * 添加控制台日志
-     * @param text
-     */
-    public static void console(String text,Object... params){
-        String date="["+DateUtil.now()+"] ";
-        if (!CommonConstants.IS_CONSOLE){//不打印日志
-            return;
-        }
-        if (CommonConstants.CLEAN_CONSOLE==0){
-            console.setText(date+"开始运行"+"\n");
-            UploadLogUtil.runLog.append(date+"开始运行"+"\n");
-        }else {
-            String format = StrUtil.format(date+text,params);
-            console.append(format+"\n");
-            UploadLogUtil.runLog.append(format+"\n");
-            console.setCaretPosition(console.getText().length());
-            //console.selectAll();
-            //console.paintImmediately(console.getBounds());
-            //scrollBar.setValue(scrollBar.getMaximum());
-        }
-    }
-
 
     /**
      * 修改开始按钮状态
