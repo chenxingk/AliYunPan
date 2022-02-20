@@ -20,6 +20,7 @@ public class MybatisAspect extends SimpleAspect {
 
     @Override
     public boolean before(Object target, Method method, Object[] args) {
+        //想办法加锁 SqlSession没用完不能拿新的 让它等着
         MybatisPlusUtil.getSqlSession();
         UserService.userMapper = MybatisPlusUtil.getMapper(UserMapper.class);
         BackupService.backupMapper = MybatisPlusUtil.getMapper(BackupMapper.class);
@@ -33,4 +34,13 @@ public class MybatisAspect extends SimpleAspect {
         log.debug(">>> SqlSession关闭。。。");
         return true;
     }
+
+    @Override
+    public boolean afterException(Object target, Method method, Object[] args, Throwable e) {
+        MybatisPlusUtil.closeSqlSession();
+        log.error(">>> 出现异常！！！SqlSession关闭。。。异常信息：{}",e.getMessage());
+        return true;
+    }
+
+
 }

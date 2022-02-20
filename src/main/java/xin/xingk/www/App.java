@@ -40,6 +40,9 @@ public class App {
         mainFrame.pack();
         mainFrame.setVisible(true);
 
+        /**
+         * 并发点...
+         */
         //开启定时任务
         ThreadUtil.execute(CronTasks::startTask);
         //开启目录检测

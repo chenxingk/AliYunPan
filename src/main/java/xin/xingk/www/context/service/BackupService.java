@@ -1,5 +1,6 @@
 package xin.xingk.www.context.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.entity.Backup;
 import xin.xingk.www.mybatis.mapper.BackupMapper;
@@ -46,6 +47,16 @@ public class BackupService {
      */
     public Backup getBackupById(Integer id){
         return backupMapper.selectById(id);
+    }
+
+    /**
+     * 根据本地目录 获取备份任务信息
+     * @param localPath
+     */
+    public Backup getBackupByLocalPath(String localPath){
+        LambdaQueryWrapper<Backup> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Backup::getLocalPath,localPath);
+        return backupMapper.selectOne(queryWrapper);
     }
 
 

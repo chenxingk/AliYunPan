@@ -51,6 +51,7 @@ public class UserContextHolder {
     }
 
     /**
+     * 并发点
      * 更新用户 token
      * @param token token
      */

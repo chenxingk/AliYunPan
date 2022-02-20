@@ -41,6 +41,7 @@ public class BackupContextHolder {
     }
 
     /**
+     * 并发点
      * 根据ID获取备份任务信息
      * @param id
      */
@@ -48,8 +49,16 @@ public class BackupContextHolder {
         return backupService.getBackupById(id);
     }
 
+    /**
+     * 根据本地目录 获取备份任务信息
+     * @param localPath
+     */
+    public static Backup getBackupByLocalPath(String localPath){
+        return backupService.getBackupByLocalPath(localPath);
+    }
 
     /**
+     * 并发点
      * 获取备份任务信息列表
      */
     public static List<Backup> getBackupList(){
