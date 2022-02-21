@@ -77,22 +77,10 @@ public class DirWatcher implements Watcher {
      */
     @Override
     public void onCreate(WatchEvent<?> event, Path currentPath) {
-        /*String path = currentPath.toString();//文件路径
+        String path = currentPath.toString();//文件路径
         String fileName = event.context().toString();//文件名
-        String filePath = path + FileUtil.FILE_SEPARATOR + fileName;
-        if (FileUtil.isFile(filePath)){
-            String localPath = this.getLocalPath();
-            Backup backup = BackupContextHolder.getBackupByLocalPath(localPath);
-            String fileSuffix = FileUtil.getSuffix(fileName);//文件后缀
-            //备份方法不执行时候执行监听
-            if (!CommonConstants.BACK_STATE && fileSuffix.length()<=8 && !fileName.startsWith("~$") && !"tmp".equals(fileSuffix)){
-                String fileId = UploadLogUtil.getFileUploadFileId(path + FileUtil.FILE_SEPARATOR + fileName);
-                if (StrUtil.isEmpty(fileId)){
-                    UIUtil.console("{} 准备上传",filePath);
-                    BackupUtil.monitorUpload(path,fileName,backup);
-                }
-            }
-        }*/
+        System.out.println("新增文件目录："+path);
+        dirMonitorFileUpload(path, fileName);
     }
 
     /**
@@ -104,36 +92,47 @@ public class DirWatcher implements Watcher {
     public void onModify(WatchEvent<?> event, Path currentPath) {//监听
         String path = currentPath.toString();//文件路径
         String fileName = event.context().toString();//文件名
+        System.out.println("修改文件目录："+path);
+        dirMonitorFileUpload(path, fileName);
+    }
+
+    /**
+     * 目录监控文件上传
+     * @param path
+     * @param fileName
+     */
+    private synchronized void dirMonitorFileUpload(String path, String fileName) {
         String filePath = path + FileUtil.FILE_SEPARATOR + fileName;
-        if (FileUtil.isFile(filePath)){
-            /**
-             * 没有点击左上角的开始备份
-             * 也没有点击右键菜单里的开始备份
-             * 定时备份也没有执行
-             */
-            if (Home.getInstance().getStartButton().getModel().isEnabled()){
-                //单个备份
-                String key = CacheUtil.BACKUP_ID_KEY + this.backId;
-                //定时备份
-                String cronKey = CacheUtil.BACKUP_ID_KEY + this.backId;
-                if (ObjectUtil.isEmpty(CacheUtil.get(key)) && ObjectUtil.isEmpty(CacheUtil.get(cronKey))) {
-                    String fileSuffix = FileUtil.getSuffix(fileName);//文件后缀
-                    //备份方法不执行时候执行监听
-                    if (fileSuffix.length()<=8 && !fileName.startsWith("~$") && !"tmp".equals(fileSuffix)){
-                        UploadRecord uploadRecord = UploadRecordContextHolder.getUploadRecordByFilePath(path + FileUtil.FILE_SEPARATOR + fileName);
-                        if (ObjectUtil.isNotEmpty(uploadRecord)){
-                            UIUtil.console("{} 发生变化，删除后上传新版",filePath);
-                            //如果文件存在 先删除在重新上传
-                            AliYunUtil.deleteFile(uploadRecord.getFileId());
-                            //删除文件上传记录
-                            UploadRecordContextHolder.delUploadRecord(uploadRecord.getId());
-                        }
-                        Backup backup = BackupContextHolder.getBackupById(this.backId);
-                        BackupUtil.monitorUpload(path,fileName,backup);
-                    }
-                }
-            }
-        }
+        System.out.println("目录检测："+filePath);
+//        if (FileUtil.isFile(filePath)){
+//            /**
+//             * 没有点击左上角的开始备份
+//             * 也没有点击右键菜单里的开始备份
+//             * 定时备份也没有执行
+//             */
+//            if (Home.getInstance().getStartButton().getModel().isEnabled()){
+//                //单个备份
+//                String key = CacheUtil.BACKUP_ID_KEY + this.backId;
+//                //定时备份
+//                String cronKey = CacheUtil.BACKUP_ID_KEY + this.backId;
+//                if (ObjectUtil.isEmpty(CacheUtil.get(key)) && ObjectUtil.isEmpty(CacheUtil.get(cronKey))) {
+//                    String fileSuffix = FileUtil.getSuffix(fileName);//文件后缀
+//                    //备份方法不执行时候执行监听
+//                    if (fileSuffix.length()<=8 && !fileName.startsWith("~$") && !"tmp".equals(fileSuffix)){
+//                        UploadRecord uploadRecord = UploadRecordContextHolder.getUploadRecordByFilePath(filePath);
+//                        if (ObjectUtil.isNotEmpty(uploadRecord)){
+//                            UIUtil.console("{} 发生变化，删除后上传新版",filePath);
+//                            //如果文件存在 先删除在重新上传
+//                            AliYunUtil.deleteFile(uploadRecord.getFileId());
+//                            //删除文件上传记录
+//                            UploadRecordContextHolder.delUploadRecord(uploadRecord.getId());
+//                        }
+//                        Backup backup = BackupContextHolder.getBackupById(this.backId);
+//                        BackupUtil.monitorUpload(path,fileName,backup);
+//                    }
+//                }
+//            }
+//        }
     }
 
     @Override
