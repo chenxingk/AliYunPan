@@ -7,8 +7,11 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.Data;
 import xin.xingk.www.context.BackupContextHolder;
+import xin.xingk.www.context.UploadRecordContextHolder;
 import xin.xingk.www.entity.Backup;
+import xin.xingk.www.entity.UploadRecord;
 import xin.xingk.www.mybatis.MybatisPlusUtil;
+import xin.xingk.www.ui.Home;
 import xin.xingk.www.util.*;
 
 import java.nio.file.Path;
@@ -23,10 +26,10 @@ import java.util.List;
 @Data
 public class DirWatcher implements Watcher {
 
-    private String localPath;
+    private Integer backId;
 
-    public DirWatcher(String localPath){
-        this.localPath = localPath;
+    public DirWatcher(Integer backId){
+        this.backId = backId;
     }
 
     /**
@@ -46,9 +49,9 @@ public class DirWatcher implements Watcher {
      */
     public static void setWatchMonitor(Backup backup) {
         if (backup.getMonitor() != DictConstants.MONITOR_ENABLE) return;
-        String key = CacheUtil.WATCHER_KEY + "_" + backup.getId();
+        String key = CacheUtil.WATCHER_KEY + backup.getId();
         remove(backup.getId());
-        WatchMonitor monitor = WatchMonitor.createAll(backup.getLocalPath(), new DelayWatcher(new DirWatcher(backup.getLocalPath()), 500));
+        WatchMonitor monitor = WatchMonitor.createAll(backup.getLocalPath(), new DelayWatcher(new DirWatcher(backup.getId()), 500));
         CacheUtil.set(key,monitor);
         //监听所有目录
         monitor.setMaxDepth(Integer.MAX_VALUE);
@@ -61,7 +64,7 @@ public class DirWatcher implements Watcher {
      * @param id 备份任务ID
      */
     public static void remove(int id){
-        String key = CacheUtil.WATCHER_KEY + "_" + id;
+        String key = CacheUtil.WATCHER_KEY + id;
         if (ObjectUtil.isNotEmpty(CacheUtil.get(key))){
             WatchMonitor monitor = (WatchMonitor) CacheUtil.get(key);
             monitor.close();
@@ -105,20 +108,33 @@ public class DirWatcher implements Watcher {
         String fileName = event.context().toString();//文件名
         String filePath = path + FileUtil.FILE_SEPARATOR + fileName;
         if (FileUtil.isFile(filePath)){
-            String localPath = this.getLocalPath();
-            Backup backup = BackupContextHolder.getBackupByLocalPath(localPath);
-            System.out.println(backup);
-//            String fileSuffix = FileUtil.getSuffix(fileName);//文件后缀
-//            //备份方法不执行时候执行监听
-//            if (!CommonConstants.BACK_STATE && fileSuffix.length()<=8 && !fileName.startsWith("~$") && !"tmp".equals(fileSuffix)){
-//                String fileId = UploadLogUtil.getFileUploadFileId(path + FileUtil.FILE_SEPARATOR + fileName);
-//                if (StrUtil.isNotEmpty(fileId)){
-//                    UIUtil.console("{} 发生变化，删除后上传新版",filePath);
-//                    AliYunUtil.deleteFile(fileId);//如果文件存在 先删除在重新上传
-//                    UploadLogUtil.removeFileUploadLog(filePath);//删除文件上传日志
-//                }
-//                BackupUtil.monitorUpload(path,fileName,backup);
-//            }
+            /**
+             * 没有点击左上角的开始备份
+             * 也没有点击右键菜单里的开始备份
+             * 定时备份也没有执行
+             */
+            if (Home.getInstance().getStartButton().getModel().isEnabled()){
+                //单个备份
+                String key = CacheUtil.BACKUP_ID_KEY + this.backId;
+                //定时备份
+                String cronKey = CacheUtil.BACKUP_ID_KEY + this.backId;
+                if (ObjectUtil.isEmpty(CacheUtil.get(key)) && ObjectUtil.isEmpty(CacheUtil.get(cronKey))) {
+                    String fileSuffix = FileUtil.getSuffix(fileName);//文件后缀
+                    //备份方法不执行时候执行监听
+                    if (fileSuffix.length()<=8 && !fileName.startsWith("~$") && !"tmp".equals(fileSuffix)){
+                        UploadRecord uploadRecord = UploadRecordContextHolder.getUploadRecordByFilePath(path + FileUtil.FILE_SEPARATOR + fileName);
+                        if (ObjectUtil.isNotEmpty(uploadRecord)){
+                            UIUtil.console("{} 发生变化，删除后上传新版",filePath);
+                            //如果文件存在 先删除在重新上传
+                            AliYunUtil.deleteFile(uploadRecord.getFileId());
+                            //删除文件上传记录
+                            UploadRecordContextHolder.delUploadRecord(uploadRecord.getId());
+                        }
+                        Backup backup = BackupContextHolder.getBackupById(this.backId);
+                        BackupUtil.monitorUpload(path,fileName,backup);
+                    }
+                }
+            }
         }
     }
 

@@ -8,12 +8,16 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import xin.xingk.www.common.CommonConstants;
 import xin.xingk.www.context.BackupContextHolder;
+import xin.xingk.www.context.UploadRecordContextHolder;
 import xin.xingk.www.entity.Backup;
+import xin.xingk.www.entity.UploadRecord;
 import xin.xingk.www.ui.Home;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Description: 操作阿里云盘工具类
@@ -28,18 +32,23 @@ public class BackupUtil {
      * @param id 备份任务ID
      */
     public static void startBackup(Integer id) {
-        CommonConstants.CLEAN_CONSOLE = 1;
         boolean login = AliYunUtil.login();//登录阿里云
         if (!login) return;
+        String key = CacheUtil.BACKUP_ID_KEY + id;
+        String cronKey = CacheUtil.CRON_TASK_ID_KEY + id;
         if (id == null){
             List<Backup> backupList = BackupContextHolder.getBackupList();
             for (Backup backup : backupList) {
                 backupTask(backup);
+                CacheUtil.remove(key);
+                CacheUtil.remove(cronKey);
             }
             Home.getInstance().getStartButton().setEnabled(true);
         }else {
             Backup backup = BackupContextHolder.getBackupById(id);
             backupTask(backup);
+            CacheUtil.remove(key);
+            CacheUtil.remove(cronKey);
         }
     }
 
@@ -87,8 +96,8 @@ public class BackupUtil {
      */
     public static void uploadFileList(List<String> fileList, String pathId,int backupType){
         if (ObjectUtil.isEmpty(fileList)) return;
-        List<String> logList = UploadLogUtil.getFileUploadList();
-        fileList.removeAll(logList);
+        List<String> uploadRecordList = UploadRecordContextHolder.getUploadRecordList().stream().map(UploadRecord::getFilePath).collect(Collectors.toList());
+        fileList.removeAll(uploadRecordList);
         for (String filePath :  fileList) {
             String fileSuffix = FileUtil.getSuffix(filePath);//文件后缀
             if (FileUtil.getPrefix(filePath).startsWith("~$") || fileSuffix.length()>=8){
@@ -132,8 +141,8 @@ public class BackupUtil {
      */
     public static void doUploadFile(String fileId,Map<String, String> fileInfo){
         //写入上传文件的路径
-        String id = UploadLogUtil.getFileUploadFileId(fileInfo.get("path"));
-        if (StrUtil.isEmpty(id)){
+        UploadRecord uploadRecord = UploadRecordContextHolder.getUploadRecordByFilePath(fileInfo.get("path"));
+        if (ObjectUtil.isEmpty(uploadRecord)){
             UIUtil.console("开始上传：{}",fileInfo.get("path"));
             JSONObject uploadFile = AliYunUtil.uploadFile(fileId,fileInfo);
             JSONArray part_info_list = uploadFile.getJSONArray("part_info_list");
@@ -160,18 +169,30 @@ public class BackupUtil {
             if (StrUtil.isEmpty(uploadFile.getStr("exist"))){//上传完成
                 JSONObject result = AliYunUtil.completeFile(upFileId, uploadId);
                 if ("available".equals(result.getStr("status")) || StrUtil.isNotEmpty(result.getStr("created_at"))){
-                    UploadLogUtil.addFileUploadLog(fileInfo.get("path"),upFileId);
-                    UIUtil.console("上传文件成功：{}",fileInfo.get("name"));
+                    addUploadRecord(fileInfo, upFileId);
                 }
             }else if ("available".equals(uploadFile.getStr("status"))){//已经存在的文件
-                UploadLogUtil.addFileUploadLog(fileInfo.get("path"),upFileId);
-                UIUtil.console("上传文件成功：{}",fileInfo.get("name"));
+                addUploadRecord(fileInfo, upFileId);
             }
         }else {
             UIUtil.console("{} 已上传 跳过",fileInfo.get("path"));
         }
 
     }
-    
-    
+
+    /**
+     * 添加上传记录
+     * @param fileInfo 文件信息
+     * @param upFileId 阿里云盘的文件ID
+     */
+    private static void addUploadRecord(Map<String, String> fileInfo, String upFileId) {
+        UploadRecord uploadRecord = new UploadRecord();
+        uploadRecord.setFileHash(fileInfo.get("content_hash"));
+        uploadRecord.setFileId(upFileId);
+        uploadRecord.setFilePath(fileInfo.get("path"));
+        UploadRecordContextHolder.addUploadRecord(uploadRecord);
+        UIUtil.console("上传文件成功：{}",fileInfo.get("name"));
+    }
+
+
 }

@@ -1,4 +1,4 @@
-package xin.xingk.www.context.service;
+package xin.xingk.www.mybatis.service;
 
 import cn.hutool.core.util.ObjectUtil;
 import xin.xingk.www.entity.User;

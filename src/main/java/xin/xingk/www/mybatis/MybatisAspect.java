@@ -3,8 +3,10 @@ package xin.xingk.www.mybatis;
 
 import cn.hutool.aop.aspects.SimpleAspect;
 import lombok.extern.slf4j.Slf4j;
-import xin.xingk.www.context.service.BackupService;
-import xin.xingk.www.context.service.UserService;
+import xin.xingk.www.mybatis.mapper.UploadRecordMapper;
+import xin.xingk.www.mybatis.service.BackupService;
+import xin.xingk.www.mybatis.service.UploadRecordService;
+import xin.xingk.www.mybatis.service.UserService;
 import xin.xingk.www.mybatis.mapper.BackupMapper;
 import xin.xingk.www.mybatis.mapper.UserMapper;
 
@@ -29,6 +31,7 @@ public class MybatisAspect extends SimpleAspect {
             MybatisPlusUtil.getSqlSession();
             UserService.userMapper = MybatisPlusUtil.getMapper(UserMapper.class);
             BackupService.backupMapper = MybatisPlusUtil.getMapper(BackupMapper.class);
+            UploadRecordService.uploadRecordMapper = MybatisPlusUtil.getMapper(UploadRecordMapper.class);
             log.debug(">>> SqlSession进行初始化。。。");
         } catch (Exception e) {
             lock.unlock();

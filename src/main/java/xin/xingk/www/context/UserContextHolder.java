@@ -1,7 +1,7 @@
 package xin.xingk.www.context;
 
 import cn.hutool.aop.ProxyUtil;
-import xin.xingk.www.context.service.UserService;
+import xin.xingk.www.mybatis.service.UserService;
 import xin.xingk.www.mybatis.MybatisAspect;
 
 /**

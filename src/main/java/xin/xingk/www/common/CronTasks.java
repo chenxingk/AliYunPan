@@ -2,13 +2,16 @@ package xin.xingk.www.common;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.cron.CronUtil;
 import xin.xingk.www.context.BackupContextHolder;
 import xin.xingk.www.context.UserContextHolder;
 import xin.xingk.www.entity.Backup;
+import xin.xingk.www.ui.Home;
 import xin.xingk.www.util.AliYunUtil;
 import xin.xingk.www.util.BackupUtil;
+import xin.xingk.www.util.CacheUtil;
 import xin.xingk.www.util.UIUtil;
 
 import java.util.List;
@@ -54,6 +57,19 @@ public class CronTasks {
      */
     public static void backFileList(int id){
         try {
+            String key = CacheUtil.BACKUP_ID_KEY + id;
+            if (!Home.getInstance().getStartButton().getModel().isEnabled() || ObjectUtil.isNotEmpty(CacheUtil.get(key))){
+                Backup backup = BackupContextHolder.getBackupById(id);
+                UIUtil.console("本地目录：{}，定时备份跳过，此目录正在备份中。。。",backup.getLocalPath());
+                return;
+            }
+            /**
+             * 没有点击左上角的开始备份
+             * 也没有点击右键菜单里的开始备份
+             * 设置定时备份的缓存做标记
+             */
+            key = CacheUtil.CRON_TASK_ID_KEY + id;
+            CacheUtil.set(key,id);
             //执行上传文件操作
             ThreadUtil.execute(() -> BackupUtil.startBackup(id));
         } catch (Exception e) {

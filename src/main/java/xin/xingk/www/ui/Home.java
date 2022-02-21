@@ -16,6 +16,7 @@ import xin.xingk.www.ui.dialog.Edit;
 import xin.xingk.www.ui.menu.TableMenuBar;
 import xin.xingk.www.util.BackupUtil;
 import xin.xingk.www.util.CacheUtil;
+import xin.xingk.www.util.UIUtil;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -233,14 +234,19 @@ public class Home {
      * 备份表格数据
      */
     public static void backupTable() {
+        home = getInstance();
+        if (!home.getStartButton().getModel().isEnabled()) {
+            JOptionPane.showMessageDialog(null, "此任务当前正在备份中。。。", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
+        }
         //先判断有没有选中
         JTable table = Home.getInstance().getTable();
         //获取选中的行
         int row = table.getSelectedRow();
         if (row > -1) {
             int id = (int) table.getValueAt(row, 0);
-            String key = CacheUtil.BACKUP_ID_KEY + "_" + id;
-            if (ObjectUtil.isNotEmpty(CacheUtil.get(key))) {
+            String key = CacheUtil.BACKUP_ID_KEY + id;
+            String cronKey = CacheUtil.CRON_TASK_ID_KEY + id;
+            if (ObjectUtil.isNotEmpty(CacheUtil.get(key)) || ObjectUtil.isNotEmpty(CacheUtil.get(cronKey))) {
                 JOptionPane.showMessageDialog(null, "此任务当前正在备份中。。。", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 CacheUtil.set(key, id);

@@ -1,4 +1,4 @@
-package xin.xingk.www.context.service;
+package xin.xingk.www.mybatis.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
