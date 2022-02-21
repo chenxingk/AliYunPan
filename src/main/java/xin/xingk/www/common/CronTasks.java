@@ -45,9 +45,9 @@ public class CronTasks {
      * @param backup 备份任务
      */
     public static void setTimeTask(Backup backup) {
-        if (StrUtil.isEmpty(backup.getBackupTime())) return;
         String id = String.valueOf(backup.getId());
         CronUtil.remove(id);
+        if (StrUtil.isEmpty(backup.getBackupTime())) return;
         String cronTab = DateUtil.format(DateUtil.parse(backup.getBackupTime()), "ss mm HH * * ?");
         CronUtil.schedule(id,cronTab, () -> backFileList(backup.getId()));
     }

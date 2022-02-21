@@ -8,6 +8,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Data;
 import xin.xingk.www.common.CronTasks;
 import xin.xingk.www.common.DictConstants;
+import xin.xingk.www.common.DirWatcher;
 import xin.xingk.www.context.BackupContextHolder;
 import xin.xingk.www.entity.Backup;
 import xin.xingk.www.ui.Home;
@@ -147,6 +148,8 @@ public class Edit extends JDialog implements FocusListener {
                 }
                 //设置定时任务
                 CronTasks.setTimeTask(backup);
+                //设置目录检测
+                DirWatcher.setWatchMonitor(backup);
                 dispose();
                 Home.initTableData();
             }
