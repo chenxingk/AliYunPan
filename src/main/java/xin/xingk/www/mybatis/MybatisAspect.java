@@ -9,6 +9,7 @@ import xin.xingk.www.mybatis.mapper.BackupMapper;
 import xin.xingk.www.mybatis.mapper.UserMapper;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Author: 陈靖杰
@@ -18,13 +19,21 @@ import java.lang.reflect.Method;
 @Slf4j
 public class MybatisAspect extends SimpleAspect {
 
+    //加锁解决并发问题
+    private final ReentrantLock lock = new ReentrantLock();
+
     @Override
     public boolean before(Object target, Method method, Object[] args) {
-        //想办法加锁 SqlSession没用完不能拿新的 让它等着
-        MybatisPlusUtil.getSqlSession();
-        UserService.userMapper = MybatisPlusUtil.getMapper(UserMapper.class);
-        BackupService.backupMapper = MybatisPlusUtil.getMapper(BackupMapper.class);
-        log.debug(">>> SqlSession进行初始化。。。");
+        lock.lock();
+        try {
+            MybatisPlusUtil.getSqlSession();
+            UserService.userMapper = MybatisPlusUtil.getMapper(UserMapper.class);
+            BackupService.backupMapper = MybatisPlusUtil.getMapper(BackupMapper.class);
+            log.debug(">>> SqlSession进行初始化。。。");
+        } catch (Exception e) {
+            lock.unlock();
+            log.error(">>> SqlSession初始化。。。 出现异常！！！异常信息：{}",e.getMessage());
+        }
         return true;
     }
 
@@ -32,6 +41,7 @@ public class MybatisAspect extends SimpleAspect {
     public boolean after(Object target, Method method, Object[] args, Object returnVal) {
         MybatisPlusUtil.closeSqlSession();
         log.debug(">>> SqlSession关闭。。。");
+        lock.unlock();
         return true;
     }
 

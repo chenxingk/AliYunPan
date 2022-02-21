@@ -1,5 +1,7 @@
 package xin.xingk.www;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.date.TimeInterval;
 import cn.hutool.core.thread.ThreadUtil;
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.common.CommonConstants;
@@ -23,6 +25,7 @@ public class App {
 
 
     public static void main( String[] args ) {
+        TimeInterval timer = DateUtil.timer();
         UIUtil.initTheme();
         CommonConstants.LOGIN_STATUS = AliYunUtil.login();
         mainFrame = new MainFrame();
@@ -40,6 +43,7 @@ public class App {
         mainFrame.pack();
         mainFrame.setVisible(true);
 
+        log.info("启动耗时："+timer.interval()+" ms");
         /**
          * 并发点...
          */

@@ -76,7 +76,7 @@ public class DirWatcher implements Watcher {
      */
     @Override
     public void onCreate(WatchEvent<?> event, Path currentPath) {
-        String path = currentPath.toString();//文件路径
+        /*String path = currentPath.toString();//文件路径
         String fileName = event.context().toString();//文件名
         String filePath = path + FileUtil.FILE_SEPARATOR + fileName;
         if (FileUtil.isFile(filePath)){
@@ -91,7 +91,7 @@ public class DirWatcher implements Watcher {
                     BackupUtil.monitorUpload(path,fileName,backup);
                 }
             }
-        }
+        }*/
     }
 
     /**
@@ -105,13 +105,9 @@ public class DirWatcher implements Watcher {
         String fileName = event.context().toString();//文件名
         String filePath = path + FileUtil.FILE_SEPARATOR + fileName;
         if (FileUtil.isFile(filePath)){
-            try {
-                String localPath = this.getLocalPath();
-                Backup backup = BackupContextHolder.getBackupByLocalPath(localPath);
-                System.out.println(backup);
-            } catch (Exception e) {
-                MybatisPlusUtil.closeSqlSession();
-            }
+            String localPath = this.getLocalPath();
+            Backup backup = BackupContextHolder.getBackupByLocalPath(localPath);
+            System.out.println(backup);
 //            String fileSuffix = FileUtil.getSuffix(fileName);//文件后缀
 //            //备份方法不执行时候执行监听
 //            if (!CommonConstants.BACK_STATE && fileSuffix.length()<=8 && !fileName.startsWith("~$") && !"tmp".equals(fileSuffix)){
