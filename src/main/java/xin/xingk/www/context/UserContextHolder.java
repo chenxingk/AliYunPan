@@ -2,7 +2,7 @@ package xin.xingk.www.context;
 
 import cn.hutool.aop.ProxyUtil;
 import xin.xingk.www.mybatis.service.UserService;
-import xin.xingk.www.mybatis.MybatisAspect;
+import xin.xingk.www.mybatis.config.MybatisAspect;
 
 /**
  * Author: 陈靖杰

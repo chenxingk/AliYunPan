@@ -1,4 +1,4 @@
-package xin.xingk.www.mybatis;
+package xin.xingk.www.mybatis.config;
 
 import cn.hutool.core.io.file.FileWriter;
 import cn.hutool.core.io.resource.ResourceUtil;
@@ -38,10 +38,10 @@ import java.util.jar.JarFile;
 /**
  * Author: 陈靖杰
  * Date: 2022/2/14 09:29
- * Description: MybatisPlusUtil
+ * Description: MybatisPlusConfig
  */
 @Slf4j
-public class MybatisPlusUtil {
+public class MybatisPlusConfig {
     //SQL会话工厂
     public static SqlSessionFactory sqlSessionFactory;
     //SqlSession

@@ -1,8 +1,9 @@
-package xin.xingk.www.mybatis;
+package xin.xingk.www.mybatis.config;
 
 
 import cn.hutool.aop.aspects.SimpleAspect;
 import lombok.extern.slf4j.Slf4j;
+import xin.xingk.www.mybatis.config.MybatisPlusConfig;
 import xin.xingk.www.mybatis.mapper.UploadRecordMapper;
 import xin.xingk.www.mybatis.service.BackupService;
 import xin.xingk.www.mybatis.service.UploadRecordService;
@@ -28,10 +29,10 @@ public class MybatisAspect extends SimpleAspect {
     public boolean before(Object target, Method method, Object[] args) {
         lock.lock();
         try {
-            MybatisPlusUtil.getSqlSession();
-            UserService.userMapper = MybatisPlusUtil.getMapper(UserMapper.class);
-            BackupService.backupMapper = MybatisPlusUtil.getMapper(BackupMapper.class);
-            UploadRecordService.uploadRecordMapper = MybatisPlusUtil.getMapper(UploadRecordMapper.class);
+            MybatisPlusConfig.getSqlSession();
+            UserService.userMapper = MybatisPlusConfig.getMapper(UserMapper.class);
+            BackupService.backupMapper = MybatisPlusConfig.getMapper(BackupMapper.class);
+            UploadRecordService.uploadRecordMapper = MybatisPlusConfig.getMapper(UploadRecordMapper.class);
             log.debug(">>> SqlSession进行初始化。。。");
         } catch (Exception e) {
             lock.unlock();
@@ -42,7 +43,7 @@ public class MybatisAspect extends SimpleAspect {
 
     @Override
     public boolean after(Object target, Method method, Object[] args, Object returnVal) {
-        MybatisPlusUtil.closeSqlSession();
+        MybatisPlusConfig.closeSqlSession();
         log.debug(">>> SqlSession关闭。。。");
         lock.unlock();
         return true;
@@ -50,7 +51,7 @@ public class MybatisAspect extends SimpleAspect {
 
     @Override
     public boolean afterException(Object target, Method method, Object[] args, Throwable e) {
-        MybatisPlusUtil.closeSqlSession();
+        MybatisPlusConfig.closeSqlSession();
         log.error(">>> 出现异常！！！SqlSession关闭。。。异常信息：{}",e.getMessage());
         return true;
     }
