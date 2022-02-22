@@ -39,10 +39,10 @@ public class DirWatcher implements Watcher {
      */
     public static void startWatcher() {
         List<Backup> backupList = BackupContextHolder.getBackupList();
+        if (ObjectUtil.isEmpty(backupList)) return;
         for (Backup backup : backupList) {
             setWatchMonitor(backup);
         }
-        if (ObjectUtil.isNotEmpty(backupList)) UIUtil.console("目录检测开启成功");
     }
 
     /**
@@ -59,6 +59,7 @@ public class DirWatcher implements Watcher {
         monitor.setMaxDepth(Integer.MAX_VALUE);
         //启动监听
         monitor.start();
+        UIUtil.console("目录：{}，检测开启成功",backup.getLocalPath());
     }
 
     /**

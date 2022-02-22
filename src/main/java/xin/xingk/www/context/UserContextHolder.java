@@ -35,6 +35,14 @@ public class UserContextHolder {
     }
 
     /**
+     * 获取当前DB版本号
+     * @return
+     */
+    public static String getDbVersion(){
+        return userService.getUserInfo().getVersion();
+    }
+
+    /**
      * 更新用户主题
      * @param theme 主题名称
      */

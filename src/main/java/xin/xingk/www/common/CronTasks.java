@@ -33,7 +33,6 @@ public class CronTasks {
         for (Backup backup : backupList) {
             setTimeTask(backup);
         }
-        UIUtil.console("定时备份开启成功");
         //开启定时
         CronUtil.start();
         //支持秒级别定时任务
@@ -50,6 +49,7 @@ public class CronTasks {
         if (StrUtil.isEmpty(backup.getBackupTime())) return;
         String cronTab = DateUtil.format(DateUtil.parse(backup.getBackupTime()), "ss mm HH * * ?");
         CronUtil.schedule(id,cronTab, () -> backFileList(backup.getId()));
+        UIUtil.console("目录：{}，将在每天【{}】自动备份",backup.getLocalPath(),backup.getBackupTime());
     }
 
     /**
