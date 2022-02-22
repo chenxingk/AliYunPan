@@ -5,7 +5,6 @@ import cn.hutool.core.util.StrUtil;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import lombok.extern.slf4j.Slf4j;
-import xin.xingk.www.common.CommonConstants;
 import xin.xingk.www.context.UserContextHolder;
 import xin.xingk.www.ui.Home;
 

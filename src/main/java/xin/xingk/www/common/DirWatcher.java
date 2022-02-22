@@ -5,6 +5,7 @@ import cn.hutool.core.io.watch.Watcher;
 import cn.hutool.core.io.watch.watchers.DelayWatcher;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.Data;
+import xin.xingk.www.common.constant.DictConstants;
 import xin.xingk.www.context.BackupContextHolder;
 import xin.xingk.www.context.UploadRecordContextHolder;
 import xin.xingk.www.entity.Backup;
@@ -113,6 +114,7 @@ public class DirWatcher implements Watcher {
              * 也没有点击右键菜单里的开始备份
              * 定时备份也没有执行
              */
+
             if (Home.getInstance().getStartButton().getModel().isEnabled()){
                 //单个备份
                 String key = CacheUtil.BACKUP_ID_KEY + this.backId;

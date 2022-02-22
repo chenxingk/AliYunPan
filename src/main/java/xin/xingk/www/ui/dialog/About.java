@@ -4,7 +4,7 @@ import cn.hutool.core.swing.DesktopUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Data;
-import xin.xingk.www.common.CommonConstants;
+import xin.xingk.www.common.constant.CommonConstants;
 import xin.xingk.www.util.ComponentUtil;
 
 import javax.swing.*;

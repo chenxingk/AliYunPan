@@ -13,7 +13,7 @@ import okhttp3.*;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import xin.xingk.www.common.CommonConstants;
+import xin.xingk.www.common.constant.CommonConstants;
 import xin.xingk.www.context.UserContextHolder;
 
 import java.io.IOException;

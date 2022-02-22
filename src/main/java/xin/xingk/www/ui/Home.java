@@ -8,7 +8,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Data;
-import xin.xingk.www.common.DictConstants;
+import xin.xingk.www.common.constant.DictConstants;
 import xin.xingk.www.common.DirWatcher;
 import xin.xingk.www.context.BackupContextHolder;
 import xin.xingk.www.entity.Backup;
@@ -16,7 +16,6 @@ import xin.xingk.www.ui.dialog.Edit;
 import xin.xingk.www.ui.menu.TableMenuBar;
 import xin.xingk.www.util.BackupUtil;
 import xin.xingk.www.util.CacheUtil;
-import xin.xingk.www.util.UIUtil;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;

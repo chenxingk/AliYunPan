@@ -6,7 +6,7 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.App;
-import xin.xingk.www.common.CommonConstants;
+import xin.xingk.www.common.constant.CommonConstants;
 import xin.xingk.www.context.UserContextHolder;
 import xin.xingk.www.ui.dialog.About;
 import xin.xingk.www.util.UIUtil;

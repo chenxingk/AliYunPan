@@ -3,7 +3,7 @@ package xin.xingk.www.util;
 import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
-import xin.xingk.www.common.CommonConstants;
+import xin.xingk.www.common.constant.CommonConstants;
 
 import java.io.File;
 import java.nio.ByteBuffer;

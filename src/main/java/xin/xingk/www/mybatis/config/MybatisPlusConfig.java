@@ -20,9 +20,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
-import xin.xingk.www.common.CommonConstants;
-import xin.xingk.www.mybatis.config.CustomMetaObjectHandler;
-import xin.xingk.www.mybatis.config.CustomerIdGenerator;
+import xin.xingk.www.common.constant.CommonConstants;
 
 import javax.sql.DataSource;
 import java.io.File;

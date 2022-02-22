@@ -2,7 +2,7 @@ package xin.xingk.www.ui;
 
 import com.formdev.flatlaf.extras.FlatSVGUtils;
 import lombok.extern.slf4j.Slf4j;
-import xin.xingk.www.common.CommonConstants;
+import xin.xingk.www.common.constant.CommonConstants;
 import xin.xingk.www.context.UserContextHolder;
 import xin.xingk.www.ui.menu.TopMenuBar;
 import xin.xingk.www.util.ComponentUtil;

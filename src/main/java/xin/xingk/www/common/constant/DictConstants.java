@@ -1,4 +1,4 @@
-package xin.xingk.www.common;
+package xin.xingk.www.common.constant;
 
 import java.util.HashMap;
 import java.util.Map;
