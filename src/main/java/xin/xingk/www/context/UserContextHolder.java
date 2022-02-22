@@ -58,4 +58,12 @@ public class UserContextHolder {
     public static void updateUserToken(String token){
         userService.updateUserToken(token);
     }
+
+    /**
+     * SQL执行器
+     * @param sql sql语句
+     */
+    public static void executeSql(String sql){
+        userService.executeSql(sql);
+    }
 }

@@ -23,6 +23,9 @@ public class CommonConstants {
     //当前路径
     public static String SYSTEM_PATH = System.getProperty("user.dir") + File.separator;
 
+    /**
+     * 阿里云接口
+     */
     //获取token
     public final static String TOKEN_URL="https://websv.aliyundrive.com/token/refresh";
     //文件列表

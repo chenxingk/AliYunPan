@@ -109,6 +109,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         devTypes.add("vue");
         devTypes.add("sh");
         devTypes.add("sql");
+        devTypes.add("db");
         devTypes.add("xml");
         devTypes.add("html");
         devTypes.add("conf");

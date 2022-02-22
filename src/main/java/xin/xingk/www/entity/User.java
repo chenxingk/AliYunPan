@@ -22,4 +22,6 @@ public class User extends BaseEntity{
     private String token;
     //主题名称
     private String theme;
+    //当前版本
+    private String version;
 }
