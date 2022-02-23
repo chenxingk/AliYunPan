@@ -1,7 +1,7 @@
 package xin.xingk.www.common;
 
+import cn.hutool.core.io.watch.SimpleWatcher;
 import cn.hutool.core.io.watch.WatchMonitor;
-import cn.hutool.core.io.watch.Watcher;
 import cn.hutool.core.io.watch.watchers.DelayWatcher;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.Data;
@@ -23,7 +23,7 @@ import java.util.List;
  * @description: 目录检测
  */
 @Data
-public class DirWatcher implements Watcher {
+public class DirWatcher extends SimpleWatcher {
 
     /**
      * 备份任务ID
@@ -53,7 +53,7 @@ public class DirWatcher implements Watcher {
         remove(backup.getId());
         if (!DictConstants.MONITOR_ENABLE.equals(backup.getMonitor())) return;
         String key = CacheUtil.WATCHER_KEY + backup.getId();
-        WatchMonitor monitor = WatchMonitor.createAll(backup.getLocalPath(), new DelayWatcher(new DirWatcher(backup.getId()), 500));
+        WatchMonitor monitor = WatchMonitor.createAll(backup.getLocalPath(), new DelayWatcher(new DirWatcher(backup.getId()), 1000));
         CacheUtil.set(key,monitor);
         //监听所有目录
         monitor.setMaxDepth(Integer.MAX_VALUE);
@@ -139,15 +139,5 @@ public class DirWatcher implements Watcher {
                 }
             }
         }
-    }
-
-    @Override
-    public void onDelete(WatchEvent<?> event, Path currentPath) {
-
-    }
-
-    @Override
-    public void onOverflow(WatchEvent<?> event, Path currentPath) {
-
     }
 }
