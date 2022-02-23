@@ -47,7 +47,7 @@ public class UpdateUtil {
                 return true;
             }
             //强更新
-            if (updateType ==1) System.exit(0);
+            if (updateType == 1) System.exit(0);
         }
         return false;
     }

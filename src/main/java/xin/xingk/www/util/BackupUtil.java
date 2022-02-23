@@ -58,7 +58,6 @@ public class BackupUtil {
     public static void backupTask(Backup backup) {
         //备份目录ID
         String fileId = AliYunUtil.getFileIdByArr(CommonConstants.ROOT,backup.getCloudPath().split("\\\\"));
-        backup.setFileId(fileId);
         scanFolders(backup.getLocalPath(), fileId, backup.getBackupType(),backup);
         UIUtil.console("本次备份：{} 下所有文件成功！...", backup.getLocalPath());
     }

@@ -162,11 +162,14 @@ public class AliYunUtil {
      */
     public static Map<String, Object> getFileIdByPath(String path,Backup backup){
         Map<String, Object> result = new HashMap<>();
-        String fileId = backup.getFileId();//备份目录ID
+        String fileId = getFileIdByArr(CommonConstants.ROOT,backup.getCloudPath().split("\\\\"));//备份目录ID
         Integer backupType = backup.getBackupType();
         if (backupType==0){//普通备份
-            String[] folderArr = StrUtil.subAfter(path, backup.getLocalPath() + FileUtil.FILE_SEPARATOR, false).split("\\\\");
-            fileId = getFileIdByArr(fileId, folderArr);
+            String folderDir = StrUtil.subAfter(path, backup.getLocalPath() + FileUtil.FILE_SEPARATOR, false);
+            if(StrUtil.isNotEmpty(folderDir)){
+                String[] folderArr = folderDir.split("\\\\");
+                fileId = getFileIdByArr(fileId, folderArr);
+            }
         }else if (backupType==2){//微信备份
             //获取月份文件夹
             String month = getMonth(path,backup.getLocalPath());

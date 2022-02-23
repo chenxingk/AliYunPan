@@ -22,12 +22,9 @@ import java.awt.event.WindowEvent;
 @Slf4j
 public class MainFrame extends JFrame {
 
-    public void init() {
+    public MainFrame(){
+        //设置图标
         setIconImages(FlatSVGUtils.createWindowIconImages("/icons/logo.svg"));
-        TopMenuBar topMenuBar = TopMenuBar.getInstance();
-        topMenuBar.init();
-        setJMenuBar(topMenuBar);
-
         // 窗口最小化事件
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -40,8 +37,14 @@ public class MainFrame extends JFrame {
         });
     }
 
+    public void initTopMenuBar() {
+        TopMenuBar topMenuBar = TopMenuBar.getInstance();
+        topMenuBar.init();
+        setJMenuBar(topMenuBar);
+    }
+
     public void initUpdate() {
-        this.init();
+        this.initTopMenuBar();
         this.setTitle("检测更新");
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.3, 0.4);
         this.add(Login.getInstance().getLoginPanel());
@@ -49,7 +52,7 @@ public class MainFrame extends JFrame {
     }
 
     public void initLogin() {
-        this.init();
+        this.initTopMenuBar();
         this.setTitle("扫码登录");
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.3, 0.4);
         this.add(Login.getInstance().getLoginPanel());
@@ -58,7 +61,7 @@ public class MainFrame extends JFrame {
     }
 
     public void initHome() {
-        this.init();
+        this.initTopMenuBar();
         this.setTitle(CommonConstants.TITLE +"，欢迎您："+ UserContextHolder.getUserName());
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.6, 0.8);
         this.add(Home.getInstance().getHomePanel());
@@ -70,7 +73,7 @@ public class MainFrame extends JFrame {
     /**
      * 窗口最小化到任务栏托盘
      */
-    private void miniTray() {
+    public void miniTray() {
         SystemTray tray = SystemTray.getSystemTray();
         ImageIcon trayImg = new ImageIcon(Class.class.getResource("/icons/logo.png"));//托盘图标
         TrayIcon trayIcon = new TrayIcon(trayImg.getImage(), CommonConstants.TITLE);

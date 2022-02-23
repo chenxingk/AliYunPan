@@ -1,7 +1,6 @@
 package xin.xingk.www.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -21,9 +20,6 @@ public class Backup extends BaseEntity{
     private String localPath;
     //云盘目录
     private String cloudPath;
-    //云盘目录ID
-    @TableField(exist = false)
-    private String fileId;
     //备份模式 0普通 1分类 2微信
     private Integer backupType;
     //目录检测 0关闭 1开始

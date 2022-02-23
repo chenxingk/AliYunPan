@@ -5,15 +5,11 @@ import cn.hutool.core.date.TimeInterval;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.system.SystemUtil;
 import lombok.extern.slf4j.Slf4j;
-import xin.xingk.www.common.constant.CommonConstants;
 import xin.xingk.www.common.CronTasks;
 import xin.xingk.www.common.DirWatcher;
-import xin.xingk.www.ui.Home;
 import xin.xingk.www.ui.Login;
 import xin.xingk.www.ui.MainFrame;
-import xin.xingk.www.util.AliYunUtil;
 import xin.xingk.www.util.UIUtil;
-import xin.xingk.www.util.UpdateUtil;
 
 import javax.swing.*;
 

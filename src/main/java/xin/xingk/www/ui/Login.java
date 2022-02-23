@@ -1,6 +1,5 @@
 package xin.xingk.www.ui;
 
-import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.qrcode.QrCodeUtil;
@@ -60,7 +59,7 @@ public class Login {
     public static void initUpdate() {
         login = getInstance();
         login.getInfoLabel().setText("");
-        login.getQrCodeLabel().setText("检测更新程序……");
+        login.getQrCodeLabel().setText("检测程序是否有更新……");
         //检查是否有更新
         if (UpdateUtil.checkForUpdate()) return;
         //检查更新程序DB
