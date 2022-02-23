@@ -1,5 +1,6 @@
 package xin.xingk.www.ui;
 
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.qrcode.QrCodeUtil;
@@ -11,8 +12,10 @@ import lombok.Data;
 import xin.xingk.www.App;
 import xin.xingk.www.common.constant.CommonConstants;
 import xin.xingk.www.context.UserContextHolder;
+import xin.xingk.www.util.AliYunUtil;
 import xin.xingk.www.util.ComponentUtil;
 import xin.xingk.www.util.OkHttpUtil;
+import xin.xingk.www.util.UpdateUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,21 +57,37 @@ public class Login {
     /**
      * 初始化窗口UI
      */
-    public static void initUi() {
+    public static void initUpdate() {
         login = getInstance();
-        login.getTipsLabel().setFont(FlatUIUtils.nonUIResource(UIManager.getFont("small.font")));
+        login.getInfoLabel().setText("");
+        login.getQrCodeLabel().setText("检测更新……");
+        CommonConstants.LOGIN_STATUS = AliYunUtil.login();
+        Home.initUi();
+        //检查是否有更新
+        if (UpdateUtil.checkForUpdate()) return;
+
+        if (CommonConstants.LOGIN_STATUS) {
+            login.getQrCodeLabel().setText("正在登录……");
+            App.mainFrame.initHome();
+        } else {
+            login.getQrCodeLabel().setText("加载二维码……");
+            App.mainFrame.initLogin();
+        }
     }
+
 
     /**
      * 初始化二维码
      */
     public static void initQrCode() {
+        login = getInstance();
+        login.getTipsLabel().setFont(FlatUIUtils.nonUIResource(UIManager.getFont("small.font")));
+        login.getInfoLabel().setText("注：请使用阿里云盘APP，扫描二维码");
         //获取二维码
         getQrCodeImg();
         //定时刷新二维码
         new Timer().schedule(new TimerTask() {
             public void run() {
-                login = getInstance();
                 JLabel tipsLabel = login.getTipsLabel();
                 JSONObject qrCode = OkHttpUtil.queryQrCode(t, ck);
                 String status = qrCode.getJSONObject("content").getJSONObject("data").getStr("qrCodeStatus");

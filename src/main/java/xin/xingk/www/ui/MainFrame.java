@@ -40,6 +40,14 @@ public class MainFrame extends JFrame {
         });
     }
 
+    public void initUpdate() {
+        this.init();
+        this.setTitle("检测更新");
+        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.3, 0.4);
+        this.add(Login.getInstance().getLoginPanel());
+        this.remove(Home.getInstance().getHomePanel());
+    }
+
     public void initLogin() {
         this.init();
         this.setTitle("扫码登录");

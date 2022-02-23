@@ -34,22 +34,14 @@ public class App {
             return;
         }
         TimeInterval timer = DateUtil.timer();
-        CommonConstants.LOGIN_STATUS = AliYunUtil.login();
         mainFrame = new MainFrame();
-        Home.initUi();
-        Login.initUi();
-        //检查是否有更新
-        if (UpdateUtil.checkForUpdate()) return;
-        if(CommonConstants.LOGIN_STATUS){
-            mainFrame.initHome();
-        }else{
-            mainFrame.initLogin();
-        }
+        mainFrame.initUpdate();
+
+        ThreadUtil.execute(Login::initUpdate);
 
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.pack();
         mainFrame.setVisible(true);
-
         log.info("启动耗时："+timer.interval()+" ms");
 
         /**
