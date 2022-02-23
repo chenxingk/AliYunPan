@@ -148,7 +148,7 @@ public class TopMenuBar extends JMenuBar {
      */
     private void logOutActionPerformed() {
         CommonConstants.LOGIN_STATUS = false;
-        UserContextHolder.updateUserToken(null);
+        UserContextHolder.logout();
         App.mainFrame.initLogin();
     }
 

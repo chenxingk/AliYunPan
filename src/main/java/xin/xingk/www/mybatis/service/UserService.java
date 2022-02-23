@@ -75,19 +75,32 @@ public class UserService {
     }
 
     /**
+     * 退出登录
+     */
+    public void logout(){
+        userMapper.logout();
+    }
+
+    /**
+     * 更新用户 version
+     * @param version version
+     */
+    public void updateUserVersion(String version){
+        User user = new User();
+        user.setVersion(version);
+        userMapper.update(user,null);
+    }
+
+    /**
      * SQL执行器
      * @param sql sql语句
      */
-    public void executeSql(String sql){
-        try {
-            SqlSession sqlSession = MybatisPlusConfig.sqlSession;
-            Connection connection = sqlSession.getConnection();
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate(sql);
-            stmt.close();
-        } catch (SQLException e) {
-            log.error(">>> SQL执行器发生异常：{}",e.getMessage());
-        }
+    public void executeSql(String sql) throws SQLException {
+        SqlSession sqlSession = MybatisPlusConfig.sqlSession;
+        Connection connection = sqlSession.getConnection();
+        Statement stmt = connection.createStatement();
+        stmt.executeUpdate(sql);
+        stmt.close();
     }
 
 }

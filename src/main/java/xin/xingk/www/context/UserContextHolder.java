@@ -4,6 +4,8 @@ import cn.hutool.aop.ProxyUtil;
 import xin.xingk.www.mybatis.service.UserService;
 import xin.xingk.www.mybatis.config.MybatisAspect;
 
+import java.sql.SQLException;
+
 /**
  * Author: 陈靖杰
  * Date: 2022/2/16 10:18
@@ -68,10 +70,26 @@ public class UserContextHolder {
     }
 
     /**
+     * 退出登录
+     */
+    public static void logout(){
+        userService.logout();
+    }
+
+    /**
+     * 并发点
+     * 更新用户 version
+     * @param version version
+     */
+    public static void updateUserVersion(String version){
+        userService.updateUserVersion(version);
+    }
+
+    /**
      * SQL执行器
      * @param sql sql语句
      */
-    public static void executeSql(String sql){
+    public static void executeSql(String sql) throws SQLException {
         userService.executeSql(sql);
     }
 }
