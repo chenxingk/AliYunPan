@@ -162,7 +162,6 @@
         <version>1.6.3</version>
         <configuration>
           <bundleJre>true</bundleJre>
-          <copyDependencies>false</copyDependencies>
           <mainClass>xin.xingk.www.App</mainClass>
           <generateInstaller>true</generateInstaller>
         </configuration>
@@ -176,7 +175,7 @@
             <configuration>
               <platform>windows</platform>
               <createZipball>true</createZipball>
-              <!--                            <administratorRequired>true</administratorRequired>-->
+              <administratorRequired>true</administratorRequired>
               <winConfig>
 
                 <!-- general properties -->

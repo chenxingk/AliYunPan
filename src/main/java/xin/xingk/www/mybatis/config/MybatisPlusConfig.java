@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerIntercept
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
+import org.apache.ibatis.logging.slf4j.Slf4jImpl;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSession;
@@ -20,6 +21,9 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import xin.xingk.www.common.constant.CommonConstants;
+import xin.xingk.www.mybatis.mapper.BackupMapper;
+import xin.xingk.www.mybatis.mapper.UploadRecordMapper;
+import xin.xingk.www.mybatis.mapper.UserMapper;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -110,9 +114,12 @@ public class MybatisPlusConfig {
         configuration.setUseGeneratedKeys(true);
         configuration.addInterceptor(initInterceptor());
         //扫描mapper接口所在包
-        configuration.addMappers("xin.xingk.www.mybatis.mapper");
+//        configuration.addMappers("xin.xingk.www.mybatis.mapper");
+        configuration.addMapper(UserMapper.class);
+        configuration.addMapper(UploadRecordMapper.class);
+        configuration.addMapper(BackupMapper.class);
         //配置日志实现
-//        configuration.setLogImpl(Slf4jImpl.class);
+        configuration.setLogImpl(Slf4jImpl.class);
         //设置数据源
         Environment environment = new Environment("1", new JdbcTransactionFactory(), initDataSource());
         configuration.setEnvironment(environment);
