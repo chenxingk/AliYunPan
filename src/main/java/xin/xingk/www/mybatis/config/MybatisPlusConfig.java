@@ -13,7 +13,6 @@ import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerIntercept
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
-import org.apache.ibatis.logging.slf4j.Slf4jImpl;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSession;
@@ -30,6 +29,7 @@ import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -47,6 +47,9 @@ public class MybatisPlusConfig {
 
     //DB文件
     private static File dbFile = new File(CommonConstants.CONFIG_HOME + "backupAider.db");
+
+    //加锁解决并发问题
+    private static  ReentrantLock lock = new ReentrantLock();
 
     /**
      * 初始化 SqlSessionFactory
@@ -71,6 +74,7 @@ public class MybatisPlusConfig {
      * 获取当前 SQLSession
      */
     public static void getSqlSession(){
+        lock.lock();
         sqlSession = sqlSessionFactory.openSession();
     }
 
@@ -81,6 +85,7 @@ public class MybatisPlusConfig {
      * @return
      */
     public static <T> T getMapper(Class<T> mapper){
+        getSqlSession();
         return sqlSession.getMapper(mapper);
     }
 
@@ -90,6 +95,7 @@ public class MybatisPlusConfig {
     public static void closeSqlSession() {
         sqlSession.commit();
         sqlSession.close();
+        lock.unlock();
     }
 
     /**
@@ -106,7 +112,7 @@ public class MybatisPlusConfig {
         //扫描mapper接口所在包
         configuration.addMappers("xin.xingk.www.mybatis.mapper");
         //配置日志实现
-        configuration.setLogImpl(Slf4jImpl.class);
+//        configuration.setLogImpl(Slf4jImpl.class);
         //设置数据源
         Environment environment = new Environment("1", new JdbcTransactionFactory(), initDataSource());
         configuration.setEnvironment(environment);

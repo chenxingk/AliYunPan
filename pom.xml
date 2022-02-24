@@ -99,8 +99,8 @@
     <!--连接池-->
     <dependency>
       <groupId>com.zaxxer</groupId>
-      <artifactId>HikariCP</artifactId>
-      <version>4.0.3</version>
+      <artifactId>HikariCP-java7</artifactId>
+      <version>2.4.13</version>
     </dependency>
 
     <!--SQLite-->
@@ -139,14 +139,30 @@
 <!--  </build>-->
 
   <build>
+        <resources>
+          <resource>
+            <directory>src/main/resources</directory>
+            <includes>
+              <include>**</include>
+            </includes>
+          </resource>
+        </resources>
+        <testResources>
+          <testResource>
+            <directory>src/main/resources</directory>
+            <includes>
+              <include>**</include>
+            </includes>
+          </testResource>
+        </testResources>
     <plugins>
       <plugin>
         <groupId>io.github.fvarrui</groupId>
         <artifactId>javapackager</artifactId>
         <version>1.6.3</version>
         <configuration>
-          <jrePath>D:\Program Files\Java\jre1.8.0_191</jrePath>
           <bundleJre>true</bundleJre>
+          <copyDependencies>false</copyDependencies>
           <mainClass>xin.xingk.www.App</mainClass>
           <generateInstaller>true</generateInstaller>
         </configuration>
@@ -163,7 +179,6 @@
               <!--                            <administratorRequired>true</administratorRequired>-->
               <winConfig>
 
-                <exeCreationTool>launch4j</exeCreationTool>
                 <!-- general properties -->
                 <generateSetup>true</generateSetup>
                 <generateMsi>true</generateMsi>

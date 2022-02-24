@@ -1,8 +1,6 @@
 package xin.xingk.www.context;
 
-import cn.hutool.aop.ProxyUtil;
 import xin.xingk.www.mybatis.service.UserService;
-import xin.xingk.www.mybatis.config.MybatisAspect;
 
 import java.sql.SQLException;
 
@@ -13,7 +11,7 @@ import java.sql.SQLException;
  */
 public class UserContextHolder {
 
-    public static UserService userService = ProxyUtil.proxy(new UserService(), MybatisAspect.class);
+    public static UserService userService = new UserService();
 
     /**
      * 获取主题名称

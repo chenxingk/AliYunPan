@@ -1,8 +1,6 @@
 package xin.xingk.www.context;
 
-import cn.hutool.aop.ProxyUtil;
 import xin.xingk.www.entity.UploadRecord;
-import xin.xingk.www.mybatis.config.MybatisAspect;
 import xin.xingk.www.mybatis.service.UploadRecordService;
 
 import java.util.List;
@@ -14,7 +12,7 @@ import java.util.List;
  */
 public class UploadRecordContextHolder {
 
-    public static UploadRecordService uploadRecordService = ProxyUtil.proxy(new UploadRecordService(), MybatisAspect.class);
+    public static UploadRecordService uploadRecordService = new UploadRecordService();
 
     /**
      * 新增备份任务

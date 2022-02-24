@@ -3,6 +3,7 @@ package xin.xingk.www.mybatis.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.entity.Backup;
+import xin.xingk.www.mybatis.config.MybatisPlusConfig;
 import xin.xingk.www.mybatis.mapper.BackupMapper;
 
 import java.util.List;
@@ -22,7 +23,9 @@ public class BackupService {
      * @return
      */
     public void addBackup(Backup backup){
+        backupMapper = MybatisPlusConfig.getMapper(BackupMapper.class);
         backupMapper.insert(backup);
+        MybatisPlusConfig.closeSqlSession();
     }
 
     /**
@@ -30,7 +33,9 @@ public class BackupService {
      * @param id
      */
     public void delBackup(Integer id){
+        backupMapper = MybatisPlusConfig.getMapper(BackupMapper.class);
         backupMapper.deleteById(id);
+        MybatisPlusConfig.closeSqlSession();
     }
 
     /**
@@ -38,7 +43,9 @@ public class BackupService {
      * @param backup
      */
     public void updateBackup(Backup backup){
+        backupMapper = MybatisPlusConfig.getMapper(BackupMapper.class);
         backupMapper.updateById(backup);
+        MybatisPlusConfig.closeSqlSession();
     }
 
     /**
@@ -46,7 +53,10 @@ public class BackupService {
      * @param id
      */
     public Backup getBackupById(Integer id){
-        return backupMapper.selectById(id);
+        backupMapper = MybatisPlusConfig.getMapper(BackupMapper.class);
+        Backup backup = backupMapper.selectById(id);
+        MybatisPlusConfig.closeSqlSession();
+        return backup;
     }
 
     /**
@@ -54,9 +64,12 @@ public class BackupService {
      * @param localPath
      */
     public Backup getBackupByLocalPath(String localPath){
+        backupMapper = MybatisPlusConfig.getMapper(BackupMapper.class);
         LambdaQueryWrapper<Backup> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Backup::getLocalPath,localPath);
-        return backupMapper.selectOne(queryWrapper);
+        Backup backup = backupMapper.selectOne(queryWrapper);
+        MybatisPlusConfig.closeSqlSession();
+        return backup;
     }
 
 
@@ -64,7 +77,10 @@ public class BackupService {
      * 获取备份任务信息列表
      */
     public List<Backup> getBackupList(){
-        return backupMapper.selectList(null);
+        backupMapper = MybatisPlusConfig.getMapper(BackupMapper.class);
+        List<Backup> backupList = backupMapper.selectList(null);
+        MybatisPlusConfig.closeSqlSession();
+        return backupList;
     }
 
 

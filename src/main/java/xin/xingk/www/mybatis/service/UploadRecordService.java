@@ -2,8 +2,8 @@ package xin.xingk.www.mybatis.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
-import xin.xingk.www.entity.Backup;
 import xin.xingk.www.entity.UploadRecord;
+import xin.xingk.www.mybatis.config.MybatisPlusConfig;
 import xin.xingk.www.mybatis.mapper.UploadRecordMapper;
 
 import java.util.List;
@@ -22,7 +22,10 @@ public class UploadRecordService {
      * 新增上传记录
      */
     public void addUploadRecord(UploadRecord uploadRecord){
+        uploadRecordMapper = MybatisPlusConfig.getMapper(UploadRecordMapper.class);
+        uploadRecordMapper = MybatisPlusConfig.getMapper(UploadRecordMapper.class);
         uploadRecordMapper.insert(uploadRecord);
+        MybatisPlusConfig.closeSqlSession();
     }
 
     /**
@@ -30,7 +33,10 @@ public class UploadRecordService {
      * @param id
      */
     public void delUploadRecord(Integer id){
+        uploadRecordMapper = MybatisPlusConfig.getMapper(UploadRecordMapper.class);
+        uploadRecordMapper = MybatisPlusConfig.getMapper(UploadRecordMapper.class);
         uploadRecordMapper.deleteById(id);
+        MybatisPlusConfig.closeSqlSession();
     }
 
     /**
@@ -38,7 +44,9 @@ public class UploadRecordService {
      * @param uploadRecord
      */
     public void updateUploadRecord(UploadRecord uploadRecord){
+        uploadRecordMapper = MybatisPlusConfig.getMapper(UploadRecordMapper.class);
         uploadRecordMapper.updateById(uploadRecord);
+        MybatisPlusConfig.closeSqlSession();
     }
 
     /**
@@ -46,7 +54,11 @@ public class UploadRecordService {
      * @param id
      */
     public UploadRecord getUploadRecordById(Integer id){
-        return uploadRecordMapper.selectById(id);
+        uploadRecordMapper = MybatisPlusConfig.getMapper(UploadRecordMapper.class);
+        uploadRecordMapper = MybatisPlusConfig.getMapper(UploadRecordMapper.class);
+        UploadRecord uploadRecord = uploadRecordMapper.selectById(id);
+        MybatisPlusConfig.closeSqlSession();
+        return uploadRecord;
     }
 
     /**
@@ -54,16 +66,22 @@ public class UploadRecordService {
      * @param filePath 文件路径
      */
     public UploadRecord getUploadRecordByFilePath(String filePath){
+        uploadRecordMapper = MybatisPlusConfig.getMapper(UploadRecordMapper.class);
         LambdaQueryWrapper<UploadRecord> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(UploadRecord::getFilePath, filePath);
-        return uploadRecordMapper.selectOne(queryWrapper);
+        UploadRecord uploadRecord = uploadRecordMapper.selectOne(queryWrapper);
+        MybatisPlusConfig.closeSqlSession();
+        return uploadRecord;
     }
 
     /**
      * 获取备份任务信息列表
      */
     public List<UploadRecord> getUploadRecordList(){
-        return uploadRecordMapper.selectList(null);
+        uploadRecordMapper = MybatisPlusConfig.getMapper(UploadRecordMapper.class);
+        List<UploadRecord> uploadRecordList = uploadRecordMapper.selectList(null);
+        MybatisPlusConfig.closeSqlSession();
+        return uploadRecordList;
     }
 
 
