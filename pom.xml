@@ -119,23 +119,95 @@
 
   </dependencies>
 
+<!--  <build>-->
+<!--    <resources>-->
+<!--      <resource>-->
+<!--        <directory>src/main/resources</directory>-->
+<!--        <includes>-->
+<!--          <include>**</include>-->
+<!--        </includes>-->
+<!--      </resource>-->
+<!--    </resources>-->
+<!--    <testResources>-->
+<!--      <testResource>-->
+<!--        <directory>src/main/resources</directory>-->
+<!--        <includes>-->
+<!--          <include>**</include>-->
+<!--        </includes>-->
+<!--      </testResource>-->
+<!--    </testResources>-->
+<!--  </build>-->
+
   <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <includes>
-          <include>**</include>
-        </includes>
-      </resource>
-    </resources>
-    <testResources>
-      <testResource>
-        <directory>src/main/resources</directory>
-        <includes>
-          <include>**</include>
-        </includes>
-      </testResource>
-    </testResources>
+    <plugins>
+      <plugin>
+        <groupId>io.github.fvarrui</groupId>
+        <artifactId>javapackager</artifactId>
+        <version>1.6.3</version>
+        <configuration>
+          <jrePath>D:\Program Files\Java\jre1.8.0_191</jrePath>
+          <bundleJre>true</bundleJre>
+          <mainClass>xin.xingk.www.App</mainClass>
+          <generateInstaller>true</generateInstaller>
+        </configuration>
+        <executions>
+          <execution>
+            <id>bundling-for-windows</id>
+            <phase>package</phase>
+            <goals>
+              <goal>package</goal>
+            </goals>
+            <configuration>
+              <platform>windows</platform>
+              <createZipball>true</createZipball>
+              <!--                            <administratorRequired>true</administratorRequired>-->
+              <winConfig>
+
+                <exeCreationTool>launch4j</exeCreationTool>
+                <!-- general properties -->
+                <generateSetup>true</generateSetup>
+                <generateMsi>true</generateMsi>
+                <generateMsm>true</generateMsm>
+
+                <!-- setup generation properties -->
+                <setupMode>installForAllUsers</setupMode>
+                <createDesktopIconTask>true</createDesktopIconTask>
+                <disableDirPage>false</disableDirPage>
+                <disableFinishedPage>false</disableFinishedPage>
+                <setupLanguages>
+                  <english>compiler:Default.isl</english>
+                  <!--                                    <spanish>compiler:Languages\Chinese.isl</spanish>-->
+                </setupLanguages>
+              </winConfig>
+            </configuration>
+          </execution>
+          <!--                                        <execution>-->
+          <!--                                            <id>bundling-for-linux</id>-->
+          <!--                                            <phase>package</phase>-->
+          <!--                                            <goals>-->
+          <!--                                                <goal>package</goal>-->
+          <!--                                            </goals>-->
+          <!--                                            <configuration>-->
+          <!--                                                <platform>linux</platform>-->
+          <!--                                                <createTarball>true</createTarball>-->
+          <!--&lt;!&ndash;                                                <jdkPath>X:\\path\to\linux\jdk</jdkPath>&ndash;&gt;-->
+          <!--                                            </configuration>-->
+          <!--                                        </execution>-->
+          <!--                                                            <execution>-->
+          <!--                                                                <id>bundling-for-mac</id>-->
+          <!--                                                                <phase>package</phase>-->
+          <!--                                                                <goals>-->
+          <!--                                                                    <goal>package</goal>-->
+          <!--                                                                </goals>-->
+          <!--                                                                <configuration>-->
+          <!--                                                                    <platform>mac</platform>-->
+          <!--                                                                    <createTarball>true</createTarball>-->
+          <!--                    &lt;!&ndash;                                                <jdkPath>X:\\path\to\mac\jdk</jdkPath>&ndash;&gt;-->
+          <!--                                                                </configuration>-->
+          <!--                                                            </execution>-->
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 
 

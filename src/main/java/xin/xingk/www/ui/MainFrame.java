@@ -1,5 +1,6 @@
 package xin.xingk.www.ui;
 
+import cn.hutool.core.io.resource.ResourceUtil;
 import com.formdev.flatlaf.extras.FlatSVGUtils;
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.common.constant.CommonConstants;
@@ -75,7 +76,7 @@ public class MainFrame extends JFrame {
      */
     public void miniTray() {
         SystemTray tray = SystemTray.getSystemTray();
-        ImageIcon trayImg = new ImageIcon(Class.class.getResource("/icons/logo.png"));//托盘图标
+        ImageIcon trayImg = new ImageIcon(ResourceUtil.getResource("icons/logo.png"));//托盘图标
         TrayIcon trayIcon = new TrayIcon(trayImg.getImage(), CommonConstants.TITLE);
         trayIcon.setImageAutoSize(true);
 
