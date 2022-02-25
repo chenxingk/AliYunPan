@@ -112,25 +112,6 @@
 
   </dependencies>
 
-<!--  <build>-->
-<!--    <resources>-->
-<!--      <resource>-->
-<!--        <directory>src/main/resources</directory>-->
-<!--        <includes>-->
-<!--          <include>**</include>-->
-<!--        </includes>-->
-<!--      </resource>-->
-<!--    </resources>-->
-<!--    <testResources>-->
-<!--      <testResource>-->
-<!--        <directory>src/main/resources</directory>-->
-<!--        <includes>-->
-<!--          <include>**</include>-->
-<!--        </includes>-->
-<!--      </testResource>-->
-<!--    </testResources>-->
-<!--  </build>-->
-
   <build>
         <resources>
           <resource>
@@ -157,7 +138,7 @@
           <!--在应用程序中嵌入自定义 JRE-->
           <bundleJre>true</bundleJre>
           <mainClass>xin.xingk.www.App</mainClass>
-<!--          为应用程序生成安装程序-->
+          <!--为应用程序生成安装程序-->
           <generateInstaller>true</generateInstaller>
         </configuration>
         <executions>
@@ -170,15 +151,15 @@
             <configuration>
               <platform>windows</platform>
               <createZipball>true</createZipball>
-              <administratorRequired>true</administratorRequired>
+<!--              <administratorRequired>true</administratorRequired>-->
               <winConfig>
                 <!-- general properties -->
                 <!--生成安装程序-->
                 <generateSetup>true</generateSetup>
                 <!--生成 MSI 安装程序-->
-                <!--<generateMsi>true</generateMsi>-->
+                <generateMsi>true</generateMsi>
                 <!--生成 MSI 合并模块-->
-                <!--<generateMsm>true</generateMsm>-->
+                <generateMsm>true</generateMsm>
                 <!-- setup generation properties -->
                 <!--安装程序安装模式：是否需要管理权限-->
                 <setupMode>installForAllUsers</setupMode>
@@ -190,13 +171,13 @@
                 <disableFinishedPage>false</disableFinishedPage>
                 <!--使用设置语言进行映射-->
                 <setupLanguages>
-                  <english>compiler:Default.isl</english>
-                  <!--<spanish>compiler:Languages\Chinese.isl</spanish>-->
+                  <!--<english>compiler:Default.isl</english>-->
+                  <spanish>compiler:Languages\ChineseSimplified.isl</spanish>
                 </setupLanguages>
               </winConfig>
             </configuration>
           </execution>
-          <execution>
+          <!--<execution>
               <id>bundling-for-linux</id>
               <phase>package</phase>
               <goals>
@@ -209,10 +190,10 @@
                   <generateDeb>true</generateDeb>
                   <generateRpm>true</generateRpm>
                 </linuxConfig>
-              <!-- <jdkPath>X:\\path\to\linux\jdk</jdkPath>-->
+              &lt;!&ndash; <jdkPath>X:\\path\to\linux\jdk</jdkPath>&ndash;&gt;
               </configuration>
-          </execution>
-          <execution>
+          </execution>-->
+          <!--<execution>
               <id>bundling-for-mac</id>
               <phase>package</phase>
               <goals>
@@ -221,13 +202,13 @@
               <configuration>
                   <platform>mac</platform>
                   <createTarball>true</createTarball>
-                  <!--<macConfig>-->
-                  <!--<generateDmg>true</generateDmg>-->
-                  <!--<generatePkg>true</generatePkg>-->
-                  <!--</macConfig>-->
-                  <!--<jdkPath>X:\\path\to\mac\jdk</jdkPath>-->
+                  &lt;!&ndash;<macConfig>&ndash;&gt;
+                  &lt;!&ndash;<generateDmg>true</generateDmg>&ndash;&gt;
+                  &lt;!&ndash;<generatePkg>true</generatePkg>&ndash;&gt;
+                  &lt;!&ndash;</macConfig>&ndash;&gt;
+                  &lt;!&ndash;<jdkPath>X:\\path\to\mac\jdk</jdkPath>&ndash;&gt;
               </configuration>
-          </execution>
+          </execution>-->
         </executions>
       </plugin>
     </plugins>
