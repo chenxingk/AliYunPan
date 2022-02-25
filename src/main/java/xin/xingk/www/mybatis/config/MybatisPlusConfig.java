@@ -53,7 +53,7 @@ public class MybatisPlusConfig {
     private static File dbFile = new File(CommonConstants.CONFIG_HOME + "backupAider.db");
 
     //加锁解决并发问题
-    private static  ReentrantLock lock = new ReentrantLock();
+    private static final ReentrantLock lock = new ReentrantLock();
 
     /**
      * 初始化 SqlSessionFactory
