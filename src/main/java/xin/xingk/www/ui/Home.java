@@ -127,11 +127,8 @@ public class Home {
         info += "目录检测：开启目录检测后，会根据文件变更实时备份\n";
         info += "备份时间：输入备份时间后会根据指定时间定时备份\n";
         info += "设置开机启动教程：https://gitee.com/xingk-code/AliYunPan/wikis/pages\n";
-        info += "如有问题可以联系作者微信：chen151363，QQ：850222153，反馈问题Q群：878678008\n";
         info += "运行日志...\n";
         logArea.setText(info);
-//        logArea.setForeground(Color.white);
-//        logArea.setBackground(Color.BLACK);
         logArea.setEditable(false);
         //启动自动换行
         logArea.setLineWrap(true);
