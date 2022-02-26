@@ -14,6 +14,7 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import xin.xingk.www.common.constant.CommonConstants;
+import xin.xingk.www.common.constant.DictConstants;
 import xin.xingk.www.context.UserContextHolder;
 
 import java.io.IOException;
@@ -53,7 +54,7 @@ public class OkHttpUtil {
                     .addHeader("Content-Type", "application/json").build();
             Response response = client.newCall(request).execute();
             String result = response.body().string();
-            UIUtil.console("请求状态码：{}",response.code());
+            UIUtil.console("{}，请求状态码：{}", DictConstants.URI_DICT.get(url),response.code());
             if (429==response.code()){
                 UIUtil.console("请求频繁了，休息一下。。。。正在准备重试中。。。");
                 ThreadUtil.sleep(3000);
@@ -97,7 +98,7 @@ public class OkHttpUtil {
                     .addHeader("Content-Type", "multipart/form-data").build();
             Response response = client.newCall(request).execute();
             String result = response.body().string();
-            UIUtil.console("文件请求状态码：{}",response.code());
+            UIUtil.console("{}，请求状态码：{}", DictConstants.URI_DICT.get(url),response.code());
             //System.out.println("result：>>>>>>>>>>>>>>>>>>>"+result);
             JSONObject json = JSONUtil.parseObj(result);
             errNum=0;

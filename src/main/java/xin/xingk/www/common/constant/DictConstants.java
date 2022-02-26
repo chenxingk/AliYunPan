@@ -40,6 +40,11 @@ public class DictConstants {
     //备份任务禁用
     public static Integer STATUS_DISABLE = 2;
 
+    /**
+     * 接口名称
+     */
+    public static Map<String, String> URI_DICT = new HashMap<>();
+
     static {
         BACKUP_TYPE_DICT.put(BACKUP_TYPE_ORDINARY,"普通备份");
         BACKUP_TYPE_DICT.put(BACKUP_TYPE_CLASSIFY,"分类备份");
@@ -51,5 +56,11 @@ public class DictConstants {
         STATUS_DICT.put(STATUS_ENABLE,"正常");
         STATUS_DICT.put(STATUS_RUN,"备份中");
         STATUS_DICT.put(STATUS_DISABLE,"已禁用");
+
+        URI_DICT.put(CommonConstants.TOKEN_URL,"获取Token");
+        URI_DICT.put(CommonConstants.FILE_LIST_URL,"文件列表");
+        URI_DICT.put(CommonConstants.CREATE_FILE_URL,"文件上传");
+        URI_DICT.put(CommonConstants.COMPLETE_FILE_URL,"完成上传");
+        URI_DICT.put(CommonConstants.DELETE_FILE_URL,"删除文件");
     }
 }
