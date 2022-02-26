@@ -80,6 +80,7 @@ public class MybatisPlusConfig {
     public static void getSqlSession(){
         lock.lock();
         sqlSession = sqlSessionFactory.openSession();
+        log.debug(">>> SqlSession进行初始化。。。");
     }
 
     /**
@@ -99,6 +100,7 @@ public class MybatisPlusConfig {
     public static void closeSqlSession() {
         sqlSession.commit();
         sqlSession.close();
+        log.debug(">>> SqlSession关闭。。。");
         lock.unlock();
     }
 

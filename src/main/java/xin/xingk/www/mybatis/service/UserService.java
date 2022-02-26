@@ -3,6 +3,7 @@ package xin.xingk.www.mybatis.service;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSession;
+import xin.xingk.www.common.constant.CommonConstants;
 import xin.xingk.www.entity.User;
 import xin.xingk.www.mybatis.config.MybatisPlusConfig;
 import xin.xingk.www.mybatis.mapper.UserMapper;
@@ -28,17 +29,12 @@ public class UserService {
     public User getUserInfo(){
         userMapper = MybatisPlusConfig.getMapper(UserMapper.class);
         User user = userMapper.selectOne(null);
-        if (ObjectUtil.isNotEmpty(user)){
-            MybatisPlusConfig.closeSqlSession();
-            return user;
-        }
-        user = new User();
-        user.setName("");
-        user.setToken("");
-        user.setTheme("Flat Light");
-        this.addUserInfo(user);
         MybatisPlusConfig.closeSqlSession();
-        System.out.println("关闭会话");
+        if (ObjectUtil.isNotEmpty(user)) return user;
+        user = new User();
+        user.setTheme("Flat Light");
+        user.setVersion(CommonConstants.VERSION);
+        this.addUserInfo(user);
         return user;
     }
 

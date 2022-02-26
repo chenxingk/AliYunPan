@@ -23,7 +23,6 @@ public class UploadRecordService {
      */
     public void addUploadRecord(UploadRecord uploadRecord){
         uploadRecordMapper = MybatisPlusConfig.getMapper(UploadRecordMapper.class);
-        uploadRecordMapper = MybatisPlusConfig.getMapper(UploadRecordMapper.class);
         uploadRecordMapper.insert(uploadRecord);
         MybatisPlusConfig.closeSqlSession();
     }
@@ -33,7 +32,6 @@ public class UploadRecordService {
      * @param id
      */
     public void delUploadRecord(Integer id){
-        uploadRecordMapper = MybatisPlusConfig.getMapper(UploadRecordMapper.class);
         uploadRecordMapper = MybatisPlusConfig.getMapper(UploadRecordMapper.class);
         uploadRecordMapper.deleteById(id);
         MybatisPlusConfig.closeSqlSession();
@@ -54,7 +52,6 @@ public class UploadRecordService {
      * @param id
      */
     public UploadRecord getUploadRecordById(Integer id){
-        uploadRecordMapper = MybatisPlusConfig.getMapper(UploadRecordMapper.class);
         uploadRecordMapper = MybatisPlusConfig.getMapper(UploadRecordMapper.class);
         UploadRecord uploadRecord = uploadRecordMapper.selectById(id);
         MybatisPlusConfig.closeSqlSession();
