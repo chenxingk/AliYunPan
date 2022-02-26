@@ -136,6 +136,7 @@
         <version>1.6.3</version>
         <configuration>
           <!--在应用程序中嵌入自定义 JRE-->
+<!--          <jrePath>D:\Program Files\Java\jre1.8.0_191</jrePath>-->
           <bundleJre>true</bundleJre>
           <mainClass>xin.xingk.www.App</mainClass>
           <!--为应用程序生成安装程序-->
@@ -177,6 +178,7 @@
               </winConfig>
             </configuration>
           </execution>
+
           <execution>
               <id>bundling-for-linux</id>
               <phase>package</phase>
@@ -209,6 +211,7 @@
                   <!--<jdkPath>X:\\path\to\mac\jdk</jdkPath>-->
               </configuration>
           </execution>
+
         </executions>
       </plugin>
     </plugins>
