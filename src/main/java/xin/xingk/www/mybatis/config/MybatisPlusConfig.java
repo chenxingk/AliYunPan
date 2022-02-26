@@ -33,7 +33,6 @@ import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -51,9 +50,6 @@ public class MybatisPlusConfig {
 
     //DB文件
     private static File dbFile = new File(CommonConstants.CONFIG_HOME + "backupAider.db");
-
-    //加锁解决并发问题
-    private static final ReentrantLock lock = new ReentrantLock();
 
     /**
      * 初始化 SqlSessionFactory
@@ -78,9 +74,7 @@ public class MybatisPlusConfig {
      * 获取当前 SQLSession
      */
     public static void getSqlSession(){
-        lock.lock();
         sqlSession = sqlSessionFactory.openSession();
-        log.debug(">>> SqlSession进行初始化。。。");
     }
 
     /**
@@ -90,7 +84,6 @@ public class MybatisPlusConfig {
      * @return
      */
     public static <T> T getMapper(Class<T> mapper){
-        getSqlSession();
         return sqlSession.getMapper(mapper);
     }
 
@@ -100,8 +93,6 @@ public class MybatisPlusConfig {
     public static void closeSqlSession() {
         sqlSession.commit();
         sqlSession.close();
-        log.debug(">>> SqlSession关闭。。。");
-        lock.unlock();
     }
 
     /**

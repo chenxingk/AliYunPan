@@ -3,6 +3,7 @@ package xin.xingk.www;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.TimeInterval;
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.system.SystemUtil;
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.common.CronTasks;
 import xin.xingk.www.common.DirWatcher;
@@ -22,12 +23,11 @@ public class App {
 
     public static void main( String[] args ) {
         UIUtil.initTheme();
-//        String version = SystemUtil.getJavaSpecInfo().getVersion();
-//        if (!"1.8".equals(version)){
-//            JOptionPane.showMessageDialog(null, "你当前的JDK版本为【"+version+"】\n" +
-//                    "请您使用JDK【1.8】来运行本程序", "温馨提示", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
+        String version = SystemUtil.getJavaSpecInfo().getVersion();
+        if (!"1.8".equals(version)){
+            JOptionPane.showMessageDialog(null, "你当前的JDK版本为【"+version+"】\n" +
+                    "建议您使用JDK【1.8】来运行本程序", "温馨提示", JOptionPane.ERROR_MESSAGE);
+        }
         TimeInterval timer = DateUtil.timer();
         mainFrame = new MainFrame();
         mainFrame.initUpdate();

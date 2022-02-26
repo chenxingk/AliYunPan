@@ -1,7 +1,9 @@
 package xin.xingk.www.context;
 
-import xin.xingk.www.entity.Backup;
+import cn.hutool.aop.ProxyUtil;
 import xin.xingk.www.mybatis.service.BackupService;
+import xin.xingk.www.entity.Backup;
+import xin.xingk.www.mybatis.config.MybatisAspect;
 
 import java.util.List;
 
@@ -12,7 +14,7 @@ import java.util.List;
  */
 public class BackupContextHolder {
 
-    public static BackupService backupService = new BackupService();
+    public static BackupService backupService = ProxyUtil.proxy(new BackupService(), MybatisAspect.class);
 
     /**
      * 新增备份任务

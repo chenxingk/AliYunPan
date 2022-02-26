@@ -99,8 +99,8 @@
     <!--连接池-->
     <dependency>
       <groupId>com.zaxxer</groupId>
-      <artifactId>HikariCP-java7</artifactId>
-      <version>2.4.13</version>
+      <artifactId>HikariCP</artifactId>
+      <version>4.0.3</version>
     </dependency>
 
     <!--SQLite-->
@@ -108,6 +108,13 @@
       <groupId>org.xerial</groupId>
       <artifactId>sqlite-jdbc</artifactId>
       <version>3.36.0.3</version>
+    </dependency>
+
+    <!--cglib-->
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib</artifactId>
+      <version>2.2.2</version>
     </dependency>
 
   </dependencies>
@@ -136,7 +143,7 @@
         <version>1.6.3</version>
         <configuration>
           <!--在应用程序中嵌入自定义 JRE-->
-<!--          <jrePath>D:\Program Files\Java\jre1.8.0_191</jrePath>-->
+          <jrePath>D:\Program Files\Java\jre1.8.0_191</jrePath>
           <bundleJre>true</bundleJre>
           <mainClass>xin.xingk.www.App</mainClass>
           <!--为应用程序生成安装程序-->
@@ -152,7 +159,7 @@
             <configuration>
               <platform>windows</platform>
               <createZipball>true</createZipball>
-<!--              <administratorRequired>true</administratorRequired>-->
+              <!--<administratorRequired>true</administratorRequired>-->
               <winConfig>
                 <!-- general properties -->
                 <!--生成安装程序-->
@@ -179,7 +186,7 @@
             </configuration>
           </execution>
 
-          <execution>
+          <!--<execution>
               <id>bundling-for-linux</id>
               <phase>package</phase>
               <goals>
@@ -192,7 +199,7 @@
                   <generateDeb>true</generateDeb>
                   <generateRpm>true</generateRpm>
                 </linuxConfig>
-              <!-- <jdkPath>X:\\path\to\linux\jdk</jdkPath>-->
+              &lt;!&ndash; <jdkPath>X:\\path\to\linux\jdk</jdkPath>&ndash;&gt;
               </configuration>
           </execution>
           <execution>
@@ -204,13 +211,13 @@
               <configuration>
                   <platform>mac</platform>
                   <createTarball>true</createTarball>
-<!--                  <macConfig>-->
-<!--                  <generateDmg>true</generateDmg>-->
-<!--                  <generatePkg>true</generatePkg>-->
-<!--                  </macConfig>-->
-                  <!--<jdkPath>X:\\path\to\mac\jdk</jdkPath>-->
+                  &lt;!&ndash;<macConfig>&ndash;&gt;
+                  &lt;!&ndash;<generateDmg>true</generateDmg>&ndash;&gt;
+                  &lt;!&ndash;<generatePkg>true</generatePkg>&ndash;&gt;
+                  &lt;!&ndash;</macConfig>&ndash;&gt;
+                  &lt;!&ndash;<jdkPath>X:\\path\to\mac\jdk</jdkPath>&ndash;&gt;
               </configuration>
-          </execution>
+          </execution>-->
 
         </executions>
       </plugin>
