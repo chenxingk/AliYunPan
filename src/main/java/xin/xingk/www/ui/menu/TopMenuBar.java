@@ -10,6 +10,7 @@ import xin.xingk.www.common.constant.CommonConstants;
 import xin.xingk.www.context.UserContextHolder;
 import xin.xingk.www.ui.dialog.About;
 import xin.xingk.www.util.UIUtil;
+import xin.xingk.www.util.UpdateUtil;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -84,7 +85,10 @@ public class TopMenuBar extends JMenuBar {
         // Check for Updates
         JMenuItem checkForUpdatesItem = new JMenuItem();
         checkForUpdatesItem.setText("检查更新");
-        checkForUpdatesItem.addActionListener(e -> problemActionPerformed());
+        checkForUpdatesItem.addActionListener(e -> {
+            boolean update = UpdateUtil.checkForUpdate();
+            if (!update) JOptionPane.showMessageDialog(null, "暂无发现更新", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
+        });
         aboutMenu.add(checkForUpdatesItem);
 
         JMenuItem problemItem = new JMenuItem();
