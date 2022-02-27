@@ -186,7 +186,7 @@
             </configuration>
           </execution>
 
-          <!--<execution>
+          <execution>
               <id>bundling-for-linux</id>
               <phase>package</phase>
               <goals>
@@ -199,7 +199,7 @@
                   <generateDeb>true</generateDeb>
                   <generateRpm>true</generateRpm>
                 </linuxConfig>
-              &lt;!&ndash; <jdkPath>X:\\path\to\linux\jdk</jdkPath>&ndash;&gt;
+              <!-- <jdkPath>X:\\path\to\linux\jdk</jdkPath>-->
               </configuration>
           </execution>
           <execution>
@@ -211,13 +211,13 @@
               <configuration>
                   <platform>mac</platform>
                   <createTarball>true</createTarball>
-                  &lt;!&ndash;<macConfig>&ndash;&gt;
-                  &lt;!&ndash;<generateDmg>true</generateDmg>&ndash;&gt;
-                  &lt;!&ndash;<generatePkg>true</generatePkg>&ndash;&gt;
-                  &lt;!&ndash;</macConfig>&ndash;&gt;
-                  &lt;!&ndash;<jdkPath>X:\\path\to\mac\jdk</jdkPath>&ndash;&gt;
+                  <!--<macConfig>-->
+                  <!--<generateDmg>true</generateDmg>-->
+                  <!--<generatePkg>true</generatePkg>-->
+                  <!--</macConfig>-->
+                  <!--<jdkPath>X:\\path\to\mac\jdk</jdkPath>-->
               </configuration>
-          </execution>-->
+          </execution>
 
         </executions>
       </plugin>
