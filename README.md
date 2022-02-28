@@ -25,11 +25,32 @@ Java Swing + FlatLaf + Hutool + Okhttp3
 
 哪我为什么不用百度云盘？？？因为穷！！！因为限速。。。
 
-#### 登录方式【阿里云盘升级，仅剩二维码登录】
+#### 截图速览
 
-|  |  |  |
-|---------------------|---------------------|---------------------|
-| ![输入图片说明](https://images.gitee.com/uploads/images/2021/0524/152531_4b2a9fa5_4873209.png "屏幕截图.png")  | ![输入图片说明](https://images.gitee.com/uploads/images/2021/0524/152435_7c4a1340_4873209.png "屏幕截图.png")  |![输入图片说明](https://images.gitee.com/uploads/images/2021/0603/101943_e74e8ba2_9173799.png "屏幕截图.png")  |
+<p align="center">
+  <a href="https://images.gitee.com/uploads/images/2022/0228/184444_0bd7db62_4873209.png">
+   <img alt="AliYunPan" src="https://images.gitee.com/uploads/images/2022/0228/184444_0bd7db62_4873209.png">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://images.gitee.com/uploads/images/2022/0228/184705_4b743edb_4873209.png">
+   <img alt="AliYunPan" src="https://images.gitee.com/uploads/images/2022/0228/184705_4b743edb_4873209.png">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://images.gitee.com/uploads/images/2022/0228/184734_bfa88bd4_4873209.png">
+   <img alt="AliYunPan" src="https://images.gitee.com/uploads/images/2022/0228/184734_bfa88bd4_4873209.png">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://images.gitee.com/uploads/images/2022/0228/184836_e0f63180_4873209.png">
+   <img alt="AliYunPan" src="https://images.gitee.com/uploads/images/2022/0228/184836_e0f63180_4873209.png">
+  </a>
+</p>
+ 
 
 #### 下载安装
 1.  Windows系统  **含JDK安装包，适合没有JDK环境的** 使用：[v1.2点击下载](http://yunpan.xingk.xin/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B%E5%AE%89%E8%A3%85%E5%8C%85v1.2.exe)
