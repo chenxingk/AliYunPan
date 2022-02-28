@@ -15,7 +15,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import xin.xingk.www.common.constant.CommonConstants;
 import xin.xingk.www.common.constant.DictConstants;
-import xin.xingk.www.context.UserContextHolder;
 
 import java.io.IOException;
 import java.util.Map;
@@ -176,7 +175,7 @@ public class OkHttpUtil {
         JSONObject loginResult = JSONUtil.parseObj(response).getJSONObject("pds_login_result");
         String accessToken = loginResult.getStr("accessToken");
         String nickName = loginResult.getStr("nickName");
-        UserContextHolder.updateUserName(nickName);
+        ConfigUtil.updateUserName(nickName);
         String cookie = getCookie();
         String code = getCode(accessToken, cookie);
         //返回真正的Token信息

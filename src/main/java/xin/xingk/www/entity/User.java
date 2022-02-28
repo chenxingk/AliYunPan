@@ -18,10 +18,12 @@ public class User extends BaseEntity{
     //用户昵称
     private String name;
     //用户token
-    @TableField(updateStrategy = FieldStrategy.IGNORED )
     private String token;
     //主题名称
     private String theme;
     //当前版本
     private String version;
+    //开机启动 0启动 1不启动
+    private Integer startup;
+
 }

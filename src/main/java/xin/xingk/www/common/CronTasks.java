@@ -6,13 +6,9 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.cron.CronUtil;
 import xin.xingk.www.context.BackupContextHolder;
-import xin.xingk.www.context.UserContextHolder;
 import xin.xingk.www.entity.Backup;
 import xin.xingk.www.ui.Home;
-import xin.xingk.www.util.AliYunUtil;
-import xin.xingk.www.util.BackupUtil;
-import xin.xingk.www.util.CacheUtil;
-import xin.xingk.www.util.UIUtil;
+import xin.xingk.www.util.*;
 
 import java.util.List;
 
@@ -81,7 +77,7 @@ public class CronTasks {
      * 更新阿里云盘token
      */
     public static void updateALiYunPanToken(){
-        if (StrUtil.isNotEmpty(UserContextHolder.getToken())){
+        if (StrUtil.isNotEmpty(ConfigUtil.getToken())){
             UIUtil.console("定时更新阿里云Token");
             AliYunUtil.login();
         }

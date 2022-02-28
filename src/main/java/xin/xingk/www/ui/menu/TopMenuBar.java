@@ -7,10 +7,8 @@ import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.App;
 import xin.xingk.www.common.constant.CommonConstants;
-import xin.xingk.www.context.UserContextHolder;
 import xin.xingk.www.ui.dialog.About;
-import xin.xingk.www.util.UIUtil;
-import xin.xingk.www.util.UpdateUtil;
+import xin.xingk.www.util.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -31,7 +29,7 @@ public class TopMenuBar extends JMenuBar {
 
     private static int initialThemeItemCount = -1;
 
-    private static String[] themeNames = {"Flat Light","Flat Dark"};
+    private static String[] themeNames = {"浅色","深色"};
 
     private TopMenuBar() {
     }
@@ -69,12 +67,18 @@ public class TopMenuBar extends JMenuBar {
         JMenu setUp = new JMenu();
         setUp.setText("设置");
 
+        //---------主题
         themeMenu = new JMenu();
         themeMenu.setText("主题");
-
         initThemesMenu();
-
         setUp.add(themeMenu);
+
+        //---------开机启动
+        JCheckBoxMenuItem startup = new JCheckBoxMenuItem();
+        startup.setSelected(ConfigUtil.getStartup());
+        startup.setText("开机启动");
+        startup.addActionListener(e -> updateStartup(startup));
+        setUp.add(startup);
 
         topMenuBar.add(setUp);
 
@@ -121,7 +125,7 @@ public class TopMenuBar extends JMenuBar {
         }
         for (String themeName : themeNames) {
             JCheckBoxMenuItem item = new JCheckBoxMenuItem(themeName);
-            item.setSelected(themeName.equals(UserContextHolder.getUserTheme()));
+            item.setSelected(themeName.equals(ConfigUtil.getUserTheme()));
             item.addActionListener(this::themeChanged);
             themeMenu.add(item);
         }
@@ -134,7 +138,7 @@ public class TopMenuBar extends JMenuBar {
     private void themeChanged(ActionEvent actionEvent) {
         String selectedThemeName = actionEvent.getActionCommand();
         FlatAnimatedLafChange.showSnapshot();
-        UserContextHolder.updateUserTheme(selectedThemeName);
+        ConfigUtil.updateUserTheme(selectedThemeName);
 //        SwingUtilities.updateComponentTreeUI(MainWindow.getInstance().getTabbedPane());
         SwingUtilities.updateComponentTreeUI(App.mainFrame);
         UIUtil.initTheme();
@@ -152,10 +156,13 @@ public class TopMenuBar extends JMenuBar {
      */
     private void logOutActionPerformed() {
         CommonConstants.LOGIN_STATUS = false;
-        UserContextHolder.logout();
+        ConfigUtil.logout();
         App.mainFrame.initLogin();
     }
 
+    /**
+     * 打开关于
+     */
     private void aboutActionPerformed() {
         try {
             About about = new About();
@@ -163,6 +170,24 @@ public class TopMenuBar extends JMenuBar {
             about.setVisible(true);
         } catch (Exception e) {
             log.error(ExceptionUtil.getMessage(e));
+        }
+    }
+
+    /**
+     * 更新开机启动
+     * @param startup
+     */
+    private void updateStartup(JCheckBoxMenuItem startup) {
+        if (!FileUtil.isWindows() || !FileUtil.isDirectory(ShortCutUtil.startup)){
+            JOptionPane.showMessageDialog(null, "您的系统暂不支持开机启动，请联系作者", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
+        }else {
+            if (ConfigUtil.getStartup()){
+                startup.setSelected(false);
+                ShortCutUtil.cancelStartup();
+            }else {
+                boolean setStartup = ShortCutUtil.setStartup();
+                startup.setSelected(setStartup);
+            }
         }
     }
 

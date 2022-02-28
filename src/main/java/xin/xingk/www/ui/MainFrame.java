@@ -4,9 +4,9 @@ import cn.hutool.core.io.resource.ResourceUtil;
 import com.formdev.flatlaf.extras.FlatSVGUtils;
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.common.constant.CommonConstants;
-import xin.xingk.www.context.UserContextHolder;
 import xin.xingk.www.ui.menu.TopMenuBar;
 import xin.xingk.www.util.ComponentUtil;
+import xin.xingk.www.util.ConfigUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -63,7 +63,7 @@ public class MainFrame extends JFrame {
 
     public void initHome() {
         this.initTopMenuBar();
-        this.setTitle(CommonConstants.TITLE +"，欢迎您："+ UserContextHolder.getUserName());
+        this.setTitle(CommonConstants.TITLE +"，欢迎您："+ ConfigUtil.getUserName());
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.6, 0.8);
         this.add(Home.getInstance().getHomePanel());
         this.remove(Login.getInstance().getLoginPanel());

@@ -5,6 +5,7 @@ import xin.xingk.www.mybatis.service.BackupService;
 import xin.xingk.www.entity.Backup;
 import xin.xingk.www.mybatis.config.MybatisAspect;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -63,6 +64,14 @@ public class BackupContextHolder {
      */
     public static List<Backup> getBackupList(){
         return backupService.getBackupList();
+    }
+
+    /**
+     * SQL执行器
+     * @param sql sql语句
+     */
+    public static void executeSql(String sql) throws SQLException {
+        backupService.executeSql(sql);
     }
 
 }

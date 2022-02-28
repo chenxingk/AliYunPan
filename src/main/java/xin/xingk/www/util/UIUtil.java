@@ -5,7 +5,6 @@ import cn.hutool.core.util.StrUtil;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import lombok.extern.slf4j.Slf4j;
-import xin.xingk.www.context.UserContextHolder;
 import xin.xingk.www.ui.Home;
 
 import javax.swing.*;
@@ -22,8 +21,8 @@ public class UIUtil {
      * 初始化主题
      */
     public static void initTheme(){
-        String theme = UserContextHolder.getUserTheme();
-        if ("Flat Light".equals(theme)){
+        String theme = ConfigUtil.getUserTheme();
+        if ("浅色".equals(theme)){
             FlatLightLaf.setup();
         }else {
             FlatDarkLaf.setup();

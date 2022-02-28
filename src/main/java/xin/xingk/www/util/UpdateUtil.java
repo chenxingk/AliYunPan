@@ -10,7 +10,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.common.constant.CommonConstants;
-import xin.xingk.www.context.UserContextHolder;
+import xin.xingk.www.context.BackupContextHolder;
 import xin.xingk.www.ui.Login;
 
 import javax.swing.*;
@@ -57,7 +57,7 @@ public class UpdateUtil {
      */
     public static void updateDb(){
         //当前数据库版本
-        String dbVersion = UserContextHolder.getDbVersion();
+        String dbVersion = ConfigUtil.getDbVersion();
         //当前软件版本
         String version = CommonConstants.VERSION;
         //判断是否需要更新DB
@@ -76,7 +76,7 @@ public class UpdateUtil {
                 if (ObjectUtil.isNotEmpty(ResourceUtil.getStreamSafe(sqlPath))){
                     String sql = ResourceUtil.readUtf8Str(sqlPath);
                     try {
-                        UserContextHolder.executeSql(sql);
+                        BackupContextHolder.executeSql(sql);
                         log.info(">>> 更新索引为【{}】版本对应的sql完毕", i);
                     } catch (SQLException e) {
                         log.error(">>> 索引为【{}】版本对应的SQL执行器发生异常：{}",i,e.getMessage());
@@ -88,7 +88,7 @@ public class UpdateUtil {
                 }
             }
             //更新库里DB版本
-            UserContextHolder.updateUserVersion(version);
+            ConfigUtil.updateUserVersion(version);
         }
     }
 }

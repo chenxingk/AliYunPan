@@ -10,6 +10,7 @@ import xin.xingk.www.common.DirWatcher;
 import xin.xingk.www.ui.Login;
 import xin.xingk.www.ui.MainFrame;
 import xin.xingk.www.util.UIUtil;
+import xin.xingk.www.util.UpdateUtil;
 
 import javax.swing.*;
 

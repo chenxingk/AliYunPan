@@ -10,11 +10,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Data;
 import xin.xingk.www.App;
 import xin.xingk.www.common.constant.CommonConstants;
-import xin.xingk.www.context.UserContextHolder;
-import xin.xingk.www.util.AliYunUtil;
-import xin.xingk.www.util.ComponentUtil;
-import xin.xingk.www.util.OkHttpUtil;
-import xin.xingk.www.util.UpdateUtil;
+import xin.xingk.www.util.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -100,7 +96,7 @@ public class Login {
                         String refreshToken = json.getStr("refresh_token");
                         if (StrUtil.isNotEmpty(refreshToken)) {
                             tipsLabel.setText("登录成功，正在跳转中，请稍后...");
-                            UserContextHolder.updateUserToken(refreshToken);
+                            ConfigUtil.updateUserToken(refreshToken);
                             this.cancel();
                             CommonConstants.LOGIN_STATUS = true;
                             App.mainFrame.initHome();

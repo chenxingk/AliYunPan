@@ -2,9 +2,14 @@ package xin.xingk.www.mybatis.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.SqlSession;
 import xin.xingk.www.entity.Backup;
+import xin.xingk.www.mybatis.config.MybatisPlusConfig;
 import xin.xingk.www.mybatis.mapper.BackupMapper;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 /**
@@ -65,6 +70,18 @@ public class BackupService {
      */
     public List<Backup> getBackupList(){
         return backupMapper.selectList(null);
+    }
+
+    /**
+     * SQL执行器
+     * @param sql sql语句
+     */
+    public void executeSql(String sql) throws SQLException {
+        SqlSession sqlSession = MybatisPlusConfig.sqlSession;
+        Connection connection = sqlSession.getConnection();
+        Statement stmt = connection.createStatement();
+        stmt.executeUpdate(sql);
+        stmt.close();
     }
 
 

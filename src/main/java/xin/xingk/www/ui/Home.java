@@ -127,7 +127,7 @@ public class Home {
         info += "分类备份：会将本地文件按文档、压缩包、软件、音乐、图片、视频等分类上传\n";
         info += "目录检测：开启目录检测后，会根据文件变更实时备份\n";
         info += "备份时间：输入备份时间后会根据指定时间定时备份\n";
-        info += "设置开机启动教程：https://gitee.com/xingk-code/AliYunPan/wikis/pages\n";
+        info += "在设置中可以切换主题，修改是否开机启动\n";
         info += "运行日志...\n";
         logArea.setText(info);
         logArea.setEditable(false);

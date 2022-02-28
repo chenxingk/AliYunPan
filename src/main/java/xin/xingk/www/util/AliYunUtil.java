@@ -6,7 +6,6 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import xin.xingk.www.common.constant.CommonConstants;
-import xin.xingk.www.context.UserContextHolder;
 import xin.xingk.www.entity.Backup;
 
 import java.util.ArrayList;
@@ -25,14 +24,14 @@ public class AliYunUtil {
      * @return
      */
     public static boolean login(){
-        JSONObject data = new JSONObject().set("refresh_token", UserContextHolder.getToken());
+        JSONObject data = new JSONObject().set("refresh_token", ConfigUtil.getToken());
         JSONObject result = OkHttpUtil.doPost(CommonConstants.TOKEN_URL, data);
         if (ObjectUtil.isNull(result) || "InvalidParameter.RefreshToken".equals(result.getStr("code"))){
             return false;
         }
         CommonConstants.TOKEN = result.getStr("token_type") + " " + result.getStr("access_token");
         CommonConstants.DriveId = result.getStr("default_drive_id");
-        UserContextHolder.updateUserToken(result.getStr("refresh_token"));
+        ConfigUtil.updateUserToken(result.getStr("refresh_token"));
         return true;
     }
 
