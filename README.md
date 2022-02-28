@@ -29,7 +29,7 @@ Java Swing + FlatLaf + Hutool + Okhttp3
 
 <p align="center">
   <a href="https://images.gitee.com/uploads/images/2022/0228/184444_0bd7db62_4873209.png">
-   <img alt="AliYunPan" src="https://images.gitee.com/uploads/images/2022/0228/184444_0bd7db62_4873209.png">
+   <img alt="AliYunPan" width="170" height="150" src="https://images.gitee.com/uploads/images/2022/0228/184444_0bd7db62_4873209.png">
   </a>
 </p>
 
@@ -127,15 +127,8 @@ PS：如需修改执行时间请到back_config.setting文件中修改backupTime�
 5.  点击开始备份，即可全量备份所选目录。
 
 #### 常见问题
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0524/153117_ebbff9ea_4873209.png "屏幕截图.png")
 
 出现【请您先在电脑网页登录成功后，再登录本软件。】是因为第一次在本设备登录需要进行二次认证。。。暂未兼容
-
-**注意：程序初次运行会在同级目录生成：** 
-
-**back_config.setting（程序配置文件，存放目录，token，备份模式等信息）、**
-
-**uploadLog.json（则存放上传过的文件信息，此文件删除后会重新扫描目录下文件是否已上传）** 
 
 ### 特别感谢
 [zhoubochina](https://gitee.com/zhoubochina)  
