@@ -1,24 +1,22 @@
-<div align="center">
-<br/>
+<a href="https://gitee.com/xingk-code/AliYunPan">
+ <img alt="AliYunPan-Logo" src="https://images.gitee.com/uploads/images/2022/0228/182550_33a29e1b_4873209.png">
+</a>
+  
+# 备份助手 
+> 一款可以定时备份本地目录到阿里云盘的小工具
 
-  <h1 align="center">
-    自动备份文件到网盘
-  </h1>
-  <h4 align="center">
-    一款可以定时备份本地目录到阿里云盘的小工具
-  </h4> 
-<div align="center">
-  <img  width="92%" style="border-radius:10px;margin-top:20px;margin-bottom:20px;box-shadow: 2px 0 6px gray;" src="https://images.gitee.com/uploads/images/2021/0524/152244_1b5520ce_4873209.png" />
-</div>
-</div>
+[![码云Gitee](https://gitee.com/xingk-code/AliYunPan/badge/star.svg?theme=blue)](https://gitee.com/xingk-code/AliYunPan)
 
 
-#### 介绍
+## 支持的平台
+Windows • Linux • macOS
 
-Java Swing + Hutool + Okhttp3 自动备份文件到【阿里云盘】的小工具
+#### 环境
 
+Java Swing + FlatLaf + Hutool + Okhttp3
 
-觉得不错请点点Star,您的Star就是我的动力，感谢！
+如果觉得不错希望您能留下真贵的Star,您的Star就是我的动力，感谢！
+
 #### 由来
 
 工作中会经常接收到各个客户发来的种种文件，这些文件又比较重要，搞丢了就会很麻烦。
@@ -117,3 +115,9 @@ PS：如需修改执行时间请到back_config.setting文件中修改backupTime�
 **back_config.setting（程序配置文件，存放目录，token，备份模式等信息）、**
 
 **uploadLog.json（则存放上传过的文件信息，此文件删除后会重新扫描目录下文件是否已上传）** 
+
+### 特别感谢
+[zhoubochina](https://gitee.com/zhoubochina)  
+[FlatLaf](https://www.formdev.com/flatlaf/)  
+[Hutool](http://hutool.cn/)  
+
