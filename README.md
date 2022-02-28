@@ -29,7 +29,7 @@ Java Swing + FlatLaf + Hutool + Okhttp3
 
 <p align="center">
   <a href="https://images.gitee.com/uploads/images/2022/0228/184444_0bd7db62_4873209.png">
-   <img alt="AliYunPan" width="170" height="150" src="https://images.gitee.com/uploads/images/2022/0228/184444_0bd7db62_4873209.png">
+   <img alt="AliYunPan" width="300" height="270" src="https://images.gitee.com/uploads/images/2022/0228/184444_0bd7db62_4873209.png">
   </a>
 </p>
 
