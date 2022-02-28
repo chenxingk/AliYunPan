@@ -227,10 +227,14 @@ public class Edit extends JDialog implements FocusListener {
             JOptionPane.showMessageDialog(null, "请选择正确的目录", "错误", JOptionPane.ERROR_MESSAGE);
             return false;
         }
+        if ("请输入时分秒，如:[20:30:00]".equals(timeText.getText())){
+            timeText.setText(null);
+        }
         if (StrUtil.isNotEmpty(timeText.getText()) && !ReUtil.contains("^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$", timeText.getText())) {
             JOptionPane.showMessageDialog(null, "请按格式输入定时备份时间", "错误", JOptionPane.ERROR_MESSAGE);
             return false;
         }
+
         return true;
     }
 

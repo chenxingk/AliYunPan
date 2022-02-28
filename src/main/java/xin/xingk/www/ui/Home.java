@@ -96,6 +96,7 @@ public class Home {
         home.getAddButton().addActionListener(e -> {
             initTableData();
             EDIT_TITLE = "新增备份任务";
+            EDIT_ID = 0;
             Edit edit = new Edit();
             edit.pack();
             edit.setVisible(true);
