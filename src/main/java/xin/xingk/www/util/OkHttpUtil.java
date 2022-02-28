@@ -175,7 +175,7 @@ public class OkHttpUtil {
         JSONObject loginResult = JSONUtil.parseObj(response).getJSONObject("pds_login_result");
         String accessToken = loginResult.getStr("accessToken");
         String nickName = loginResult.getStr("nickName");
-        ConfigUtil.updateUserName(nickName);
+        ConfigUtil.setName(nickName);
         String cookie = getCookie();
         String code = getCode(accessToken, cookie);
         //返回真正的Token信息

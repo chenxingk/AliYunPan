@@ -88,7 +88,7 @@ public class UpdateUtil {
                 }
             }
             //更新库里DB版本
-            ConfigUtil.updateUserVersion(version);
+            ConfigUtil.setVersion(version);
         }
     }
 }

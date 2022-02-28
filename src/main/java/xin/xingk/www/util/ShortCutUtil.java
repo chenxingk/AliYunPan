@@ -257,7 +257,7 @@ public class ShortCutUtil {
             return false;
         }
         setAppStartup(appPath);
-        ConfigUtil.updateUserStartup(DictConstants.MONITOR_ENABLE);
+        ConfigUtil.setStartup(DictConstants.MONITOR_ENABLE);
         JOptionPane.showMessageDialog(null, "已开启开机启动", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
         return true;
     }
@@ -270,7 +270,7 @@ public class ShortCutUtil {
         if (FileUtil.isFile(appPath)){
             cancelAppStartup(startup+appName+".lnk");
         }
-        ConfigUtil.updateUserStartup(DictConstants.MONITOR_DISABLE);
+        ConfigUtil.setStartup(DictConstants.MONITOR_DISABLE);
         JOptionPane.showMessageDialog(null, "已关闭开机启动", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
     }
 

@@ -61,7 +61,7 @@ public class ConfigUtil {
     /**
      * 获取主题名称
      */
-    public static String getUserTheme(){
+    public static String getTheme(){
         if (getStr(theme_key) == null){
             set(theme_key,"浅色");
         }
@@ -71,7 +71,7 @@ public class ConfigUtil {
     /**
      * 获取用户的昵称
      */
-    public static String getUserName(){
+    public static String getName(){
         return getStr(name_key);
     }
 
@@ -108,7 +108,7 @@ public class ConfigUtil {
      * 更新用户主题
      * @param theme 主题名称
      */
-    public static void updateUserTheme(String theme) {
+    public static void setTheme(String theme) {
         set(theme_key,theme);
     }
 
@@ -116,7 +116,7 @@ public class ConfigUtil {
      * 更新用户昵称
      * @param name 昵称
      */
-    public static void updateUserName(String name){
+    public static void setName(String name){
         set(name_key,name);
     }
 
@@ -125,7 +125,7 @@ public class ConfigUtil {
      * 更新用户 token
      * @param token token
      */
-    public static void updateUserToken(String token){
+    public static void setToken(String token){
         set(token_key,token);
     }
 
@@ -141,7 +141,7 @@ public class ConfigUtil {
      * 更新用户 dbVersion
      * @param dbVersion dbVersion
      */
-    public static void updateUserVersion(String dbVersion){
+    public static void setVersion(String dbVersion){
         set(dbVersion_key,dbVersion);
     }
 
@@ -149,7 +149,7 @@ public class ConfigUtil {
      * 更新用户开机启动
      * @param startup startup
      */
-    public static void updateUserStartup(Integer startup){
+    public static void setStartup(Integer startup){
         set(startup_key,startup+"");
     }
 

@@ -31,7 +31,7 @@ public class AliYunUtil {
         }
         CommonConstants.TOKEN = result.getStr("token_type") + " " + result.getStr("access_token");
         CommonConstants.DriveId = result.getStr("default_drive_id");
-        ConfigUtil.updateUserToken(result.getStr("refresh_token"));
+        ConfigUtil.setToken(result.getStr("refresh_token"));
         return true;
     }
 

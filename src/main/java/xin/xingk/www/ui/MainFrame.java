@@ -63,7 +63,7 @@ public class MainFrame extends JFrame {
 
     public void initHome() {
         this.initTopMenuBar();
-        this.setTitle(CommonConstants.TITLE +"，欢迎您："+ ConfigUtil.getUserName());
+        this.setTitle(CommonConstants.TITLE +"，欢迎您："+ ConfigUtil.getName());
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.6, 0.8);
         this.add(Home.getInstance().getHomePanel());
         this.remove(Login.getInstance().getLoginPanel());

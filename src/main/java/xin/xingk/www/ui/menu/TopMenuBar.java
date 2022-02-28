@@ -7,6 +7,7 @@ import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.App;
 import xin.xingk.www.common.constant.CommonConstants;
+import xin.xingk.www.ui.Login;
 import xin.xingk.www.ui.dialog.About;
 import xin.xingk.www.util.*;
 
@@ -125,7 +126,7 @@ public class TopMenuBar extends JMenuBar {
         }
         for (String themeName : themeNames) {
             JCheckBoxMenuItem item = new JCheckBoxMenuItem(themeName);
-            item.setSelected(themeName.equals(ConfigUtil.getUserTheme()));
+            item.setSelected(themeName.equals(ConfigUtil.getTheme()));
             item.addActionListener(this::themeChanged);
             themeMenu.add(item);
         }
@@ -138,7 +139,7 @@ public class TopMenuBar extends JMenuBar {
     private void themeChanged(ActionEvent actionEvent) {
         String selectedThemeName = actionEvent.getActionCommand();
         FlatAnimatedLafChange.showSnapshot();
-        ConfigUtil.updateUserTheme(selectedThemeName);
+        ConfigUtil.setTheme(selectedThemeName);
 //        SwingUtilities.updateComponentTreeUI(MainWindow.getInstance().getTabbedPane());
         SwingUtilities.updateComponentTreeUI(App.mainFrame);
         UIUtil.initTheme();
@@ -157,6 +158,7 @@ public class TopMenuBar extends JMenuBar {
     private void logOutActionPerformed() {
         CommonConstants.LOGIN_STATUS = false;
         ConfigUtil.logout();
+        Login.getInstance().getTipsLabel().setText("");
         App.mainFrame.initLogin();
     }
 

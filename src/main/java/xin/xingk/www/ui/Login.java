@@ -96,7 +96,7 @@ public class Login {
                         String refreshToken = json.getStr("refresh_token");
                         if (StrUtil.isNotEmpty(refreshToken)) {
                             tipsLabel.setText("登录成功，正在跳转中，请稍后...");
-                            ConfigUtil.updateUserToken(refreshToken);
+                            ConfigUtil.setToken(refreshToken);
                             this.cancel();
                             CommonConstants.LOGIN_STATUS = true;
                             App.mainFrame.initHome();

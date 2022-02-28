@@ -21,7 +21,7 @@ public class UIUtil {
      * 初始化主题
      */
     public static void initTheme(){
-        String theme = ConfigUtil.getUserTheme();
+        String theme = ConfigUtil.getTheme();
         if ("浅色".equals(theme)){
             FlatLightLaf.setup();
         }else {
