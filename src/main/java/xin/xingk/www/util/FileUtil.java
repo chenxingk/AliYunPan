@@ -2,12 +2,15 @@ package xin.xingk.www.util;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.io.IORuntimeException;
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.common.constant.CommonConstants;
 import xin.xingk.www.entity.aliyun.FileInfo;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.file.Paths;
@@ -21,6 +24,7 @@ import java.util.concurrent.Future;
  * Author: 陈靖杰
  * Date: 2021/05/10
  */
+@Slf4j
 public class FileUtil extends cn.hutool.core.io.FileUtil {
     static List<String> docTypes = new ArrayList<>();//文档类型
     static List<String> compressTypes = new ArrayList<>();//压缩包类型
@@ -171,7 +175,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
      * @param blockSize 文件块大小
      * @return 文件块内容
      */
-    public static byte[] readByte(String path, long position, int blockSize){
+    public static byte[] readBytes(String path, long position, int blockSize){
         // ----- 校验文件，当文件不存在时，抛出文件不存在异常
         // ----- 读取文件
         ByteBuffer block = ByteBuffer.allocate(blockSize);
@@ -185,6 +189,29 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
             throw new IORuntimeException("读取文件流，发生异常...请联系作者..."+ ExceptionUtil.getMessage(e));
         }
         return block.array();
+    }
+
+    /**
+     * 分片读取文件块
+     *
+     * @param path      文件路径
+     * @param position  角标
+     * @param blockSize 文件块大小
+     * @return 文件块内容
+     */
+    public static byte[] readBytes(String path, int position, int blockSize){
+        byte[] bytes = new byte[blockSize];
+        FileInputStream in = null;
+        try {
+            in = new FileInputStream(path);
+            int read = in.read(bytes, position, blockSize);
+            log.info(">>> {},当前读取：{}",path,read);
+        } catch (Exception e) {
+            throw new IORuntimeException(e);
+        } finally {
+            IoUtil.close(in);
+        }
+        return bytes;
     }
 
     /**

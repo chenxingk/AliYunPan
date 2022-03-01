@@ -152,9 +152,9 @@ public class BackupUtil {
                 for (int i = 0; i < part_info_list.size(); i++) {
                     byte[] fileBytes;
                     if (size>CommonConstants.DEFAULT_SIZE.longValue()){
-                        fileBytes = FileUtil.readByte(fileInfo.getPath(), position, CommonConstants.DEFAULT_SIZE);
+                        fileBytes = FileUtil.readBytes(fileInfo.getPath(), position, CommonConstants.DEFAULT_SIZE);
                     }else{
-                        fileBytes = FileUtil.readByte(fileInfo.getPath(), position, (int) size);
+                        fileBytes = FileUtil.readBytes(fileInfo.getPath(), position, (int) size);
                     }
                     String uploadUrl = part_info_list.getJSONObject(i).getStr("upload_url");
                     int code = OkHttpUtil.uploadFileBytes(uploadUrl, fileBytes);
