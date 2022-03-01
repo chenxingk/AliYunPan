@@ -1,6 +1,7 @@
 package xin.xingk.www.util;
 
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -10,12 +11,15 @@ import xin.xingk.www.common.constant.CommonConstants;
 import xin.xingk.www.context.BackupContextHolder;
 import xin.xingk.www.context.UploadRecordContextHolder;
 import xin.xingk.www.entity.Backup;
+import xin.xingk.www.entity.aliyun.CloudFile;
 import xin.xingk.www.entity.UploadRecord;
+import xin.xingk.www.entity.aliyun.FileInfo;
 import xin.xingk.www.ui.Home;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -53,7 +57,7 @@ public class BackupUtil {
 
     /**
      * 备份任务
-     * @param backup
+     * @param backup 备份任务
      */
     public static void backupTask(Backup backup) {
         //备份目录ID
@@ -102,16 +106,15 @@ public class BackupUtil {
                 continue;
             }
             try {
-                Map<String, String> map = FileUtil.getFileInfo(filePath);
+                FileInfo fileInfo = FileUtil.getFileInfo(filePath);
                 if (backupType==0){//普通备份
-                    doUploadFile(pathId,map);
+                    doUploadFile(pathId,fileInfo);
                 }else {
-                    String type = map.get("type");
-                    String fileId = AliYunUtil.getFileId(pathId,type);//微信备份-类型
-                    doUploadFile(fileId,map);
+                    String fileId = AliYunUtil.getFileId(pathId,fileInfo.getType());//微信备份-类型
+                    doUploadFile(fileId,fileInfo);
                 }
             } catch (Exception e) {
-                UIUtil.console("遇到异常情况：{}",e.toString());
+                UIUtil.console("遇到异常情况：{}",ExceptionUtil.getMessage(e));
             }
         }
     }
@@ -122,14 +125,14 @@ public class BackupUtil {
      * @param fileName 文件名称
      */
     public static void monitorUpload(String path,String fileName,Backup backup) {
-            boolean login = AliYunUtil.login();//登录阿里云
-            if (!login) return;
-            //获取文件ID
-            Map<String, Object> result = AliYunUtil.getFileIdByPath(path,backup);
-            //上传文件
-            List<String> fileList = new ArrayList<>();
-            fileList.add(path+FileUtil.FILE_SEPARATOR+fileName);
-            uploadFileList(fileList, Convert.toStr(result.get("fileId")),Convert.toInt(result.get("backupType")));
+        boolean login = AliYunUtil.login();//登录阿里云
+        if (!login) return;
+        //获取文件ID
+        Map<String, Object> result = AliYunUtil.getFileIdByPath(path,backup);
+        //上传文件
+        List<String> fileList = new ArrayList<>();
+        fileList.add(path+FileUtil.FILE_SEPARATOR+fileName);
+        uploadFileList(fileList, Convert.toStr(result.get("fileId")),Convert.toInt(result.get("backupType")));
     }
 
     /**
@@ -137,27 +140,26 @@ public class BackupUtil {
      * @param fileId 文件夹ID
      * @param fileInfo 文件信息
      */
-    public static void doUploadFile(String fileId,Map<String, String> fileInfo){
-        //写入上传文件的路径
-        UploadRecord uploadRecord = UploadRecordContextHolder.getUploadRecordByFilePath(fileInfo.get("path"));
-        if (ObjectUtil.isEmpty(uploadRecord)){
-            UIUtil.console("开始上传：{}",fileInfo.get("path"));
+    public static void doUploadFile(String fileId,FileInfo fileInfo){
+
+        if (!getFileExistCloud(fileInfo,fileId)){
+            UIUtil.console("开始上传：{}",fileInfo.getPath());
             JSONObject uploadFile = AliYunUtil.uploadFile(fileId,fileInfo);
             JSONArray part_info_list = uploadFile.getJSONArray("part_info_list");
             if(ObjectUtil.isNotEmpty(part_info_list)){//上传新文件
                 int position = 0;//文件流位置
-                Long size = Long.parseLong(fileInfo.get("size"));//文件大小
+                long size = fileInfo.getSize();//文件大小
                 for (int i = 0; i < part_info_list.size(); i++) {
                     byte[] fileBytes;
                     if (size>CommonConstants.DEFAULT_SIZE.longValue()){
-                        fileBytes = FileUtil.readByte(fileInfo.get("path"), position, CommonConstants.DEFAULT_SIZE);
+                        fileBytes = FileUtil.readByte(fileInfo.getPath(), position, CommonConstants.DEFAULT_SIZE);
                     }else{
-                        fileBytes = FileUtil.readByte(fileInfo.get("path"), position, size.intValue());
+                        fileBytes = FileUtil.readByte(fileInfo.getPath(), position, (int) size);
                     }
                     String uploadUrl = part_info_list.getJSONObject(i).getStr("upload_url");
                     int code = OkHttpUtil.uploadFileBytes(uploadUrl, fileBytes);
                     double progress = ((double) (i+1) / part_info_list.size()) * 100;
-                    UIUtil.console("文件：{} 上传进度：{}% 状态码： {}",fileInfo.get("name"), NumberUtil.roundStr(progress,2),code);
+                    UIUtil.console("文件：{} 上传进度：{}% 状态码： {}",fileInfo.getName(), NumberUtil.roundStr(progress,2),code);
                     position += CommonConstants.DEFAULT_SIZE;
                     size -= CommonConstants.DEFAULT_SIZE;
                 }
@@ -173,9 +175,31 @@ public class BackupUtil {
                 addUploadRecord(fileInfo, upFileId);
             }
         }else {
-            UIUtil.console("{} 已上传 跳过",fileInfo.get("path"));
+            UIUtil.console("{} 云盘已存在 跳过",fileInfo.getPath());
         }
+    }
 
+    /**
+     * 判断文件是否存在云盘
+     * @param fileInfo 本地文件信息
+     * @param fileId 云盘目录ID
+     * @return true 存在
+     */
+    private static boolean getFileExistCloud(FileInfo fileInfo,String fileId) {
+        UploadRecord uploadRecord = UploadRecordContextHolder.getUploadRecordByFilePath(fileInfo.getPath());
+        if (ObjectUtil.isNotEmpty(uploadRecord)){
+            return true;
+        }
+        List<CloudFile> cloudFileList = AliYunUtil.getCloudFileList(fileId);
+        Optional<CloudFile> cloudFile = cloudFileList.stream().filter(f ->
+                "file".equals(f.getType()) && f.getName().equals(fileInfo.getName())
+                        && fileInfo.getContentHash().equals(f.getContentHash())
+        ).findFirst();
+        if (cloudFile.isPresent()){
+            addUploadRecord(fileInfo,cloudFile.get().getFileId());
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -183,13 +207,13 @@ public class BackupUtil {
      * @param fileInfo 文件信息
      * @param upFileId 阿里云盘的文件ID
      */
-    private static void addUploadRecord(Map<String, String> fileInfo, String upFileId) {
+    private static void addUploadRecord(FileInfo fileInfo, String upFileId) {
         UploadRecord uploadRecord = new UploadRecord();
-        uploadRecord.setFileHash(fileInfo.get("content_hash"));
+        uploadRecord.setFileHash(fileInfo.getContentHash());
         uploadRecord.setFileId(upFileId);
-        uploadRecord.setFilePath(fileInfo.get("path"));
+        uploadRecord.setFilePath(fileInfo.getPath());
         UploadRecordContextHolder.addUploadRecord(uploadRecord);
-        UIUtil.console("上传文件成功：{}",fileInfo.get("name"));
+        UIUtil.console("上传文件成功：{}",fileInfo.getName());
     }
 
 

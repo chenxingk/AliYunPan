@@ -1,9 +1,11 @@
 package xin.xingk.www.util;
 
+import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import xin.xingk.www.common.constant.CommonConstants;
+import xin.xingk.www.entity.aliyun.FileInfo;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -11,9 +13,7 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Future;
 
 /**
@@ -32,8 +32,8 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
 
     //文件类型
     static {
-        /**
-         * 文档类型
+        /*
+          文档类型
          */
         docTypes.add("xls");
         docTypes.add("xlsx");
@@ -48,8 +48,8 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         docTypes.add("xmind");
         devTypes.add("md");
 
-        /**
-         * 压缩包类型
+        /*
+          压缩包类型
          */
         compressTypes.add("zip");
         compressTypes.add("rar");
@@ -57,8 +57,8 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         compressTypes.add("tar.gz");
         compressTypes.add("gz");
 
-        /**
-         * 图片类型
+        /*
+          图片类型
          */
         imageTypes.add("png");
         imageTypes.add("jpg");
@@ -67,8 +67,8 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         imageTypes.add("ico");
         imageTypes.add("psd");
 
-        /**
-         * 音频类型
+        /*
+          音频类型
          */
         musicTypes.add("mp3");
         musicTypes.add("wma");
@@ -76,8 +76,8 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         musicTypes.add("m4a");
         musicTypes.add("amr");
 
-        /**
-         * 视频类型
+        /*
+          视频类型
          */
         videoTypes.add("mp4");
         videoTypes.add("avi");
@@ -87,8 +87,8 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         videoTypes.add("mov");
         videoTypes.add("wmv");
 
-        /**
-         * 软件类型
+        /*
+          软件类型
          */
         applyTypes.add("1");//微信发送的APK文件
         applyTypes.add("apk");
@@ -98,8 +98,8 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         applyTypes.add("dmg");
         applyTypes.add("rpm");
 
-        /**
-         * 开发类型
+        /*
+          开发类型
          */
         devTypes.add("properties");
         devTypes.add("java");
@@ -143,23 +143,24 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
     /**
      * 获取文件信息
      * @param path 文件路径
+     * @return 文件信息
      */
-    public static Map<String, String> getFileInfo(String path) {
+    public static FileInfo getFileInfo(String path) {
         String contentType = getMimeType(path);
         if (StrUtil.isEmpty(contentType)) contentType="application/octet-stream";
-        Map<String, String> map = new HashMap();
+        FileInfo fileInfo = new FileInfo();
         File file = file(path);
         String type = getFileTypes(file.getName());
-        map.put("name",file.getName());
-        map.put("path",file.getPath());
-        map.put("size",file.length()+"");
-        map.put("type",type);
-        map.put("content_type",contentType);
-        map.put("content_hash",DigestUtil.sha1Hex(file).toUpperCase());
         long max = file.length() / CommonConstants.DEFAULT_SIZE;
         if (max%10480000!=0) max++;
-        map.put("max",max+"");
-        return map;
+        fileInfo.setName(file.getName());
+        fileInfo.setPath(file.getPath());
+        fileInfo.setType(type);
+        fileInfo.setContentType(contentType);
+        fileInfo.setContentHash(DigestUtil.sha1Hex(file).toUpperCase());
+        fileInfo.setSize(file.length());
+        fileInfo.setMax(max);
+        return fileInfo;
     }
 
     /**
@@ -181,15 +182,15 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
                 Thread.sleep(1L);
             }
         }catch (Exception e){
-            throw new IORuntimeException("读取文件流，发生异常...请联系作者..."+e.getMessage());
+            throw new IORuntimeException("读取文件流，发生异常...请联系作者..."+ ExceptionUtil.getMessage(e));
         }
         return block.array();
     }
 
     /**
      * 获取目录下所有文件
-     * @param path
-     * @return
+     * @param path 目录
+     * @return 目录下所有文件
      */
     public static List<String> getFileList(String path) {
         List<String> List = new ArrayList<>();
@@ -200,8 +201,8 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
 
     /**
      * 获取目录下所有文件夹
-     * @param path
-     * @return
+     * @param path 目录
+     * @return 目录下所有文件夹
      */
     public static List<String> getFileFolder(String path) {
         List<String> List = new ArrayList<>();

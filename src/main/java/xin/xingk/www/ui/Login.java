@@ -62,7 +62,6 @@ public class Login {
         UpdateUtil.updateDb();
         //登录
         CommonConstants.LOGIN_STATUS = AliYunUtil.login();
-        Home.initUi();
         //窗口切换
         if (CommonConstants.LOGIN_STATUS) {
             login.getQrCodeLabel().setText("正在登录……");

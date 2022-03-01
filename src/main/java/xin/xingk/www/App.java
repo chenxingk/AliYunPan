@@ -7,10 +7,10 @@ import cn.hutool.system.SystemUtil;
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.common.CronTasks;
 import xin.xingk.www.common.DirWatcher;
+import xin.xingk.www.ui.Home;
 import xin.xingk.www.ui.Login;
 import xin.xingk.www.ui.MainFrame;
 import xin.xingk.www.util.UIUtil;
-import xin.xingk.www.util.UpdateUtil;
 
 import javax.swing.*;
 
@@ -32,6 +32,8 @@ public class App {
         TimeInterval timer = DateUtil.timer();
         mainFrame = new MainFrame();
         mainFrame.initUpdate();
+        //初始化主窗口UI
+        Home.initUi();
 
         ThreadUtil.execute(Login::initUpdate);
 

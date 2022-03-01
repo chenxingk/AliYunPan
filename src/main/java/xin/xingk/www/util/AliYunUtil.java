@@ -5,12 +5,13 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import xin.xingk.www.common.constant.CommonConstants;
 import xin.xingk.www.entity.Backup;
+import xin.xingk.www.entity.aliyun.CloudFile;
+import xin.xingk.www.entity.aliyun.FileInfo;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author: Mr.chen
@@ -21,7 +22,7 @@ public class AliYunUtil {
 
     /**
      * 获取阿里云信息
-     * @return
+     * @return 登录状态
      */
     public static boolean login(){
         JSONObject data = new JSONObject().set("refresh_token", ConfigUtil.getToken());
@@ -37,10 +38,10 @@ public class AliYunUtil {
 
     /**
      * 获取阿里云文件列表
-     * @param fileId
-     * @return
+     * @param fileId 云盘目录ID
+     * @return 目录下所有内容
      */
-    public static JSONObject getFileList(String fileId){
+    public static List<CloudFile> getCloudFileList(String fileId){
         JSONObject data = new JSONObject();
         data.set("drive_id",CommonConstants.DriveId);
         data.set("parent_file_id",fileId);
@@ -53,14 +54,26 @@ public class AliYunUtil {
         data.set("url_expire_sec",1600);
         data.set("order_by","updated_at");
         data.set("order_direction","DESC");
-        return OkHttpUtil.doPost(CommonConstants.FILE_LIST_URL,data);
+
+        //下一页 标记
+        String nextMarker = "";
+        JSONArray resultArr = new JSONArray();
+        do {
+            if (StrUtil.isNotEmpty(nextMarker)){
+                data.set("marker",nextMarker);
+            }
+            JSONObject result = OkHttpUtil.doPost(CommonConstants.FILE_LIST_URL, data);
+            resultArr.addAll(result.getJSONArray("items"));
+            nextMarker = result.getStr("next_marker");
+        }while (StrUtil.isNotEmpty(nextMarker));
+        return JSONUtil.toList(resultArr, CloudFile.class);
     }
 
     /**
      * 创建文件夹
      * @param fileId 父级目录ID 根目录为root
      * @param name 新文件夹名称
-     * @return
+     * @return 文件夹信息
      */
     public static JSONObject createFolder(String fileId,String name){
         //创建文件夹
@@ -75,26 +88,26 @@ public class AliYunUtil {
 
     /**
      * 上传文件到阿里云盘
-     * @return
+     * @return 上传结果
      */
-    public static JSONObject uploadFile(String fileId, Map<String, String> fileInfo){
+    public static JSONObject uploadFile(String fileId,FileInfo fileInfo){
         JSONObject data = new JSONObject();
         JSONArray array = new JSONArray();
-        long max = Long.parseLong(fileInfo.get("max"));
+        long max = fileInfo.getMax();
         for (int i = 1; i <= max; i++) {
             JSONObject list = new JSONObject();
             list.set("part_number",i);
             array.add(list);
         }
         data.set("drive_id",CommonConstants.DriveId);
-        data.set("name",fileInfo.get("name"));
+        data.set("name",fileInfo.getName());
         data.set("type","file");
-        data.set("content_type",fileInfo.get("content_type"));
-        data.set("size",Long.valueOf(fileInfo.get("size")));
+        data.set("content_type",fileInfo.getContentType());
+        data.set("size",fileInfo.getSize());
         data.set("parent_file_id",fileId);
         data.set("part_info_list",array);
         data.set("content_hash_name","sha1");
-        data.set("content_hash",fileInfo.get("content_hash"));
+        data.set("content_hash",fileInfo.getContentHash());
         data.set("ignoreError",false);
         data.set("check_name_mode","refuse");
         return OkHttpUtil.doFilePost(CommonConstants.CREATE_FILE_URL,data);
@@ -102,9 +115,9 @@ public class AliYunUtil {
 
     /**
      * 完成文件上传
-     * @param fileId
-     * @param uploadId
-     * @return
+     * @param fileId 云盘文件ID
+     * @param uploadId 上传ID
+     * @return 上传完成信息
      */
     public static JSONObject completeFile(String fileId,String uploadId){
         JSONObject data = new JSONObject();
@@ -119,8 +132,7 @@ public class AliYunUtil {
 
     /**
      * 删除阿里云盘文件
-     * @param fileId
-     * @returnn
+     * @param fileId 云盘文件ID
      */
     public static void deleteFile(String fileId){
         JSONObject data = new JSONObject();
@@ -133,25 +145,18 @@ public class AliYunUtil {
      * 获取文件夹ID
      * @param parentFileId 父级文件夹ID
      * @param folderName 文件夹名称
-     * @return
+     * @return 云盘目录ID
      */
     public static String getFileId(String parentFileId,String folderName){
-        String fileId="";
-        JSONObject fileList = getFileList(parentFileId);//获取文件目录
-        JSONArray fileArray = fileList.getJSONArray("items");
-        if (ObjectUtil.isNotNull(fileArray) && fileArray.size()>0){
-            for (int i = 0; i < fileArray.size(); i++) {
-                JSONObject folder = fileArray.getJSONObject(i);
-                if ("folder".equals(folder.getStr("type")) && folderName.equals(folder.getStr("name"))){
-                    return folder.getStr("file_id");
-                }
-            }
-        }
-        if (StrUtil.isEmpty(fileId)){
-            JSONObject folder = createFolder(parentFileId, folderName); //创建备份目录
-            return folder.getStr("file_id");
-        }
-        return fileId;
+        List<CloudFile> cloudFileList = getCloudFileList(parentFileId);//获取文件目录
+        //过滤文件夹
+        Optional<CloudFile> cloudFile = cloudFileList.stream().filter(f ->
+                "folder".equals(f.getType()) && folderName.equals(f.getName())
+        ).findFirst();
+        if (cloudFile.isPresent()) return cloudFile.get().getFileId();
+        //没有找到则创建一个返回
+        JSONObject folder = createFolder(parentFileId, folderName); //创建备份目录
+        return folder.getStr("file_id");
     }
 
     /**
@@ -206,8 +211,8 @@ public class AliYunUtil {
 
     /**
      * 获取月份文件夹
-     * @param path
-     * @return
+     * @param path 本地路径
+     * @return 月份目录
      */
     public static String getMonth(String path,String localPath) {
         if (twoFolder(path,localPath)){
@@ -219,8 +224,8 @@ public class AliYunUtil {
 
     /**
      * 是否为二级目录
-     * @param path
-     * @return
+     * @param path 本地路径
+     * @return true 二级目录
      */
     public static boolean twoFolder(String path,String localPath) {
         String str = StrUtil.subAfter(path, localPath, false);
