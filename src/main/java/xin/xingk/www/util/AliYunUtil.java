@@ -25,7 +25,11 @@ public class AliYunUtil {
      * @return 登录状态
      */
     public static boolean login(){
-        JSONObject data = new JSONObject().set("refresh_token", ConfigUtil.getToken());
+        String token = ConfigUtil.getToken();
+        if (StrUtil.isEmpty(token)){
+            return false;
+        }
+        JSONObject data = new JSONObject().set("refresh_token", token);
         JSONObject result = OkHttpUtil.doPost(CommonConstants.TOKEN_URL, data);
         if (ObjectUtil.isNull(result) || "InvalidParameter.RefreshToken".equals(result.getStr("code"))){
             return false;

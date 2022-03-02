@@ -87,7 +87,6 @@ public class Edit extends JDialog implements FocusListener {
             int intRetVal = selectPathChooser.showOpenDialog(this);
             if (intRetVal == JFileChooser.APPROVE_OPTION) {
                 localText.setText(selectPathChooser.getSelectedFile().getPath());
-                System.out.println(localText.getText());
             }
         });
         defaultColor = localText.getForeground();

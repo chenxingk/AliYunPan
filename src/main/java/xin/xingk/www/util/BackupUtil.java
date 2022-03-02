@@ -36,7 +36,10 @@ public class BackupUtil {
      */
     public static void startBackup(Integer id) {
         boolean login = AliYunUtil.login();//登录阿里云
-        if (!login) return;
+        if (!login) {
+            UIUtil.console("Token已过期，请退出重新登录。。。");
+            return;
+        }
         String key = CacheUtil.BACKUP_ID_KEY + id;
         String cronKey = CacheUtil.CRON_TASK_ID_KEY + id;
         if (id == null){
@@ -126,7 +129,10 @@ public class BackupUtil {
      */
     public static void monitorUpload(String path,String fileName,Backup backup) {
         boolean login = AliYunUtil.login();//登录阿里云
-        if (!login) return;
+        if (!login) {
+            UIUtil.console("Token已过期，请退出重新登录。。。");
+            return;
+        }
         //获取文件ID
         Map<String, Object> result = AliYunUtil.getFileIdByPath(path,backup);
         //上传文件

@@ -98,7 +98,6 @@ public class OkHttpUtil {
             Response response = client.newCall(request).execute();
             String result = response.body().string();
             UIUtil.console("{}，请求状态码：{}", DictConstants.URI_DICT.get(url),response.code());
-            //System.out.println("result：>>>>>>>>>>>>>>>>>>>"+result);
             JSONObject json = JSONUtil.parseObj(result);
             errNum=0;
             return json;

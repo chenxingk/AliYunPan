@@ -84,7 +84,6 @@ public class DirWatcher extends SimpleWatcher {
     public void onCreate(WatchEvent<?> event, Path currentPath) {
         String path = currentPath.toString();//文件路径
         String fileName = event.context().toString();//文件名
-        System.out.println("新增文件目录："+path);
         dirMonitorFileUpload(path, fileName);
     }
 
@@ -97,7 +96,6 @@ public class DirWatcher extends SimpleWatcher {
     public void onModify(WatchEvent<?> event, Path currentPath) {//监听
         String path = currentPath.toString();//文件路径
         String fileName = event.context().toString();//文件名
-        System.out.println("修改文件目录："+path);
         dirMonitorFileUpload(path, fileName);
     }
 
@@ -108,14 +106,13 @@ public class DirWatcher extends SimpleWatcher {
      */
     private synchronized void dirMonitorFileUpload(String path, String fileName) {
         String filePath = path + FileUtil.FILE_SEPARATOR + fileName;
-        System.out.println("目录检测："+filePath);
+        UIUtil.console("监控到目录：{} 文件发生变化",path);
         if (FileUtil.isFile(filePath)){
             /**
              * 没有点击左上角的开始备份
              * 也没有点击右键菜单里的开始备份
              * 定时备份也没有执行
              */
-
             if (Home.getInstance().getStartButton().getModel().isEnabled()){
                 //单个备份
                 String key = CacheUtil.BACKUP_ID_KEY + this.backId;
