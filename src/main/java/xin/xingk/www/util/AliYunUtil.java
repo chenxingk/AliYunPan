@@ -2,11 +2,12 @@ package xin.xingk.www.util;
 
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.io.StreamProgress;
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
-import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
+import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -16,6 +17,7 @@ import xin.xingk.www.entity.aliyun.CloudFile;
 import xin.xingk.www.entity.aliyun.FileInfo;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -156,17 +158,15 @@ public class AliYunUtil {
      * @return 云盘目录ID
      */
     public static JSONObject getDownload(String fileId){
-        /*HttpResponse response = HttpRequest.post("https://api.aliyundrive.com/v2/file/get_download_url")
-                .header("authorization", CommonConstants.TOKEN)
-                .body(data.toString())
-                .execute();
-        String body = response.body();
-        System.out.println("body："+body);
-        JSONObject result = JSONUtil.parseObj(body);*/
-
         JSONObject data = new JSONObject();
         data.set("drive_id",CommonConstants.DriveId);
         data.set("file_id",fileId);
+//        HttpResponse response = HttpRequest.post("https://api.aliyundrive.com/v2/file/get_download_url")
+//                .auth(CommonConstants.TOKEN)
+//                .body(data.toString())
+//                .execute();
+//        String body = response.body();
+//        return JSONUtil.parseObj(body);
         return OkHttpUtil.doPost(CommonConstants.DOWNLOAD_FILE_URL, data);
     }
 
@@ -177,8 +177,8 @@ public class AliYunUtil {
      */
     public static void downloadCloudFile(String fileId,String path){
         JSONObject download = getDownload(fileId);
-        double size = download.getDouble("size");
-        HttpResponse response = HttpRequest.get(download.getStr("url"))
+        BigDecimal size = download.getBigDecimal("size");
+        HttpResponse response = HttpUtil.createGet(download.getStr("url"), true)
                 .header("Connection", "keep-alive")
                 .header("sec-ch-ua", "\" Not;A Brand\";v=\"99\", \"Google Chrome\";v=\"97\", \"Chromium\";v=\"97\"")
                 .header("sec-ch-ua-mobile", "?0")
@@ -191,31 +191,36 @@ public class AliYunUtil {
                 .header("Sec-Fetch-Dest", "iframe")
                 .header("Referer", "https://www.aliyundrive.com/")
                 .header("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
-                .execute();
-        if (403 == response.getStatus()){
-            System.out.println("下载失败");
-            return;
+                .executeAsync();
+        if (response.isOk()){
+            String fileName = StrUtil.subAfter(response.header("Content-Disposition"), "''", false);
+            fileName = URLUtil.decode(fileName);
+            File newFile = FileUtil.file(path + FileUtil.FILE_SEPARATOR + fileName);
+            response.writeBody(newFile,new StreamProgress() {
+                @Override
+                public void start() {
+                    System.out.println("开始下载");
+                }
+
+                @Override
+                public void progress(long progressSize) {
+                    BigDecimal bigDecimal = new BigDecimal(progressSize);
+                    BigDecimal div = NumberUtil.div(bigDecimal, size);
+                    BigDecimal mul = NumberUtil.mul(div, 100).setScale(2);
+                    System.out.println("当前已下载："+ mul + "％");
+                    System.out.println("当前已下载："+ FileUtil.readableFileSize(progressSize));
+                }
+
+                @Override
+                public void finish() {
+                    //写入下载完成表
+                    //没有下载完成的下次继续下载
+                    System.out.println("下载完成");
+                }
+            });
+        }else {
+            System.out.println("下载失败："+response.getStatus());
         }
-        String fileName = StrUtil.subAfter(response.header("Content-Disposition"), "''", false);
-        fileName = URLUtil.decode(fileName);
-        File newFile = cn.hutool.core.io.FileUtil.file(path + FileUtil.FILE_SEPARATOR + fileName);
-        response.writeBody(newFile,new StreamProgress() {
-            @Override
-            public void start() {
-                System.out.println("开始下载");
-            }
-
-            @Override
-            public void progress(long progressSize) {
-                double progress = (progressSize / size) * 100;
-                System.out.println("当前已下载："+ progress );
-            }
-
-            @Override
-            public void finish() {
-                System.out.println("下载完成");
-            }
-        });
     }
 
     /**
