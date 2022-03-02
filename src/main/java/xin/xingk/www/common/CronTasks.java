@@ -1,11 +1,16 @@
 package xin.xingk.www.common;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.ReUtil;
+import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.cron.CronUtil;
-import xin.xingk.www.util.AliYunPanUtil;
-import xin.xingk.www.util.ConfigUtil;
+import xin.xingk.www.context.BackupContextHolder;
+import xin.xingk.www.entity.Backup;
+import xin.xingk.www.ui.Home;
+import xin.xingk.www.util.*;
+
+import java.util.List;
 
 /**
  * Description: 定时任务
@@ -14,43 +19,15 @@ import xin.xingk.www.util.ConfigUtil;
  */
 public class CronTasks {
 
-    private static AliYunPanUtil aliYunPanUtil = new AliYunPanUtil();;
-
     /**
-     * 更新阿里云盘token
-     */
-    public static void updateALiYunPanToken(){
-        if (StrUtil.isNotEmpty(ConfigUtil.getRefreshToken())){
-            CommonUI.console("定时更新阿里云Token");
-            aliYunPanUtil.getAliYunPanInfo();
-        }
-    }
-
-    /**
-     * 定时备份文件
-     */
-    public static void backFileList(){
-        try {
-            //执行上传文件操作
-            Thread backup = new Thread(() -> aliYunPanUtil.startBackup());
-            backup.start();
-        } catch (Exception e) {
-            CommonUI.console("定时备份遇到异常情况：{}",e.toString());
-        }
-    }
-
-    /**
-     * 定时任务开始
+     * 开始定时任务
      */
     public static void startTask() {
         //每小时刷新阿里云盘登录信息
-        CronUtil.schedule("001","0 0 0/1 * * ?", () -> updateALiYunPanToken());
-        String backupTime = ConfigUtil.getBackupTime();
-        boolean contains = ReUtil.contains("^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$", backupTime);
-        if (StrUtil.isNotEmpty(backupTime) && contains){
-            startTimeBackupFile(backupTime);
-        }else {
-            CommonUI.console("定时备份任务暂未开启，请检查您的配置");
+        CronUtil.schedule("001","0 0 0/1 * * ?", CronTasks::updateALiYunPanToken);
+        List<Backup> backupList = BackupContextHolder.getBackupList();
+        for (Backup backup : backupList) {
+            setTimeTask(backup);
         }
         //开启定时
         CronUtil.start();
@@ -59,14 +36,51 @@ public class CronTasks {
     }
 
     /**
-     * 开启定时备份文件
-     * @param backupTime
+     * 设置备份任务
+     * @param backup 备份任务
      */
-    public static void startTimeBackupFile(String backupTime) {
-        CronUtil.remove("002");
-        String cronTab = DateUtil.format(DateUtil.parse(backupTime), "ss mm HH * * ?");
-        CronUtil.schedule("002",cronTab, CronTasks::backFileList);
-        CommonUI.console("定时备份任务开启成功，每天【{}】执行",backupTime);
+    public static void setTimeTask(Backup backup) {
+        String id = String.valueOf(backup.getId());
+        CronUtil.remove(id);
+        if (StrUtil.isEmpty(backup.getBackupTime())) return;
+        String cronTab = DateUtil.format(DateUtil.parse(backup.getBackupTime()), "ss mm HH * * ?");
+        CronUtil.schedule(id,cronTab, () -> backFileList(backup.getId()));
+        UIUtil.console("目录：{}，将在每天【{}】自动备份",backup.getLocalPath(),backup.getBackupTime());
+    }
+
+    /**
+     * 定时备份文件
+     */
+    public static void backFileList(int id){
+        try {
+            String key = CacheUtil.BACKUP_ID_KEY + id;
+            if (!Home.getInstance().getStartButton().getModel().isEnabled() || ObjectUtil.isNotEmpty(CacheUtil.get(key))){
+                Backup backup = BackupContextHolder.getBackupById(id);
+                UIUtil.console("本地目录：{}，定时备份跳过，此目录正在备份中。。。",backup.getLocalPath());
+                return;
+            }
+            /**
+             * 没有点击左上角的开始备份
+             * 也没有点击右键菜单里的开始备份
+             * 设置定时备份的缓存做标记
+             */
+            key = CacheUtil.CRON_TASK_ID_KEY + id;
+            CacheUtil.set(key,id);
+            //执行上传文件操作
+            ThreadUtil.execute(() -> BackupUtil.startBackup(id));
+        } catch (Exception e) {
+            UIUtil.console("定时备份遇到异常情况：{}",e.toString());
+        }
+    }
+
+    /**
+     * 更新阿里云盘token
+     */
+    public static void updateALiYunPanToken(){
+        if (StrUtil.isNotEmpty(ConfigUtil.getToken())){
+            UIUtil.console("定时更新阿里云Token");
+            AliYunUtil.login();
+        }
     }
 
 }

@@ -1,10 +1,7 @@
-package xin.xingk.www.common;
+package xin.xingk.www.common.constant;
 
-
-import cn.hutool.core.io.watch.WatchMonitor;
 
 import java.io.File;
-import java.math.BigDecimal;
 
 /**
  * Description: 公共变量
@@ -13,11 +10,22 @@ import java.math.BigDecimal;
  */
 public class CommonConstants {
 
-    public static String TITLE = "备份助手v1.2";
-
+    //软件版本
+    public static final String VERSION = "V2.1.20220302";
+    //软件标题
+    public static final String TITLE = "备份助手"+VERSION;
+    //用户目录
+    private static final String USER_HOME = System.getProperty("user.home");
+    //配置文件路径
+    public static final String CONFIG_HOME = USER_HOME + File.separator + ".backupAider" + File.separator;
+    //日志文件路径
+    public final static String LOG_DIR = USER_HOME + File.separator + ".backupAider" + File.separator + "logs" + File.separator;
     //当前路径
     public static String SYSTEM_PATH = System.getProperty("user.dir") + File.separator;
 
+    /**
+     * 阿里云接口
+     */
     //获取token
     public final static String TOKEN_URL="https://websv.aliyundrive.com/token/refresh";
     //文件列表
@@ -34,31 +42,14 @@ public class CommonConstants {
     public static String DriveId="";
     //根目录
     public final static String ROOT="root";
+    //登录状态
+    public static boolean LOGIN_STATUS = false;
 
-    //refresh_token
-    public static String REFRESH_TOKEN = "tokenText";
-    //上传目录
-    public static String PATH = "pathText";
-    //云盘备份目录
-    public static String BACKUP_NAME = "folderText";
-    //备份模式
-    public static String BACKUP_TYPE = "backType";//0是普通备份 1是分类备份
-    //定时任务时间
-    public static String BACKUP_TIME = "backupTime";
-    //是否监听目录
-    public static String MONITOR_FOLDER= "monitorFolder";//0是关闭 1是开启
-
-    //输出日志模式 0是覆盖 1追加
-    public static int CLEAN_CONSOLE=1;
-    //备份状态
-    public static boolean BACK_STATE = false;
-    //是否打印日志
-    public static boolean IS_CONSOLE = false;
-    //文件监听
-    public static WatchMonitor monitor;
     //默认大小
     public static final Integer DEFAULT_SIZE = 10480000;
-    //软件版本
-    public static final BigDecimal VERSION = new BigDecimal(1.2);
+
+
+
+
 
 }

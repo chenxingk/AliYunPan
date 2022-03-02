@@ -6,7 +6,7 @@
 
   <groupId>xin.xingk.www</groupId>
   <artifactId>AliYunPan</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>2.0</version>
 
   <name>AliYunPan</name>
   <!-- FIXME change it to the project's website -->
@@ -33,11 +33,11 @@
       <version>4.9.1</version>
     </dependency>
 
-    <!--工具类-->
+    <!--hutool工具类-->
     <dependency>
       <groupId>cn.hutool</groupId>
       <artifactId>hutool-all</artifactId>
-      <version>5.6.5</version>
+      <version>5.7.21</version>
     </dependency>
 
     <!--Jsoup-->
@@ -54,6 +54,175 @@
       <version>3.3.3</version>
     </dependency>
 
+    <!--flatlaf-->
+    <dependency>
+      <groupId>com.formdev</groupId>
+      <artifactId>flatlaf</artifactId>
+      <version>2.0.1</version>
+    </dependency>
+
+    <!--flatlaf-->
+    <dependency>
+      <groupId>com.formdev</groupId>
+      <artifactId>flatlaf-extras</artifactId>
+      <version>2.0.1</version>
+    </dependency>
+
+    <!--logback-->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.2.9</version>
+    </dependency>
+
+    <!--集成lombook-->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.22</version>
+    </dependency>
+
+    <!--GUI Designer -> binary class files-->
+    <dependency>
+      <groupId>com.intellij</groupId>
+      <artifactId>forms_rt</artifactId>
+      <version>7.0.3</version>
+    </dependency>
+
+    <!--mybatis-plus-->
+    <dependency>
+      <groupId>com.baomidou</groupId>
+      <artifactId>mybatis-plus</artifactId>
+      <version>3.4.3</version>
+    </dependency>
+
+    <!--连接池-->
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>4.0.3</version>
+    </dependency>
+
+    <!--SQLite-->
+    <dependency>
+      <groupId>org.xerial</groupId>
+      <artifactId>sqlite-jdbc</artifactId>
+      <version>3.36.0.3</version>
+    </dependency>
+
+    <!--cglib-->
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib</artifactId>
+      <version>2.2.2</version>
+    </dependency>
+
   </dependencies>
+
+  <build>
+        <resources>
+          <resource>
+            <directory>src/main/resources</directory>
+            <includes>
+              <include>**</include>
+            </includes>
+          </resource>
+        </resources>
+        <testResources>
+          <testResource>
+            <directory>src/main/resources</directory>
+            <includes>
+              <include>**</include>
+            </includes>
+          </testResource>
+        </testResources>
+    <plugins>
+      <plugin>
+        <groupId>io.github.fvarrui</groupId>
+        <artifactId>javapackager</artifactId>
+        <version>1.6.3</version>
+        <configuration>
+          <!--在应用程序中嵌入自定义 JRE-->
+          <jrePath>D:\Program Files\Java\jre1.8.0_191</jrePath>
+          <bundleJre>true</bundleJre>
+          <mainClass>xin.xingk.www.App</mainClass>
+          <!--为应用程序生成安装程序-->
+          <generateInstaller>true</generateInstaller>
+        </configuration>
+        <executions>
+          <execution>
+            <id>bundling-for-windows</id>
+            <phase>package</phase>
+            <goals>
+              <goal>package</goal>
+            </goals>
+            <configuration>
+              <platform>windows</platform>
+              <createZipball>true</createZipball>
+              <!--<administratorRequired>true</administratorRequired>-->
+              <winConfig>
+                <!-- general properties -->
+                <!--生成安装程序-->
+                <generateSetup>true</generateSetup>
+                <!--生成 MSI 安装程序-->
+                <generateMsi>false</generateMsi>
+                <!--生成 MSI 合并模块-->
+                <generateMsm>false</generateMsm>
+                <!-- setup generation properties -->
+                <!--安装程序安装模式：是否需要管理权限-->
+                <setupMode>installForAllUsers</setupMode>
+                <!--如果设置为true，安装程序将不会要求创建桌面图标。-->
+                <createDesktopIconTask>true</createDesktopIconTask>
+                <!--如果将其设置为true，安装程序将不会显示“选择目标位置”向导页面。-->
+                <disableDirPage>false</disableDirPage>
+                <!--如果设置为true，安装程序将不会显示安装完成向导页面。-->
+                <disableFinishedPage>false</disableFinishedPage>
+                <!--使用设置语言进行映射-->
+                <setupLanguages>
+                  <!--<english>compiler:Default.isl</english>-->
+                  <spanish>compiler:Languages\ChineseSimplified.isl</spanish>
+                </setupLanguages>
+              </winConfig>
+            </configuration>
+          </execution>
+
+          <execution>
+              <id>bundling-for-linux</id>
+              <phase>package</phase>
+              <goals>
+                  <goal>package</goal>
+              </goals>
+              <configuration>
+                  <platform>linux</platform>
+                  <createTarball>true</createTarball>
+                <linuxConfig>
+                  <generateDeb>true</generateDeb>
+                  <generateRpm>true</generateRpm>
+                </linuxConfig>
+              <!-- <jdkPath>X:\\path\to\linux\jdk</jdkPath>-->
+              </configuration>
+          </execution>
+          <execution>
+              <id>bundling-for-mac</id>
+              <phase>package</phase>
+              <goals>
+                  <goal>package</goal>
+              </goals>
+              <configuration>
+                  <platform>mac</platform>
+                  <createTarball>true</createTarball>
+                  <!--<macConfig>-->
+                  <!--<generateDmg>true</generateDmg>-->
+                  <!--<generatePkg>true</generatePkg>-->
+                  <!--</macConfig>-->
+                  <!--<jdkPath>X:\\path\to\mac\jdk</jdkPath>-->
+              </configuration>
+          </execution>
+
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
 
 </project>

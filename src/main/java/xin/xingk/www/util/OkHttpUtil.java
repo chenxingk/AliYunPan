@@ -13,8 +13,8 @@ import okhttp3.*;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import xin.xingk.www.common.CommonConstants;
-import xin.xingk.www.common.CommonUI;
+import xin.xingk.www.common.constant.CommonConstants;
+import xin.xingk.www.common.constant.DictConstants;
 
 import java.io.IOException;
 import java.util.Map;
@@ -27,13 +27,13 @@ import java.util.concurrent.TimeUnit;
  */
 public class OkHttpUtil {
     //错误次数
-    int errNum=0;
+    static int errNum=0;
 
-   static OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(5, TimeUnit.MINUTES).build();
-   static MediaType mediaType = MediaType.parse("application/json");
-   static RequestBody body;
-   static Request request;
-   static String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36 Edg/90.0.818.66";
+    static OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(5, TimeUnit.MINUTES).build();
+    static MediaType mediaType = MediaType.parse("application/json");
+    static RequestBody body;
+    static Request request;
+    static String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36 Edg/90.0.818.66";
 
 
     /**
@@ -43,7 +43,7 @@ public class OkHttpUtil {
      * @return
      * @throws Exception
      */
-    public JSONObject doPost(String url, JSONObject data){
+    public static JSONObject doPost(String url, JSONObject data){
         try {
             body = RequestBody.create(mediaType,data.toString());
             request = new Request.Builder()
@@ -53,9 +53,9 @@ public class OkHttpUtil {
                     .addHeader("Content-Type", "application/json").build();
             Response response = client.newCall(request).execute();
             String result = response.body().string();
-            CommonUI.console("请求状态码：{}",response.code());
+            UIUtil.console("{}，请求状态码：{}", DictConstants.URI_DICT.get(url),response.code());
             if (429==response.code()){
-                CommonUI.console("请求频繁了，休息一下。。。。正在准备重试中。。。");
+                UIUtil.console("请求频繁了，休息一下。。。。正在准备重试中。。。");
                 ThreadUtil.sleep(3000);
                 return doPost(url,data);
             }
@@ -64,16 +64,16 @@ public class OkHttpUtil {
             return json;
         } catch (Exception e) {
             if (e.toString().contains("A JSONObject text")){
-                CommonUI.console("{} 请求遇到异常：{}",url,e);
+                UIUtil.console("{} 请求遇到异常：{}",url,e);
                 return null;
             }else{
                 errNum++;
-                CommonUI.console("{} 请求遇到异常：{}",url,e);
+                UIUtil.console("{} 请求遇到异常：{}",url,e);
                 if (errNum>5){
-                    CommonUI.console("普通请求失败次数超过：{} 次....已停止",errNum);
+                    UIUtil.console("普通请求失败次数超过：{} 次....已停止",errNum);
                     return null;
                 }else{
-                    CommonUI.console("普通请求发起第：{} 次重试",errNum);
+                    UIUtil.console("普通请求发起第：{} 次重试",errNum);
                     return doPost(url,data);
                 }
             }
@@ -87,7 +87,7 @@ public class OkHttpUtil {
      * @return netstat -anp|grep 61617
      * @throws Exception
      */
-    public JSONObject doFilePost(String url,JSONObject data){
+    public static JSONObject doFilePost(String url,JSONObject data){
         try {
             RequestBody body = RequestBody.create(mediaType, data.toString());
             request = new Request.Builder()
@@ -97,19 +97,19 @@ public class OkHttpUtil {
                     .addHeader("Content-Type", "multipart/form-data").build();
             Response response = client.newCall(request).execute();
             String result = response.body().string();
-            CommonUI.console("文件请求状态码：{}",response.code());
+            UIUtil.console("{}，请求状态码：{}", DictConstants.URI_DICT.get(url),response.code());
             //System.out.println("result：>>>>>>>>>>>>>>>>>>>"+result);
             JSONObject json = JSONUtil.parseObj(result);
             errNum=0;
             return json;
         } catch (Exception e) {
             errNum++;
-            CommonUI.console("上传请求遇到异常：{}",e);
+            UIUtil.console("上传请求遇到异常：{}",e);
             if (errNum>5){
-                CommonUI.console("上传请求失败次数超过：{} 次....已停止",errNum);
+                UIUtil.console("上传请求失败次数超过：{} 次....已停止",errNum);
                 return null;
             }else{
-                CommonUI.console("上传请求发起第：{} 次重试",errNum);
+                UIUtil.console("上传请求发起第：{} 次重试",errNum);
                 return doFilePost(url,data);
             }
         }
@@ -120,7 +120,7 @@ public class OkHttpUtil {
      * @param data
      * @return
      */
-    public void deleteFile(JSONObject data){
+    public static void deleteFile(JSONObject data){
         HttpRequest request = HttpRequest.post(CommonConstants.DELETE_FILE_URL);
         request.body(data.toString());
         request.header("Content-Type", "application/json");
@@ -135,23 +135,23 @@ public class OkHttpUtil {
      * @return
      * @throws Exception
      */
-    public int uploadFileBytes(String url, byte[] fileBytes){
+    public static int uploadFileBytes(String url, byte[] fileBytes){
         try {
             RequestBody body = RequestBody.create(fileBytes);
             Request request = new Request.Builder().url(url).method("PUT",body).build();
             Response response = client.newCall(request).execute();
             //String result=response.body().string();
-            //CommonUI.console("上传文件请求状态码：{}",response.code());
+            //UIUtil.console("上传文件请求状态码：{}",response.code());
             errNum=0;
             return response.code();
         } catch (Exception e) {
             errNum++;
-            CommonUI.console("上传文件遇到异常：{}",e.toString());
+            UIUtil.console("上传文件遇到异常：{}",e.toString());
             if (errNum>5){
-                CommonUI.console("上传文件失败次数超过：{} 次....已停止",errNum);
+                UIUtil.console("上传文件失败次数超过：{} 次....已停止",errNum);
                 return 0;
             }else{
-                CommonUI.console("上传文件发起第：{} 次重试",errNum);
+                UIUtil.console("上传文件发起第：{} 次重试",errNum);
                 uploadFileBytes(url,fileBytes);
             }
         }
@@ -172,7 +172,10 @@ public class OkHttpUtil {
         //解密返回的数据
         response = Base64.decodeStr(dataStr, CharsetUtil.CHARSET_GBK);
         //完成登录流程
-        String accessToken = JSONUtil.parseObj(response).getJSONObject("pds_login_result").getStr("accessToken");
+        JSONObject loginResult = JSONUtil.parseObj(response).getJSONObject("pds_login_result");
+        String accessToken = loginResult.getStr("accessToken");
+        String nickName = loginResult.getStr("nickName");
+        ConfigUtil.setName(nickName);
         String cookie = getCookie();
         String code = getCode(accessToken, cookie);
         //返回真正的Token信息
@@ -293,13 +296,18 @@ public class OkHttpUtil {
     /**
      * 获取阿里云二维码
      */
-    public static JSONObject getQrCodeUrl() throws Exception {
-        Request request = new Request.Builder()
-                .url("https://passport.aliyundrive.com/newlogin/qrcode/generate.do?appName=aliyun_drive")
-                .method("GET", null)
-                .build();
-        Response response = client.newCall(request).execute();
-        return JSONUtil.parseObj(response.body().string());
+    public static JSONObject getQrCodeUrl(){
+        try {
+            Request request = new Request.Builder()
+                    .url("https://passport.aliyundrive.com/newlogin/qrcode/generate.do?appName=aliyun_drive")
+                    .method("GET", null)
+                    .build();
+            Response response = client.newCall(request).execute();
+            return JSONUtil.parseObj(response.body().string());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
