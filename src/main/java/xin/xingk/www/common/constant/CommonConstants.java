@@ -11,7 +11,7 @@ import java.io.File;
 public class CommonConstants {
 
     //软件版本
-    public static final String VERSION = "V2.1.20220228";
+    public static final String VERSION = "V2.1.20220302";
     //软件标题
     public static final String TITLE = "备份助手"+VERSION;
     //用户目录
