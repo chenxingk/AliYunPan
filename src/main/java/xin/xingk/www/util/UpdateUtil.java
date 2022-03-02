@@ -28,7 +28,7 @@ public class UpdateUtil {
      * 检查更新
      */
     public static boolean checkForUpdate() {
-        String result = HttpUtil.get("https://gitee.com/xingk-code/AliYunPan/raw/dev/src/main/resources/version.json");
+        String result = HttpUtil.get("https://gitee.com/xingk-code/AliYunPan/raw/master/src/main/resources/version.json");
         //版本信息
         JSONObject versionJson = JSONUtil.parseObj(result);
         //下载地址
