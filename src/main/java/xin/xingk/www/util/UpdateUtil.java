@@ -44,6 +44,7 @@ public class UpdateUtil {
             int button = JOptionPane.showConfirmDialog(null, desc, "检测到有新版，是否更新？", JOptionPane.YES_NO_OPTION);
             if (button==0){//选择是打开浏览器
                 DesktopUtil.browse(url);
+                if (updateType == 1) System.exit(0);
                 return true;
             }
             //强更新
