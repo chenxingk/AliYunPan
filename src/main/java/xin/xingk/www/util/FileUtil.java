@@ -192,29 +192,6 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
     }
 
     /**
-     * 分片读取文件块
-     *
-     * @param path      文件路径
-     * @param position  角标
-     * @param blockSize 文件块大小
-     * @return 文件块内容
-     */
-    public static byte[] readBytes(String path, int position, int blockSize){
-        byte[] bytes = new byte[blockSize];
-        FileInputStream in = null;
-        try {
-            in = new FileInputStream(path);
-            int read = in.read(bytes, position, blockSize);
-            log.info(">>> {},当前读取：{}",path,read);
-        } catch (Exception e) {
-            throw new IORuntimeException(e);
-        } finally {
-            IoUtil.close(in);
-        }
-        return bytes;
-    }
-
-    /**
      * 获取目录下所有文件
      * @param path 目录
      * @return 目录下所有文件

@@ -147,8 +147,10 @@ public class BackupUtil {
             JSONObject uploadFile = AliYunUtil.uploadFile(fileId,fileInfo);
             JSONArray part_info_list = uploadFile.getJSONArray("part_info_list");
             if(ObjectUtil.isNotEmpty(part_info_list)){//上传新文件
-                int position = 0;//文件流位置
-                long size = fileInfo.getSize();//文件大小
+                //文件流位置
+                long position = 0;
+                //文件大小
+                long size = fileInfo.getSize();
                 for (int i = 0; i < part_info_list.size(); i++) {
                     byte[] fileBytes;
                     if (size>CommonConstants.DEFAULT_SIZE.longValue()){
