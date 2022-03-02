@@ -36,6 +36,8 @@ public class CommonConstants {
     public final static String COMPLETE_FILE_URL="https://api.aliyundrive.com/v2/file/complete";
     //删除文件
     public final static String DELETE_FILE_URL="https://api.aliyundrive.com/v2/recyclebin/trash";
+    //下载文件
+    public final static String DOWNLOAD_FILE_URL="https://api.aliyundrive.com/v2/file/get_download_url";
     //Token
     public static String TOKEN="";
     //driveId
