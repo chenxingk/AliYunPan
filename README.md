@@ -47,11 +47,18 @@ Java Swing + FlatLaf + Hutool + Okhttp3
  
 
 #### 下载安装
-1.  Windows系统  **含JDK安装包，适合没有JDK环境的** 使用：[v1.2点击下载](http://yunpan.xingk.xin/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8B%E5%AE%89%E8%A3%85%E5%8C%85v1.2.exe)
-2.  Windows系统  **不含JDK安装包，适合有JDK环境的** 可以直接运行：[v1.2点击下载](https://gitee.com/xingk-code/AliYunPan/attach_files/959151/download/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8Bv1.2%EF%BC%88%E4%B8%8D%E5%90%ABJDK%EF%BC%89.exe)
-2.  Windows、Liunx、Macos、等系统有JDK的可以直接下载jar运行：[v1.2点击下载](https://gitee.com/xingk-code/AliYunPan/attach_files/959145/download/%E5%A4%87%E4%BB%BD%E5%8A%A9%E6%89%8Bv1.2.jar)
+[备份助手下载地址](https://gitee.com/xingk-code/AliYunPan/releases)  
 
 #### 更新日志
+
+##### 2022-3-2
+
+- 2.1全新版本，新的开始！
+- 软件UI重新布局美化
+- 修复了N个BUG
+- 强烈建议升级！！！
+- 调整打包方式内置运行环境，各平台安装更便捷
+
 ##### 2022-2-6
 
 - 优化扫描目录逻辑
