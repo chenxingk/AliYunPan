@@ -101,8 +101,6 @@ public class BackupUtil {
      */
     public static void uploadFileList(List<String> fileList, String pathId,int backupType){
         if (ObjectUtil.isEmpty(fileList)) return;
-        List<String> uploadRecordList = UploadRecordContextHolder.getUploadRecordList().stream().map(UploadRecord::getFilePath).collect(Collectors.toList());
-        fileList.removeAll(uploadRecordList);
         for (String filePath :  fileList) {
             String fileSuffix = FileUtil.getSuffix(filePath);//文件后缀
             if (FileUtil.getPrefix(filePath).startsWith("~$") || fileSuffix.length()>=8){
@@ -194,18 +192,34 @@ public class BackupUtil {
      * @return true 存在
      */
     private static boolean getFileExistCloud(FileInfo fileInfo,String fileId) {
+        //本地有上传记录
         UploadRecord uploadRecord = UploadRecordContextHolder.getUploadRecordByFilePath(fileInfo.getPath());
         if (ObjectUtil.isNotEmpty(uploadRecord)){
-            return true;
-        }
-        List<CloudFile> cloudFileList = AliYunUtil.getCloudFileList(fileId);
-        Optional<CloudFile> cloudFile = cloudFileList.stream().filter(f ->
-                "file".equals(f.getType()) && f.getName().equals(fileInfo.getName())
-                        && fileInfo.getContentHash().equals(f.getContentHash())
-        ).findFirst();
-        if (cloudFile.isPresent()){
-            addUploadRecord(fileInfo,cloudFile.get().getFileId());
-            return true;
+            if (fileInfo.getContentHash().equals(uploadRecord.getFileHash())){
+                //Hash一致 上传过
+                return true;
+            }else {
+                //如果文件存在 并且Hash不一致 先删除在重新上传
+                AliYunUtil.deleteFile(uploadRecord.getFileId());
+                return false;
+            }
+        } else {//本地无上传记录
+            List<CloudFile> cloudFileList = AliYunUtil.getCloudFileList(fileId);
+            Optional<CloudFile> cloudFile = cloudFileList.stream().filter(f ->
+                    "file".equals(f.getType()) && f.getName().equals(fileInfo.getName())
+            ).findFirst();
+            if (cloudFile.isPresent()){
+                CloudFile cloud = cloudFile.get();
+                if (cloud.getContentHash().equals(fileInfo.getContentHash())){
+                    //Hash一致 上传过
+                    addUploadRecord(fileInfo,cloudFile.get().getFileId());
+                    return true;
+                }else {
+                    //并且Hash不一致 先删除在重新上传
+                    AliYunUtil.deleteFile(cloud.getFileId());
+                    return false;
+                }
+            }
         }
         return false;
     }
