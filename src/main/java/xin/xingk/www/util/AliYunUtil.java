@@ -18,6 +18,7 @@ import xin.xingk.www.entity.aliyun.FileInfo;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 /**
@@ -206,9 +207,8 @@ public class AliYunUtil {
                 public void progress(long progressSize) {
                     BigDecimal bigDecimal = new BigDecimal(progressSize);
                     BigDecimal div = NumberUtil.div(bigDecimal, size);
-                    BigDecimal mul = NumberUtil.mul(div, 100).setScale(2);
-                    System.out.println("当前已下载："+ mul + "％");
-                    System.out.println("当前已下载："+ FileUtil.readableFileSize(progressSize));
+                    BigDecimal mul = NumberUtil.mul(div, 100).setScale(2, RoundingMode.DOWN);
+                    System.out.println("当前已下载："+ mul + "％" + "---" + FileUtil.readableFileSize(progressSize));
                 }
 
                 @Override
