@@ -1,8 +1,8 @@
 package xin.xingk.www.util;
 
 import cn.hutool.core.comparator.VersionComparator;
+import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
-import cn.hutool.core.swing.DesktopUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpUtil;
@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.common.constant.CommonConstants;
 import xin.xingk.www.context.BackupContextHolder;
 import xin.xingk.www.ui.Login;
+import xin.xingk.www.ui.dialog.UpdateDialog;
 
 import javax.swing.*;
 import java.sql.SQLException;
@@ -23,6 +24,9 @@ import java.sql.SQLException;
  */
 @Slf4j
 public class UpdateUtil {
+
+    //更新模式 1为强更新
+    public static int updateType = 0;
 
     /**
      * 检查更新
@@ -36,15 +40,19 @@ public class UpdateUtil {
         //版本描述
         String desc = versionJson.getStr("desc");
         //服务端版本号
-        String newVersion = versionJson.getStr("version");
+        String newVersion = "V2.2.20220303";
         //更新模式 1为强更新
-        int updateType = versionJson.getInt("updateType");
+        updateType = versionJson.getInt("updateType");
         //判断是否有新版
         if (VersionComparator.INSTANCE.compare(newVersion,CommonConstants.VERSION)>0){
             int button = JOptionPane.showConfirmDialog(null, desc, "检测到有新版，是否更新？", JOptionPane.YES_NO_OPTION);
             if (button==0){//选择是打开浏览器
-                DesktopUtil.browse(url);
-                if (updateType == 1) System.exit(0);
+//                DesktopUtil.browse(url);
+//                if (updateType == 1) System.exit(0);
+                UpdateDialog updateDialog = new UpdateDialog();
+                updateDialog.pack();
+                updateDialog.downLoad(newVersion);
+                updateDialog.setVisible(true);
                 return true;
             }
             //强更新
@@ -92,4 +100,5 @@ public class UpdateUtil {
             ConfigUtil.setVersion(version);
         }
     }
+
 }
