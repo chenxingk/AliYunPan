@@ -51,7 +51,7 @@ public class DirWatcher extends SimpleWatcher {
      */
     public static void setWatchMonitor(Backup backup) {
         remove(backup.getId());
-        if (!DictConstants.MONITOR_ENABLE.equals(backup.getMonitor())) return;
+        if (!DictConstants.ON.equals(backup.getMonitor())) return;
         String key = CacheUtil.WATCHER_KEY + backup.getId();
         WatchMonitor monitor = WatchMonitor.createAll(backup.getLocalPath(), new DelayWatcher(new DirWatcher(backup.getId()), 1000));
         CacheUtil.set(key,monitor);

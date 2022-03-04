@@ -1,0 +1,1 @@
+alter table backup add sync integer;

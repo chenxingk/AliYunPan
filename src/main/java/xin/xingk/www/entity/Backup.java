@@ -24,6 +24,8 @@ public class Backup extends BaseEntity{
     private Integer backupType;
     //目录检测 0关闭 1开始
     private Integer monitor;
+    //目录检测 0关闭 1开始
+    private Integer sync;
     //定时备份时间
     private String backupTime;
     //状态 0正常 1备份中 2禁用

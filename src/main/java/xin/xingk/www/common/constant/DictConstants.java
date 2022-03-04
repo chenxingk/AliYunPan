@@ -21,13 +21,13 @@ public class DictConstants {
     public static Integer BACKUP_TYPE_WECHAT = 2;
 
     /**
-     * 目录检测
+     * 开启 关闭
      */
-    public static Map<Integer, String> MONITOR_DICT = new HashMap<>();
+    public static Map<Integer, String> ON_OFF_DICT = new HashMap<>();
     //开启目录检测
-    public static Integer MONITOR_ENABLE = 0;
+    public static Integer ON = 0;
     //关闭目录检测
-    public static Integer MONITOR_DISABLE = 1;
+    public static Integer OFF = 1;
 
     /**
      * 备份任务状态
@@ -35,10 +35,12 @@ public class DictConstants {
     public static Map<Integer, String> STATUS_DICT = new HashMap<>();
     //备份任务正常
     public static Integer STATUS_ENABLE = 0;
-    //备份任务运行中
-    public static Integer STATUS_RUN = 1;
     //备份任务禁用
-    public static Integer STATUS_DISABLE = 2;
+    public static Integer STATUS_DISABLE = 1;
+    //备份任务运行中
+    public static Integer STATUS_BACKUP_RUN = 2;
+    //同步任务运行中
+    public static Integer STATUS_SYNC_RUN = 2;
 
     /**
      * 接口名称
@@ -50,12 +52,14 @@ public class DictConstants {
         BACKUP_TYPE_DICT.put(BACKUP_TYPE_CLASSIFY,"分类备份");
         BACKUP_TYPE_DICT.put(BACKUP_TYPE_WECHAT,"微信备份");
 
-        MONITOR_DICT.put(MONITOR_ENABLE,"开启");
-        MONITOR_DICT.put(MONITOR_DISABLE,"关闭");
+        ON_OFF_DICT.put(ON,"开启");
+        ON_OFF_DICT.put(OFF,"关闭");
 
         STATUS_DICT.put(STATUS_ENABLE,"正常");
-        STATUS_DICT.put(STATUS_RUN,"备份中");
         STATUS_DICT.put(STATUS_DISABLE,"已禁用");
+        STATUS_DICT.put(STATUS_BACKUP_RUN,"备份中");
+        STATUS_DICT.put(STATUS_SYNC_RUN,"同步中");
+
 
         URI_DICT.put(CommonConstants.TOKEN_URL,"获取Token");
         URI_DICT.put(CommonConstants.FILE_LIST_URL,"文件列表");

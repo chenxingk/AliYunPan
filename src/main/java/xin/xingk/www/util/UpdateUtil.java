@@ -40,7 +40,7 @@ public class UpdateUtil {
         //版本描述
         String desc = versionJson.getStr("desc");
         //服务端版本号
-        String newVersion = "V2.2.20220303";
+        String newVersion = versionJson.getStr("version");
         //更新模式 1为强更新
         updateType = versionJson.getInt("updateType");
         //判断是否有新版

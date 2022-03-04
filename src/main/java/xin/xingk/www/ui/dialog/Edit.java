@@ -37,8 +37,8 @@ public class Edit extends JDialog implements FocusListener {
     private JRadioButton ordinaryRadio;
     private JRadioButton classifyRadio;
     private JRadioButton weChatRadio;
-    private JRadioButton openRadio;
-    private JRadioButton closeRadio;
+    private JRadioButton checkOpenRadio;
+    private JRadioButton checkCloseRadio;
     private JTextField timeText;
     private JButton saveButton;
     private JButton cancelButton;
@@ -47,6 +47,9 @@ public class Edit extends JDialog implements FocusListener {
     private JLabel typeLabel;
     private JLabel monitorLabel;
     private JLabel timeLable;
+    private JLabel syncLabel;
+    private JRadioButton syncOpenRadio;
+    private JRadioButton syncCloseRadio;
 
     //当前对象
     private static Edit edit;
@@ -98,14 +101,20 @@ public class Edit extends JDialog implements FocusListener {
         typeGroup.add(classifyRadio);
         typeGroup.add(weChatRadio);
 
-        //备份模式 单选
+        //目录检测开关 单选
         ButtonGroup monitorGroup = new ButtonGroup();
-        monitorGroup.add(openRadio);
-        monitorGroup.add(closeRadio);
+        monitorGroup.add(checkOpenRadio);
+        monitorGroup.add(checkCloseRadio);
+
+        //同步开关 单选
+        ButtonGroup syncGroup = new ButtonGroup();
+        syncGroup.add(syncOpenRadio);
+        syncGroup.add(syncCloseRadio);
 
         if ("新增备份任务".equals(Home.EDIT_TITLE)) {
             ordinaryRadio.setSelected(true);
-            closeRadio.setSelected(true);
+            checkCloseRadio.setSelected(true);
+            syncCloseRadio.setSelected(true);
             cloudText.addFocusListener(this);
             timeText.addFocusListener(this);
             cloudText.setForeground(Color.GRAY);
@@ -124,8 +133,11 @@ public class Edit extends JDialog implements FocusListener {
             if (backupType == 1) classifyRadio.setSelected(true);
             if (backupType == 2) weChatRadio.setSelected(true);
             Integer monitor = backup.getMonitor();
-            if (monitor == 0) openRadio.setSelected(true);
-            if (monitor == 1) closeRadio.setSelected(true);
+            if (monitor == 0) checkOpenRadio.setSelected(true);
+            if (monitor == 1) checkCloseRadio.setSelected(true);
+            Integer sync = backup.getSync();
+            if (sync == 0) syncOpenRadio.setSelected(true);
+            if (sync == 1) syncCloseRadio.setSelected(true);
         }
 
         //保存按钮
@@ -205,9 +217,9 @@ public class Edit extends JDialog implements FocusListener {
      * @return 目录检测
      */
     private Integer getMonitor() {
-        if (openRadio.isSelected()) return DictConstants.MONITOR_ENABLE;
-        if (closeRadio.isSelected()) return DictConstants.MONITOR_DISABLE;
-        return DictConstants.MONITOR_ENABLE;
+        if (checkOpenRadio.isSelected()) return DictConstants.ON;
+        if (checkCloseRadio.isSelected()) return DictConstants.OFF;
+        return DictConstants.ON;
     }
 
     /**
@@ -253,7 +265,7 @@ public class Edit extends JDialog implements FocusListener {
      */
     private void $$$setupUI$$$() {
         editPanel = new JPanel();
-        editPanel.setLayout(new GridLayoutManager(6, 4, new Insets(20, 20, 20, 20), -1, -1));
+        editPanel.setLayout(new GridLayoutManager(7, 4, new Insets(20, 20, 20, 20), -1, -1));
         localLabel = new JLabel();
         localLabel.setText("本地目录");
         editPanel.add(localLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -274,29 +286,38 @@ public class Edit extends JDialog implements FocusListener {
         monitorLabel = new JLabel();
         monitorLabel.setText("目录检测");
         editPanel.add(monitorLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        openRadio = new JRadioButton();
-        openRadio.setText("开启");
-        editPanel.add(openRadio, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         timeLable = new JLabel();
         timeLable.setText("自动备份时间");
-        editPanel.add(timeLable, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        editPanel.add(timeLable, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         timeText = new JTextField();
-        editPanel.add(timeText, new GridConstraints(4, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        editPanel.add(timeText, new GridConstraints(5, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         classifyRadio = new JRadioButton();
         classifyRadio.setText("分类备份");
         editPanel.add(classifyRadio, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        closeRadio = new JRadioButton();
-        closeRadio.setText("关闭");
-        editPanel.add(closeRadio, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         weChatRadio = new JRadioButton();
         weChatRadio.setText("微信备份");
         editPanel.add(weChatRadio, new GridConstraints(2, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         saveButton = new JButton();
         saveButton.setText("保存");
-        editPanel.add(saveButton, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        editPanel.add(saveButton, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         cancelButton = new JButton();
         cancelButton.setText("取消");
-        editPanel.add(cancelButton, new GridConstraints(5, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        editPanel.add(cancelButton, new GridConstraints(6, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        checkOpenRadio = new JRadioButton();
+        checkOpenRadio.setText("开启");
+        editPanel.add(checkOpenRadio, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        checkCloseRadio = new JRadioButton();
+        checkCloseRadio.setText("关闭");
+        editPanel.add(checkCloseRadio, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        syncLabel = new JLabel();
+        syncLabel.setText("目录同步");
+        editPanel.add(syncLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        syncOpenRadio = new JRadioButton();
+        syncOpenRadio.setText("开启");
+        editPanel.add(syncOpenRadio, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        syncCloseRadio = new JRadioButton();
+        syncCloseRadio.setText("关闭");
+        editPanel.add(syncCloseRadio, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

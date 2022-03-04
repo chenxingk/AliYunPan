@@ -177,7 +177,7 @@ public class Home {
             dataArr[i][1] = backupList.get(i).getLocalPath();
             dataArr[i][2] = backupList.get(i).getCloudPath();
             dataArr[i][3] = DictConstants.BACKUP_TYPE_DICT.get(backupList.get(i).getBackupType());
-            dataArr[i][4] = DictConstants.MONITOR_DICT.get(backupList.get(i).getMonitor());
+            dataArr[i][4] = DictConstants.ON_OFF_DICT.get(backupList.get(i).getMonitor());
             dataArr[i][5] = backupList.get(i).getBackupTime();
             dataArr[i][6] = DictConstants.STATUS_DICT.get(backupList.get(i).getStatus());
 //            dataArr[i][7] = backupList.get(i).getFileNum();
