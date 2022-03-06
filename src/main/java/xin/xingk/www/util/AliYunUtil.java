@@ -82,6 +82,21 @@ public class AliYunUtil {
     }
 
     /**
+     * 搜索文件
+     * @param fileId 云盘目录ID
+     * @param name 文件名
+     * @return 是否返回
+     */
+    public static JSONObject searchFile(String fileId, String name) {
+        JSONObject data = new JSONObject();
+        data.set("drive_id", CommonConstants.DriveId);
+        data.set("limit", 100);
+        data.set("order_by", "name ASC");
+        data.set("query", "parent_file_id = "+fileId+" and (name = "+name+")");
+        return OkHttpUtil.doPost(CommonConstants.CREATE_FILE_URL,data);
+    }
+
+    /**
      * 创建文件夹
      * @param fileId 父级目录ID 根目录为root
      * @param name 新文件夹名称
@@ -99,30 +114,57 @@ public class AliYunUtil {
     }
 
     /**
+     * 检测文件是否存在
+     * @param fileId
+     * @param fileInfo
+     * @return
+     */
+    public static JSONObject fileExists(String fileId, FileInfo fileInfo) {
+        JSONObject data = new JSONObject();
+        data.set("drive_id", CommonConstants.DriveId);
+        data.set("part_info_list", getPartNumber(fileInfo.getMax()));
+        data.set("parent_file_id", fileId);
+        data.set("name", fileInfo.getName());
+        data.set("type", "file");
+        data.set("check_name_mode", "refuse");
+        data.set("size",fileInfo.getSize());
+        data.set("pre_hash", fileInfo.getContentHash());
+        return OkHttpUtil.doFilePost(CommonConstants.CREATE_FILE_URL,data);
+    }
+
+    /**
      * 上传文件到阿里云盘
      * @return 上传结果
      */
     public static JSONObject uploadFile(String fileId,FileInfo fileInfo){
         JSONObject data = new JSONObject();
-        JSONArray array = new JSONArray();
-        long max = fileInfo.getMax();
-        for (int i = 1; i <= max; i++) {
-            JSONObject list = new JSONObject();
-            list.set("part_number",i);
-            array.add(list);
-        }
         data.set("drive_id",CommonConstants.DriveId);
         data.set("name",fileInfo.getName());
         data.set("type","file");
         data.set("content_type",fileInfo.getContentType());
         data.set("size",fileInfo.getSize());
         data.set("parent_file_id",fileId);
-        data.set("part_info_list",array);
+        data.set("part_info_list",getPartNumber(fileInfo.getMax()));
         data.set("content_hash_name","sha1");
         data.set("content_hash",fileInfo.getContentHash());
         data.set("ignoreError",false);
         data.set("check_name_mode","refuse");
         return OkHttpUtil.doFilePost(CommonConstants.CREATE_FILE_URL,data);
+    }
+
+    /**
+     * 获取 PartNumber
+     * @param max 次数
+     * @return
+     */
+    private static JSONArray getPartNumber(long max) {
+        JSONArray array = new JSONArray();
+        for (int i = 1; i <= max; i++) {
+            JSONObject list = new JSONObject();
+            list.set("part_number",i);
+            array.add(list);
+        }
+        return array;
     }
 
     /**
@@ -158,7 +200,7 @@ public class AliYunUtil {
      * @param fileId 云盘文件ID
      * @return 云盘目录ID
      */
-    public static JSONObject getDownload(String fileId){
+    public static JSONObject getDownloadUrl(String fileId){
         JSONObject data = new JSONObject();
         data.set("drive_id",CommonConstants.DriveId);
         data.set("file_id",fileId);
@@ -177,21 +219,21 @@ public class AliYunUtil {
      * @param path 文件保存目录
      */
     public static void downloadCloudFile(String fileId,String path){
-        JSONObject download = getDownload(fileId);
-        BigDecimal size = download.getBigDecimal("size");
-        HttpResponse response = HttpUtil.createGet(download.getStr("url"), true)
-                .header("Connection", "keep-alive")
-                .header("sec-ch-ua", "\" Not;A Brand\";v=\"99\", \"Google Chrome\";v=\"97\", \"Chromium\";v=\"97\"")
-                .header("sec-ch-ua-mobile", "?0")
-                .header("sec-ch-ua-platform", "\"Windows\"")
-                .header("Upgrade-Insecure-Requests", "1")
-                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36")
-                .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-                .header("Sec-Fetch-Site", "cross-site")
-                .header("Sec-Fetch-Mode", "navigate")
-                .header("Sec-Fetch-Dest", "iframe")
+        JSONObject downloadUrl = getDownloadUrl(fileId);
+        BigDecimal size = downloadUrl.getBigDecimal("size");
+        HttpResponse response = HttpUtil.createGet(downloadUrl.getStr("url"), true)
+//                .header("Connection", "keep-alive")
+//                .header("sec-ch-ua", "\" Not;A Brand\";v=\"99\", \"Google Chrome\";v=\"97\", \"Chromium\";v=\"97\"")
+//                .header("sec-ch-ua-mobile", "?0")
+//                .header("sec-ch-ua-platform", "\"Windows\"")
+//                .header("Upgrade-Insecure-Requests", "1")
+//                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36")
+//                .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+//                .header("Sec-Fetch-Site", "cross-site")
+//                .header("Sec-Fetch-Mode", "navigate")
+//                .header("Sec-Fetch-Dest", "iframe")
                 .header("Referer", "https://www.aliyundrive.com/")
-                .header("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
+//                .header("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
                 .executeAsync();
         if (response.isOk()){
             String fileName = StrUtil.subAfter(response.header("Content-Disposition"), "''", false);
@@ -221,6 +263,33 @@ public class AliYunUtil {
         }else {
             System.out.println("下载失败："+response.getStatus());
         }
+    }
+
+    /**
+     * 获取目录层级信息
+     * @param fileId 云盘文件ID
+     * @return 目录层级信息
+     */
+    public static JSONObject getFolderPath(String fileId){
+        JSONObject data = new JSONObject();
+        data.set("drive_id",CommonConstants.DriveId);
+        data.set("file_id",fileId);
+        return OkHttpUtil.doPost(CommonConstants.GET_FOLDER_PATH_URL, data);
+    }
+
+    /**
+     * 修改文件目录名称
+     * @param fileId 目录ID
+     * @param name 目录新名称
+     * @return 修改结果
+     */
+    public static JSONObject updateFolder(String fileId,String name){
+        JSONObject data = new JSONObject();
+        data.set("check_name_mode","refuse");
+        data.set("drive_id",CommonConstants.DriveId);
+        data.set("file_id",fileId);
+        data.set("name",name);
+        return OkHttpUtil.doPost(CommonConstants.UPDATE_FOLDER_URL, data);
     }
 
     /**

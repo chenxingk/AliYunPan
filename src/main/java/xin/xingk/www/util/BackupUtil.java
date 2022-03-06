@@ -20,10 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
- * Description: 操作阿里云盘工具类
+ * Description: 阿里云盘备份工具类
  * Author: 陈靖杰
  * Date: 2021/05/10
  */
@@ -148,26 +147,33 @@ public class BackupUtil {
 
         if (!getFileExistCloud(fileInfo,fileId)){
             UIUtil.console("开始上传：{}",fileInfo.getPath());
-            JSONObject uploadFile = AliYunUtil.uploadFile(fileId,fileInfo);
-            JSONArray part_info_list = uploadFile.getJSONArray("part_info_list");
-            if(ObjectUtil.isNotEmpty(part_info_list)){//上传新文件
-                //文件流位置
-                long position = 0;
-                //文件大小
-                long size = fileInfo.getSize();
-                for (int i = 0; i < part_info_list.size(); i++) {
-                    byte[] fileBytes;
-                    if (size>CommonConstants.DEFAULT_SIZE.longValue()){
-                        fileBytes = FileUtil.readBytes(fileInfo.getPath(), position, CommonConstants.DEFAULT_SIZE);
-                    }else{
-                        fileBytes = FileUtil.readBytes(fileInfo.getPath(), position, (int) size);
+            JSONObject fileExists = AliYunUtil.fileExists(fileId, fileInfo);
+            JSONObject uploadFile = new JSONObject();
+            if ("PreHashMatched".equals(fileExists.getStr("code"))) {
+                uploadFile = AliYunUtil.uploadFile(fileId, fileInfo);
+                UIUtil.console("{}，秒传成功",fileInfo.getPath());
+            }else {
+                uploadFile = AliYunUtil.uploadFile(fileId,fileInfo);
+                JSONArray part_info_list = uploadFile.getJSONArray("part_info_list");
+                if(ObjectUtil.isNotEmpty(part_info_list)){//上传新文件
+                    //文件流位置
+                    long position = 0;
+                    //文件大小
+                    long size = fileInfo.getSize();
+                    for (int i = 0; i < part_info_list.size(); i++) {
+                        byte[] fileBytes;
+                        if (size>CommonConstants.DEFAULT_SIZE.longValue()){
+                            fileBytes = FileUtil.readBytes(fileInfo.getPath(), position, CommonConstants.DEFAULT_SIZE);
+                        }else{
+                            fileBytes = FileUtil.readBytes(fileInfo.getPath(), position, (int) size);
+                        }
+                        String uploadUrl = part_info_list.getJSONObject(i).getStr("upload_url");
+                        int code = OkHttpUtil.uploadFileBytes(uploadUrl, fileBytes);
+                        double progress = ((double) (i+1) / part_info_list.size()) * 100;
+                        UIUtil.console("文件：{} 上传进度：{}% 状态码： {}",fileInfo.getName(), NumberUtil.roundStr(progress,2),code);
+                        position += CommonConstants.DEFAULT_SIZE;
+                        size -= CommonConstants.DEFAULT_SIZE;
                     }
-                    String uploadUrl = part_info_list.getJSONObject(i).getStr("upload_url");
-                    int code = OkHttpUtil.uploadFileBytes(uploadUrl, fileBytes);
-                    double progress = ((double) (i+1) / part_info_list.size()) * 100;
-                    UIUtil.console("文件：{} 上传进度：{}% 状态码： {}",fileInfo.getName(), NumberUtil.roundStr(progress,2),code);
-                    position += CommonConstants.DEFAULT_SIZE;
-                    size -= CommonConstants.DEFAULT_SIZE;
                 }
             }
             String upFileId = uploadFile.getStr("file_id");//文件id

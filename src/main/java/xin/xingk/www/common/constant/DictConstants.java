@@ -9,6 +9,12 @@ import java.util.Map;
  * @description: 字典翻译
  */
 public class DictConstants {
+
+    //文件
+    public static final String FILE_TYPE_FILE = "file";
+    //文件夹
+    public static final String FILE_TYPE_FOLDER = "folder";
+
     /**
      * 备份模式
      */
