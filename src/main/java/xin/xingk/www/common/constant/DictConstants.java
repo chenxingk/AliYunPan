@@ -69,8 +69,12 @@ public class DictConstants {
 
         URI_DICT.put(CommonConstants.TOKEN_URL,"获取Token");
         URI_DICT.put(CommonConstants.FILE_LIST_URL,"文件列表");
+        URI_DICT.put(CommonConstants.FILE_SEARCH_URL,"文件搜索");
         URI_DICT.put(CommonConstants.CREATE_FILE_URL,"文件上传");
         URI_DICT.put(CommonConstants.COMPLETE_FILE_URL,"完成上传");
         URI_DICT.put(CommonConstants.DELETE_FILE_URL,"删除文件");
+        URI_DICT.put(CommonConstants.DOWNLOAD_FILE_URL,"文件下载");
+        URI_DICT.put(CommonConstants.FOLDER_PATH_URL,"目录层级");
+        URI_DICT.put(CommonConstants.UPDATE_FOLDER_URL,"修改目录");
     }
 }

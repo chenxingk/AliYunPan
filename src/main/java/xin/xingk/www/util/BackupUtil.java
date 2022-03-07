@@ -8,6 +8,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import xin.xingk.www.common.constant.CommonConstants;
+import xin.xingk.www.common.constant.DictConstants;
 import xin.xingk.www.context.BackupContextHolder;
 import xin.xingk.www.context.UploadRecordContextHolder;
 import xin.xingk.www.entity.Backup;
@@ -147,33 +148,26 @@ public class BackupUtil {
 
         if (!getFileExistCloud(fileInfo,fileId)){
             UIUtil.console("开始上传：{}",fileInfo.getPath());
-            JSONObject fileExists = AliYunUtil.fileExists(fileId, fileInfo);
-            JSONObject uploadFile = new JSONObject();
-            if ("PreHashMatched".equals(fileExists.getStr("code"))) {
-                uploadFile = AliYunUtil.uploadFile(fileId, fileInfo);
-                UIUtil.console("{}，秒传成功",fileInfo.getPath());
-            }else {
-                uploadFile = AliYunUtil.uploadFile(fileId,fileInfo);
-                JSONArray part_info_list = uploadFile.getJSONArray("part_info_list");
-                if(ObjectUtil.isNotEmpty(part_info_list)){//上传新文件
-                    //文件流位置
-                    long position = 0;
-                    //文件大小
-                    long size = fileInfo.getSize();
-                    for (int i = 0; i < part_info_list.size(); i++) {
-                        byte[] fileBytes;
-                        if (size>CommonConstants.DEFAULT_SIZE.longValue()){
-                            fileBytes = FileUtil.readBytes(fileInfo.getPath(), position, CommonConstants.DEFAULT_SIZE);
-                        }else{
-                            fileBytes = FileUtil.readBytes(fileInfo.getPath(), position, (int) size);
-                        }
-                        String uploadUrl = part_info_list.getJSONObject(i).getStr("upload_url");
-                        int code = OkHttpUtil.uploadFileBytes(uploadUrl, fileBytes);
-                        double progress = ((double) (i+1) / part_info_list.size()) * 100;
-                        UIUtil.console("文件：{} 上传进度：{}% 状态码： {}",fileInfo.getName(), NumberUtil.roundStr(progress,2),code);
-                        position += CommonConstants.DEFAULT_SIZE;
-                        size -= CommonConstants.DEFAULT_SIZE;
+            JSONObject uploadFile = AliYunUtil.uploadFile(fileId,fileInfo);
+            JSONArray part_info_list = uploadFile.getJSONArray("part_info_list");
+            if(ObjectUtil.isNotEmpty(part_info_list)){//上传新文件
+                //文件流位置
+                long position = 0;
+                //文件大小
+                long size = fileInfo.getSize();
+                for (int i = 0; i < part_info_list.size(); i++) {
+                    byte[] fileBytes;
+                    if (size>CommonConstants.DEFAULT_SIZE.longValue()){
+                        fileBytes = FileUtil.readBytes(fileInfo.getPath(), position, CommonConstants.DEFAULT_SIZE);
+                    }else{
+                        fileBytes = FileUtil.readBytes(fileInfo.getPath(), position, (int) size);
                     }
+                    String uploadUrl = part_info_list.getJSONObject(i).getStr("upload_url");
+                    int code = OkHttpUtil.uploadFileBytes(uploadUrl, fileBytes);
+                    double progress = ((double) (i+1) / part_info_list.size()) * 100;
+                    UIUtil.console("文件：{} 上传进度：{}% 状态码： {}",fileInfo.getName(), NumberUtil.roundStr(progress,2),code);
+                    position += CommonConstants.DEFAULT_SIZE;
+                    size -= CommonConstants.DEFAULT_SIZE;
                 }
             }
             String upFileId = uploadFile.getStr("file_id");//文件id
@@ -210,24 +204,26 @@ public class BackupUtil {
                 return false;
             }
         } else {//本地无上传记录
-            List<CloudFile> cloudFileList = AliYunUtil.getCloudFileList(fileId);
+            List<CloudFile> cloudFileList = AliYunUtil.search(fileId, fileInfo.getName(), DictConstants.FILE_TYPE_FILE);
+            //搜索云盘无此文件
+            if(ObjectUtil.isEmpty(cloudFileList)){
+                return false;
+            }
             Optional<CloudFile> cloudFile = cloudFileList.stream().filter(f ->
-                    "file".equals(f.getType()) && f.getName().equals(fileInfo.getName())
-            ).findFirst();
+                    DictConstants.FILE_TYPE_FILE.equals(f.getType())
+                        && f.getName().equals(fileInfo.getName())
+                        && fileInfo.getContentHash().equals(f.getContentHash()
+                )).findFirst();
             if (cloudFile.isPresent()){
-                CloudFile cloud = cloudFile.get();
-                if (cloud.getContentHash().equals(fileInfo.getContentHash())){
-                    //Hash一致 上传过
-                    addUploadRecord(fileInfo,cloudFile.get().getFileId());
-                    return true;
-                }else {
-                    //并且Hash不一致 先删除在重新上传
-                    AliYunUtil.deleteFile(cloud.getFileId());
-                    return false;
-                }
+                //Hash一致 上传过
+                addUploadRecord(fileInfo,cloudFile.get().getFileId());
+                return true;
+            }else {
+                //并且Hash不一致 先删除在重新上传
+                AliYunUtil.deleteFile(cloudFile.get().getFileId());
+                return false;
             }
         }
-        return false;
     }
 
     /**

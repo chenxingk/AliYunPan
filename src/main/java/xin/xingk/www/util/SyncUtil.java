@@ -3,6 +3,7 @@ package xin.xingk.www.util;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import xin.xingk.www.common.constant.CommonConstants;
+import xin.xingk.www.common.constant.DictConstants;
 import xin.xingk.www.context.BackupContextHolder;
 import xin.xingk.www.entity.Backup;
 import xin.xingk.www.entity.aliyun.CloudFile;
@@ -70,7 +71,7 @@ public class SyncUtil {
         List<CloudFile> cloudFileList = AliYunUtil.getCloudFileList(fileId);
         //处理云端文件和云端目录
         for (CloudFile cloudFile : cloudFileList) {
-            if ("file".equals(cloudFile.getType())){
+            if (DictConstants.FILE_TYPE_FILE.equals(cloudFile.getType())){
                 //先判断本地存不存在 不存在在执行下载 存在则跳过本次循环
                 AliYunUtil.downloadCloudFile(cloudFile.getFileId(),path);
             }else {

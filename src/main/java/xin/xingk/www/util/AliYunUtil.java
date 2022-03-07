@@ -12,6 +12,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import xin.xingk.www.common.constant.CommonConstants;
+import xin.xingk.www.common.constant.DictConstants;
 import xin.xingk.www.entity.Backup;
 import xin.xingk.www.entity.aliyun.CloudFile;
 import xin.xingk.www.entity.aliyun.FileInfo;
@@ -85,15 +86,21 @@ public class AliYunUtil {
      * 搜索文件
      * @param fileId 云盘目录ID
      * @param name 文件名
+     * @param type 类型 文件或文件夹
      * @return 是否返回
      */
-    public static JSONObject searchFile(String fileId, String name) {
+    public static List<CloudFile> search(String fileId, String name, String type) {
         JSONObject data = new JSONObject();
         data.set("drive_id", CommonConstants.DriveId);
         data.set("limit", 100);
         data.set("order_by", "name ASC");
-        data.set("query", "parent_file_id = "+fileId+" and (name = "+name+")");
-        return OkHttpUtil.doPost(CommonConstants.CREATE_FILE_URL,data);
+        //模糊查询
+        //String format = StrUtil.format("parent_file_id = '{}' and name match '{}' and type = '{}'", fileId, name, type);
+        String format = StrUtil.format("parent_file_id = '{}' and name = '{}' and type = '{}'", fileId, name, type);
+        data.set("query",format);
+        JSONObject result = OkHttpUtil.doPost(CommonConstants.FILE_SEARCH_URL,data);
+        List<CloudFile> cloudFileList = JSONUtil.toList(result.getJSONArray("items"), CloudFile.class);
+        return cloudFileList;
     }
 
     /**
@@ -274,7 +281,7 @@ public class AliYunUtil {
         JSONObject data = new JSONObject();
         data.set("drive_id",CommonConstants.DriveId);
         data.set("file_id",fileId);
-        return OkHttpUtil.doPost(CommonConstants.GET_FOLDER_PATH_URL, data);
+        return OkHttpUtil.doPost(CommonConstants.FOLDER_PATH_URL, data);
     }
 
     /**
@@ -299,12 +306,8 @@ public class AliYunUtil {
      * @return 云盘目录ID
      */
     public static String getFileId(String parentFileId,String folderName){
-        List<CloudFile> cloudFileList = getCloudFileList(parentFileId);//获取文件目录
-        //过滤文件夹
-        Optional<CloudFile> cloudFile = cloudFileList.stream().filter(f ->
-                "folder".equals(f.getType()) && folderName.equals(f.getName())
-        ).findFirst();
-        if (cloudFile.isPresent()) return cloudFile.get().getFileId();
+        List<CloudFile> cloudFileList = search(parentFileId, folderName, DictConstants.FILE_TYPE_FOLDER);//获取文件目录
+        if (ObjectUtil.isNotEmpty(cloudFileList)) return cloudFileList.get(0).getFileId();
         //没有找到则创建一个返回
         JSONObject folder = createFolder(parentFileId, folderName); //创建备份目录
         return folder.getStr("file_id");
