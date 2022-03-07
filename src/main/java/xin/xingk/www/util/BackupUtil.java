@@ -146,43 +146,46 @@ public class BackupUtil {
      */
     public static void doUploadFile(String fileId,FileInfo fileInfo){
 
-        if (!getFileExistCloud(fileInfo,fileId)){
+//        if (!getFileExistCloud(fileInfo,fileId)){
             UIUtil.console("开始上传：{}",fileInfo.getPath());
-            JSONObject uploadFile = AliYunUtil.uploadFile(fileId,fileInfo);
-            JSONArray part_info_list = uploadFile.getJSONArray("part_info_list");
-            if(ObjectUtil.isNotEmpty(part_info_list)){//上传新文件
-                //文件流位置
-                long position = 0;
-                //文件大小
-                long size = fileInfo.getSize();
-                for (int i = 0; i < part_info_list.size(); i++) {
-                    byte[] fileBytes;
-                    if (size>CommonConstants.DEFAULT_SIZE.longValue()){
-                        fileBytes = FileUtil.readBytes(fileInfo.getPath(), position, CommonConstants.DEFAULT_SIZE);
-                    }else{
-                        fileBytes = FileUtil.readBytes(fileInfo.getPath(), position, (int) size);
+            JSONObject uploadFile = AliYunUtil.fileExists(fileId,fileInfo);
+            if ("PreHashMatched".equals(uploadFile.getStr("code"))){
+                uploadFile = AliYunUtil.uploadFile(fileId,fileInfo);
+                addUploadRecord(fileInfo, uploadFile.getStr("file_id"));
+                UIUtil.console("{} 秒传完成",fileInfo.getPath());
+            }else {
+                JSONArray part_info_list = uploadFile.getJSONArray("part_info_list");
+                if(ObjectUtil.isNotEmpty(part_info_list)){//上传新文件
+                    //文件流位置
+                    long position = 0;
+                    //文件大小
+                    long size = fileInfo.getSize();
+                    for (int i = 0; i < part_info_list.size(); i++) {
+                        byte[] fileBytes;
+                        if (size>CommonConstants.DEFAULT_SIZE.longValue()){
+                            fileBytes = FileUtil.readBytes(fileInfo.getPath(), position, CommonConstants.DEFAULT_SIZE);
+                        }else{
+                            fileBytes = FileUtil.readBytes(fileInfo.getPath(), position, (int) size);
+                        }
+                        String uploadUrl = part_info_list.getJSONObject(i).getStr("upload_url");
+                        int code = OkHttpUtil.uploadFileBytes(uploadUrl, fileBytes);
+                        double progress = ((double) (i+1) / part_info_list.size()) * 100;
+                        UIUtil.console("文件：{} 上传进度：{}% 状态码： {}",fileInfo.getName(), NumberUtil.roundStr(progress,2),code);
+                        position += CommonConstants.DEFAULT_SIZE;
+                        size -= CommonConstants.DEFAULT_SIZE;
                     }
-                    String uploadUrl = part_info_list.getJSONObject(i).getStr("upload_url");
-                    int code = OkHttpUtil.uploadFileBytes(uploadUrl, fileBytes);
-                    double progress = ((double) (i+1) / part_info_list.size()) * 100;
-                    UIUtil.console("文件：{} 上传进度：{}% 状态码： {}",fileInfo.getName(), NumberUtil.roundStr(progress,2),code);
-                    position += CommonConstants.DEFAULT_SIZE;
-                    size -= CommonConstants.DEFAULT_SIZE;
                 }
-            }
-            String upFileId = uploadFile.getStr("file_id");//文件id
-            String uploadId = uploadFile.getStr("upload_id");//上传ID
-            if (StrUtil.isEmpty(uploadFile.getStr("exist"))){//上传完成
+                String upFileId = uploadFile.getStr("file_id");//文件id
+                String uploadId = uploadFile.getStr("upload_id");//上传ID
                 JSONObject result = AliYunUtil.completeFile(upFileId, uploadId);
                 if ("available".equals(result.getStr("status")) || StrUtil.isNotEmpty(result.getStr("created_at"))){
                     addUploadRecord(fileInfo, upFileId);
                 }
-            }else if ("available".equals(uploadFile.getStr("status"))){//已经存在的文件
-                addUploadRecord(fileInfo, upFileId);
             }
-        }else {
-            UIUtil.console("{} 云盘已存在 跳过",fileInfo.getPath());
-        }
+
+//        }else {
+//            UIUtil.console("{} 云盘已存在 跳过",fileInfo.getPath());
+//        }
     }
 
     /**

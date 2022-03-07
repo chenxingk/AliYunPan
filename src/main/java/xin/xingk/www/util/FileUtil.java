@@ -1,8 +1,11 @@
 package xin.xingk.www.util;
 
+import cn.hutool.core.codec.Base64;
+import cn.hutool.core.codec.Base64Encoder;
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.io.IORuntimeException;
-import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.HexUtil;
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +14,8 @@ import xin.xingk.www.entity.aliyun.FileInfo;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.file.Paths;
@@ -157,6 +162,16 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         String type = getFileTypes(file.getName());
         long max = file.length() / CommonConstants.DEFAULT_SIZE;
         if (max%10480000!=0) max++;
+        System.out.println(CommonConstants.ACCESS_TOKEN.length());
+        System.out.println(CommonConstants.ACCESS_TOKEN);
+        String md5Hex = DigestUtil.md5Hex(CommonConstants.ACCESS_TOKEN).substring(0, 16);
+        BigInteger n1 = HexUtil.toBigInteger(md5Hex);
+        long n2 = file.length();
+        long n3 = n2 == 0 ? n2 : n1.mod(BigInteger.valueOf(n2)).longValueExact();
+        long min = NumberUtil.min(n3 + 8, n2);
+        byte[] proofCodeBytes = FileUtil.readBytes(file, (int)n3, (int)min);
+        //String proofCode = Base64Encoder.encode(proofCodeBytes);
+        String proofCode = Base64.encode(proofCodeBytes);
         fileInfo.setName(file.getName());
         fileInfo.setPath(file.getPath());
         fileInfo.setType(type);
@@ -164,6 +179,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         fileInfo.setContentHash(DigestUtil.sha1Hex(file).toUpperCase());
         fileInfo.setSize(file.length());
         fileInfo.setMax(max);
+        fileInfo.setProofCode(proofCode);
         return fileInfo;
     }
 
@@ -213,6 +229,24 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         File[] files = ls(path);
         for (File file : files) if (file.isDirectory()) List.add(file.getName());
         return List;
+    }
+
+
+    public static byte[] readBytes(File file, int start, int end){
+        byte[] bytes = new byte[end - start];
+        try (FileInputStream stream = new FileInputStream(file)){
+            for (int i = 0; i < start; i++) {
+                stream.read();
+            }
+            int j = 0;
+            for (int i = start; i < end; i++) {
+                bytes[j++] = (byte) stream.read();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bytes;
     }
 
 }

@@ -27,7 +27,7 @@ public class CommonConstants {
      * 阿里云接口
      */
     //获取token
-    public final static String TOKEN_URL="https://websv.aliyundrive.com/token/refresh";
+    public final static String TOKEN_URL="https://api.aliyundrive.com/token/refresh";
     //文件列表
     public final static String FILE_LIST_URL="https://api.aliyundrive.com/adrive/v3/file/list";
     //文件搜索
@@ -48,6 +48,8 @@ public class CommonConstants {
     public final static String UPDATE_FOLDER_URL = "https://api.aliyundrive.com/v3/file/update";
     //Token
     public static String TOKEN="";
+    //access_token
+    public static String ACCESS_TOKEN="";
     //driveId
     public static String DriveId="";
     //根目录

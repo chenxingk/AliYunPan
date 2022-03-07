@@ -44,6 +44,7 @@ public class AliYunUtil {
             return false;
         }
         CommonConstants.TOKEN = result.getStr("token_type") + " " + result.getStr("access_token");
+        CommonConstants.ACCESS_TOKEN = result.getStr("access_token");
         CommonConstants.DriveId = result.getStr("default_drive_id");
         ConfigUtil.setToken(result.getStr("refresh_token"));
         return true;
@@ -135,7 +136,9 @@ public class AliYunUtil {
         data.set("type", "file");
         data.set("check_name_mode", "refuse");
         data.set("size",fileInfo.getSize());
-        data.set("pre_hash", fileInfo.getContentHash());
+        data.set("proof_code", fileInfo.getProofCode());
+        data.set("proof_version", "v1");
+//        data.set("pre_hash", fileInfo.getContentHash());
         return OkHttpUtil.doFilePost(CommonConstants.CREATE_FILE_URL,data);
     }
 
@@ -146,16 +149,16 @@ public class AliYunUtil {
     public static JSONObject uploadFile(String fileId,FileInfo fileInfo){
         JSONObject data = new JSONObject();
         data.set("drive_id",CommonConstants.DriveId);
-        data.set("name",fileInfo.getName());
+        data.set("name", fileInfo.getName());
+        data.set("parent_file_id", fileId);
         data.set("type","file");
-        data.set("content_type",fileInfo.getContentType());
-        data.set("size",fileInfo.getSize());
-        data.set("parent_file_id",fileId);
         data.set("part_info_list",getPartNumber(fileInfo.getMax()));
-        data.set("content_hash_name","sha1");
-        data.set("content_hash",fileInfo.getContentHash());
-        data.set("ignoreError",false);
-        data.set("check_name_mode","refuse");
+        data.set("check_name_mode", "refuse");
+        data.set("size", fileInfo.getSize());
+        data.set("content_hash", fileInfo.getContentHash());
+        data.set("content_hash_name", "sha1");
+        data.set("proof_code", fileInfo.getProofCode());
+        data.set("proof_version", "v1");
         return OkHttpUtil.doFilePost(CommonConstants.CREATE_FILE_URL,data);
     }
 

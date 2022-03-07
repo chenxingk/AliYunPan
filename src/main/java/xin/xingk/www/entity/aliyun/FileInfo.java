@@ -31,5 +31,8 @@ public class FileInfo {
     //文件块
     private long max;
 
+    //
+    private String proofCode;
+
 
 }
