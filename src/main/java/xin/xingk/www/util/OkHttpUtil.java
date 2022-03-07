@@ -28,11 +28,6 @@ import java.util.concurrent.TimeUnit;
 public class OkHttpUtil {
     //错误次数
     static int errNum=0;
-
-    static OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(5, TimeUnit.MINUTES).build();
-    static MediaType mediaType = MediaType.parse("application/json");
-    static RequestBody body;
-    static Request request;
     static String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36 Edg/90.0.818.66";
 
 
@@ -45,8 +40,10 @@ public class OkHttpUtil {
      */
     public static JSONObject doPost(String url, JSONObject data){
         try {
-            body = RequestBody.create(mediaType,data.toString());
-            request = new Request.Builder()
+            OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(5, TimeUnit.MINUTES).build();
+            MediaType mediaType = MediaType.parse("application/json");
+            RequestBody body = RequestBody.create(mediaType,data.toString());
+            Request request = new Request.Builder()
                     .url(url)
                     .method("POST", body)
                     .addHeader("authorization", CommonConstants.TOKEN)
@@ -89,12 +86,14 @@ public class OkHttpUtil {
      */
     public static JSONObject doFilePost(String url,JSONObject data){
         try {
+            OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(5, TimeUnit.MINUTES).build();
+            MediaType mediaType = MediaType.parse("text/plain");
             RequestBody body = RequestBody.create(mediaType, data.toString());
-            request = new Request.Builder()
+            Request request = new Request.Builder()
                     .url(url)
                     .method("POST", body)
                     .addHeader("authorization",CommonConstants.TOKEN)
-                    .addHeader("Content-Type", "multipart/form-data").build();
+                    .addHeader("Content-Type", "text/plain").build();
             Response response = client.newCall(request).execute();
             String result = response.body().string();
             UIUtil.console("{}，请求状态码：{}", DictConstants.URI_DICT.get(url),response.code());
@@ -136,6 +135,7 @@ public class OkHttpUtil {
      */
     public static int uploadFileBytes(String url, byte[] fileBytes){
         try {
+            OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(5, TimeUnit.MINUTES).build();
             RequestBody body = RequestBody.create(fileBytes);
             Request request = new Request.Builder().url(url).method("PUT",body).build();
             Response response = client.newCall(request).execute();
@@ -297,6 +297,7 @@ public class OkHttpUtil {
      */
     public static JSONObject getQrCodeUrl(){
         try {
+            OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(5, TimeUnit.MINUTES).build();
             Request request = new Request.Builder()
                     .url("https://passport.aliyundrive.com/newlogin/qrcode/generate.do?appName=aliyun_drive")
                     .method("GET", null)
@@ -318,6 +319,7 @@ public class OkHttpUtil {
      */
     public static JSONObject queryQrCode(String t,String ck){
         try {
+            OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(5, TimeUnit.MINUTES).build();
             RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
                     .addFormDataPart("t", t)
                     .addFormDataPart("ck", ck)

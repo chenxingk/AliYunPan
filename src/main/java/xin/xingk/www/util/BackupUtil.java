@@ -146,12 +146,12 @@ public class BackupUtil {
      */
     public static void doUploadFile(String fileId,FileInfo fileInfo){
 
-//        if (!getFileExistCloud(fileInfo,fileId)){
+        if (!getFileExistCloud(fileInfo,fileId)){
             UIUtil.console("开始上传：{}",fileInfo.getPath());
-            JSONObject uploadFile = AliYunUtil.fileExists(fileId,fileInfo);
-            if ("PreHashMatched".equals(uploadFile.getStr("code"))){
-                uploadFile = AliYunUtil.uploadFile(fileId,fileInfo);
-                addUploadRecord(fileInfo, uploadFile.getStr("file_id"));
+            JSONObject uploadFile = AliYunUtil.uploadFile(fileId,fileInfo);
+            String upFileId = uploadFile.getStr("file_id");//文件id
+            if (uploadFile.getBool("rapid_upload")){
+                addUploadRecord(fileInfo, upFileId);
                 UIUtil.console("{} 秒传完成",fileInfo.getPath());
             }else {
                 JSONArray part_info_list = uploadFile.getJSONArray("part_info_list");
@@ -174,18 +174,18 @@ public class BackupUtil {
                         position += CommonConstants.DEFAULT_SIZE;
                         size -= CommonConstants.DEFAULT_SIZE;
                     }
-                }
-                String upFileId = uploadFile.getStr("file_id");//文件id
-                String uploadId = uploadFile.getStr("upload_id");//上传ID
-                JSONObject result = AliYunUtil.completeFile(upFileId, uploadId);
-                if ("available".equals(result.getStr("status")) || StrUtil.isNotEmpty(result.getStr("created_at"))){
-                    addUploadRecord(fileInfo, upFileId);
+                    //上传ID
+                    String uploadId = uploadFile.getStr("upload_id");
+                    //完成文件上传
+                    JSONObject result = AliYunUtil.completeFile(upFileId, uploadId);
+                    if ("available".equals(result.getStr("status")) || StrUtil.isNotEmpty(result.getStr("created_at"))){
+                        addUploadRecord(fileInfo, upFileId);
+                    }
                 }
             }
-
-//        }else {
-//            UIUtil.console("{} 云盘已存在 跳过",fileInfo.getPath());
-//        }
+        }else {
+            UIUtil.console("{} 云盘已存在 跳过",fileInfo.getPath());
+        }
     }
 
     /**

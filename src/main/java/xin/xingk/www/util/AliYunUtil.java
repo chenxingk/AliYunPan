@@ -122,41 +122,22 @@ public class AliYunUtil {
     }
 
     /**
-     * 检测文件是否存在
-     * @param fileId
-     * @param fileInfo
-     * @return
+     * 上传文件到阿里云盘
+     * @return 上传结果
      */
-    public static JSONObject fileExists(String fileId, FileInfo fileInfo) {
+    public static JSONObject uploadFile(String fileId,FileInfo fileInfo){
         JSONObject data = new JSONObject();
         data.set("drive_id", CommonConstants.DriveId);
         data.set("part_info_list", getPartNumber(fileInfo.getMax()));
         data.set("parent_file_id", fileId);
         data.set("name", fileInfo.getName());
         data.set("type", "file");
-        data.set("check_name_mode", "refuse");
+        //data.set("check_name_mode", "refuse");
+        //覆盖
+        //data.set("check_name_mode", "overwrite");
+        //保留两者
+        data.set("check_name_mode", "auto_rename");
         data.set("size",fileInfo.getSize());
-        data.set("content_hash", fileInfo.getContentHash());
-        data.set("content_hash_name", "sha1");
-        data.set("proof_code", fileInfo.getProofCode());
-        data.set("proof_version", "v1");
-//        data.set("pre_hash", fileInfo.getContentHash());
-        return OkHttpUtil.doFilePost(CommonConstants.CREATE_FILE_URL,data);
-    }
-
-    /**
-     * 上传文件到阿里云盘
-     * @return 上传结果
-     */
-    public static JSONObject uploadFile(String fileId,FileInfo fileInfo){
-        JSONObject data = new JSONObject();
-        data.set("drive_id",CommonConstants.DriveId);
-        data.set("name", fileInfo.getName());
-        data.set("parent_file_id", fileId);
-        data.set("type","file");
-        data.set("part_info_list",getPartNumber(fileInfo.getMax()));
-        data.set("check_name_mode", "refuse");
-        data.set("size", fileInfo.getSize());
         data.set("content_hash", fileInfo.getContentHash());
         data.set("content_hash_name", "sha1");
         data.set("proof_code", fileInfo.getProofCode());

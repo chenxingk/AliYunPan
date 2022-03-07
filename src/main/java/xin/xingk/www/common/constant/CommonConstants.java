@@ -33,9 +33,9 @@ public class CommonConstants {
     //文件搜索
     public final static String FILE_SEARCH_URL = "https://api.aliyundrive.com/adrive/v3/file/search";
     //文件上传
-    public final static String CREATE_FILE_URL="https://api.aliyundrive.com/v2/file/create";
+//    public final static String CREATE_FILE_URL="https://api.aliyundrive.com/v2/file/create";
     //文件上传
-//    public final static String CREATE_FILE_URL="https://api.aliyundrive.com/adrive/v2/file/createWithFolders";
+    public final static String CREATE_FILE_URL="https://api.aliyundrive.com/adrive/v2/file/createWithFolders";
     //完成上传
     public final static String COMPLETE_FILE_URL="https://api.aliyundrive.com/v2/file/complete";
     //删除文件

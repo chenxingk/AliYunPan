@@ -1,7 +1,6 @@
 package xin.xingk.www.util;
 
 import cn.hutool.core.codec.Base64;
-import cn.hutool.core.codec.Base64Encoder;
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.core.util.HexUtil;
@@ -162,8 +161,6 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         String type = getFileTypes(file.getName());
         long max = file.length() / CommonConstants.DEFAULT_SIZE;
         if (max%10480000!=0) max++;
-        System.out.println(CommonConstants.ACCESS_TOKEN.length());
-        System.out.println(CommonConstants.ACCESS_TOKEN);
         String md5Hex = DigestUtil.md5Hex(CommonConstants.ACCESS_TOKEN).substring(0, 16);
         BigInteger n1 = HexUtil.toBigInteger(md5Hex);
         long n2 = file.length();
