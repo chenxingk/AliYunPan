@@ -136,6 +136,8 @@ public class AliYunUtil {
         data.set("type", "file");
         data.set("check_name_mode", "refuse");
         data.set("size",fileInfo.getSize());
+        data.set("content_hash", fileInfo.getContentHash());
+        data.set("content_hash_name", "sha1");
         data.set("proof_code", fileInfo.getProofCode());
         data.set("proof_version", "v1");
 //        data.set("pre_hash", fileInfo.getContentHash());

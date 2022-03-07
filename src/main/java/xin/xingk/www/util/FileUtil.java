@@ -178,7 +178,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         fileInfo.setContentType(contentType);
         fileInfo.setContentHash(DigestUtil.sha1Hex(file).toUpperCase());
         fileInfo.setSize(file.length());
-        fileInfo.setMax(max);
+        fileInfo.setMax(max == 0 ? 1 : max);
         fileInfo.setProofCode(proofCode);
         return fileInfo;
     }
