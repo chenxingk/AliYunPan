@@ -16,6 +16,7 @@ import xin.xingk.www.ui.dialog.Edit;
 import xin.xingk.www.ui.menu.TableMenuBar;
 import xin.xingk.www.util.BackupUtil;
 import xin.xingk.www.util.CacheUtil;
+import xin.xingk.www.util.UIUtil;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -189,7 +190,6 @@ public class Home {
      * 修改表格数据
      */
     public static void updateTable() {
-        if (checkCurrentBackup()) return;
         JTable table = Home.getInstance().getTable();
         //获取选中的行
         int row = table.getSelectedRow();
@@ -209,7 +209,6 @@ public class Home {
      * 删除表格数据
      */
     public static void delTable() {
-        if (checkCurrentBackup()) return;
         //先判断有没有选中
         JTable table = Home.getInstance().getTable();
         //获取选中的行
@@ -224,7 +223,7 @@ public class Home {
                 //删除定时任务
                 CronUtil.remove(String.valueOf(id));
                 //删除目录检测
-                DirWatcher.remove(id);
+                DirWatcher.removeWatcher(id);
             }
         } else {
             JOptionPane.showMessageDialog(null, "请您先选中一行", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
@@ -235,7 +234,6 @@ public class Home {
      * 备份表格数据
      */
     public static void backupTable() {
-        if (checkCurrentBackup()) return;
         //先判断有没有选中
         JTable table = Home.getInstance().getTable();
         //获取选中的行
@@ -252,27 +250,20 @@ public class Home {
     }
 
     /**
-     * 检查当前是否在备份中
-     * @return
-     */
-    private static boolean checkCurrentBackup() {
-        home = getInstance();
-        if (!home.getStartButton().getModel().isEnabled()) {
-            JOptionPane.showMessageDialog(null, "此任务当前正在备份中。。。", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * 根据ID 检查当前是否在备份中
      * @return
      */
     private static boolean checkBackupById(int id) {
-        String key = CacheUtil.BACKUP_ID_KEY + id;
-        String cronKey = CacheUtil.CRON_TASK_ID_KEY + id;
-        if (ObjectUtil.isNotEmpty(CacheUtil.get(key)) || ObjectUtil.isNotEmpty(CacheUtil.get(cronKey))) {
+        Backup backup = BackupContextHolder.getBackupById(id);
+        Integer status = CacheUtil.getInt(CacheUtil.BACKUP_STATUS_KEY + backup.getId());
+        if (!Home.getInstance().getStartButton().getModel().isEnabled() || DictConstants.STATUS_BACKUP_RUN.equals(status)){
             JOptionPane.showMessageDialog(null, "此任务当前正在备份中。。。", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
+            return true;
+        }else if (DictConstants.STATUS_SYNC_RUN.equals(status)){
+            JOptionPane.showMessageDialog(null, "此任务当前正在同步中。。。", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
+            return true;
+        }else if (DictConstants.STATUS_DISABLE.equals(backup.getStatus())){
+            UIUtil.console("本地目录：{}，已禁用，本次备份跳过。。。",backup.getLocalPath());
             return true;
         }
         return false;

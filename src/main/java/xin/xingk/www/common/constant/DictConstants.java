@@ -46,7 +46,7 @@ public class DictConstants {
     //备份任务运行中
     public static Integer STATUS_BACKUP_RUN = 2;
     //同步任务运行中
-    public static Integer STATUS_SYNC_RUN = 2;
+    public static Integer STATUS_SYNC_RUN = 3;
 
     /**
      * 接口名称

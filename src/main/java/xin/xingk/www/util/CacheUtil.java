@@ -1,6 +1,7 @@
 package xin.xingk.www.util;
 
 import cn.hutool.cache.Cache;
+import cn.hutool.core.convert.Convert;
 
 /**
  * @author: Mr.chen
@@ -19,11 +20,8 @@ public class CacheUtil extends cn.hutool.cache.CacheUtil{
      */
     public static final Cache<String, Object> cache = CacheUtil.newFIFOCache(9999);
 
-    //备份ID KEY
-    public static String BACKUP_ID_KEY = "BACKUP_ID_KEY_";
-
-    //定时备份ID KEY
-    public static String CRON_TASK_ID_KEY = "CRON_TASK_ID_KEY_";
+    //备份任务状态 KEY
+    public static String BACKUP_STATUS_KEY = "BACKUP_STATUS_KEY_";
 
     //目录检测 KEY
     public static String WATCHER_KEY = "WATCHER_KEY_";
@@ -44,6 +42,15 @@ public class CacheUtil extends cn.hutool.cache.CacheUtil{
      */
     public static Object get(String key){
         return cache.get(key);
+    }
+
+    /**
+     * 获取缓存的值
+     * @param key key
+     * @return 获取的值
+     */
+    public static Integer getInt(String key){
+        return Convert.toInt(cache.get(key));
     }
 
     /**

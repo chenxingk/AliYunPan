@@ -28,7 +28,7 @@ public class Backup extends BaseEntity{
     private Integer sync;
     //定时备份时间
     private String backupTime;
-    //状态 0正常 1备份中 2禁用
+    //状态 0正常 1禁用 2备份中 3同步中
     private Integer status;
     //备份文件数量
     private Integer fileNum;

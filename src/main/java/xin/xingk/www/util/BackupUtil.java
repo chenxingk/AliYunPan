@@ -40,22 +40,48 @@ public class BackupUtil {
             UIUtil.console("Token已过期，请退出重新登录。。。");
             return;
         }
-        String key = CacheUtil.BACKUP_ID_KEY + id;
-        String cronKey = CacheUtil.CRON_TASK_ID_KEY + id;
         if (id == null){
             List<Backup> backupList = BackupContextHolder.getBackupList();
             for (Backup backup : backupList) {
+                if (checkBackupStatus(backup)) continue;
                 backupTask(backup);
-                CacheUtil.remove(key);
-                CacheUtil.remove(cronKey);
+                removeBackupStatus(id);
             }
             Home.getInstance().getStartButton().setEnabled(true);
         }else {
             Backup backup = BackupContextHolder.getBackupById(id);
+            if (checkBackupStatus(backup)) return;
             backupTask(backup);
-            CacheUtil.remove(key);
-            CacheUtil.remove(cronKey);
+            removeBackupStatus(id);
         }
+    }
+
+    /**
+     * 验证备份任务状态
+     * @param backup 备份任务
+     * @return
+     */
+    public static boolean checkBackupStatus(Backup backup) {
+        Integer status = CacheUtil.getInt(CacheUtil.BACKUP_STATUS_KEY + backup.getId());
+        if (!Home.getInstance().getStartButton().getModel().isEnabled() || DictConstants.STATUS_BACKUP_RUN.equals(status)){
+            UIUtil.console("本地目录：{}，正在备份中，本次备份跳过。。。",backup.getLocalPath());
+            return true;
+        }else if (DictConstants.STATUS_SYNC_RUN.equals(status)){
+            UIUtil.console("本地目录：{}，正在同步中，本次备份跳过。。。",backup.getLocalPath());
+            return true;
+        }else if (DictConstants.STATUS_DISABLE.equals(backup.getStatus())){
+            UIUtil.console("本地目录：{}，已禁用，本次备份跳过。。。",backup.getLocalPath());
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 清除备份任务状态
+     * @param id 备份任务ID
+     */
+    public static void removeBackupStatus(Integer id) {
+        CacheUtil.remove(CacheUtil.BACKUP_STATUS_KEY + id);
     }
 
     /**

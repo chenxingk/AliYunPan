@@ -50,7 +50,7 @@ public class DirWatcher extends SimpleWatcher {
      * @param backup 备份任务
      */
     public static void setWatchMonitor(Backup backup) {
-        remove(backup.getId());
+        removeWatcher(backup.getId());
         if (!DictConstants.ON.equals(backup.getMonitor())) return;
         String key = CacheUtil.WATCHER_KEY + backup.getId();
         WatchMonitor monitor = WatchMonitor.createAll(backup.getLocalPath(), new DelayWatcher(new DirWatcher(backup.getId()), 1000));
@@ -66,7 +66,7 @@ public class DirWatcher extends SimpleWatcher {
      * 删除目录检测
      * @param id 备份任务ID
      */
-    public static void remove(int id){
+    public static void removeWatcher(int id){
         String key = CacheUtil.WATCHER_KEY + id;
         if (ObjectUtil.isNotEmpty(CacheUtil.get(key))){
             WatchMonitor monitor = (WatchMonitor) CacheUtil.get(key);
@@ -107,34 +107,22 @@ public class DirWatcher extends SimpleWatcher {
     private synchronized void dirMonitorFileUpload(String path, String fileName) {
         String filePath = path + FileUtil.FILE_SEPARATOR + fileName;
         UIUtil.console("监控到目录：{} 文件发生变化",path);
-        if (FileUtil.isFile(filePath)){
-            /**
-             * 没有点击左上角的开始备份
-             * 也没有点击右键菜单里的开始备份
-             * 定时备份也没有执行
-             */
-            if (Home.getInstance().getStartButton().getModel().isEnabled()){
-                //单个备份
-                String key = CacheUtil.BACKUP_ID_KEY + this.backId;
-                //定时备份
-                String cronKey = CacheUtil.BACKUP_ID_KEY + this.backId;
-                if (ObjectUtil.isEmpty(CacheUtil.get(key)) && ObjectUtil.isEmpty(CacheUtil.get(cronKey))) {
-                    String fileSuffix = FileUtil.getSuffix(fileName);//文件后缀
-                    //备份方法不执行时候执行监听
-                    if (fileSuffix.length()<=8 && !fileName.startsWith("~$") && !"tmp".equals(fileSuffix)){
-                        UploadRecord uploadRecord = UploadRecordContextHolder.getUploadRecordByFilePath(filePath);
-                        if (ObjectUtil.isNotEmpty(uploadRecord)){
-                            UIUtil.console("{} 发生变化，删除后上传新版",filePath);
-                            //如果文件存在 先删除在重新上传
-                            AliYunUtil.deleteFile(uploadRecord.getFileId());
-                            //删除文件上传记录
-                            UploadRecordContextHolder.delUploadRecord(uploadRecord.getId());
-                        }
-                        Backup backup = BackupContextHolder.getBackupById(this.backId);
-                        BackupUtil.monitorUpload(path,fileName,backup);
+            if (FileUtil.isFile(filePath)){
+                Backup backup = BackupContextHolder.getBackupById(this.getBackId());
+                if (BackupUtil.checkBackupStatus(backup)) return;
+                String fileSuffix = FileUtil.getSuffix(fileName);//文件后缀
+                //备份方法不执行时候执行监听
+                if (fileSuffix.length()<=8 && !fileName.startsWith("~$") && !"tmp".equals(fileSuffix)){
+                    UploadRecord uploadRecord = UploadRecordContextHolder.getUploadRecordByFilePath(filePath);
+                    if (ObjectUtil.isNotEmpty(uploadRecord)){
+                        UIUtil.console("{} 发生变化，删除后上传新版",filePath);
+                        //如果文件存在 先删除在重新上传
+                        AliYunUtil.deleteFile(uploadRecord.getFileId());
+                        //删除文件上传记录
+                        UploadRecordContextHolder.delUploadRecord(uploadRecord.getId());
                     }
+                    BackupUtil.monitorUpload(path,fileName,backup);
                 }
-            }
         }
     }
 }
