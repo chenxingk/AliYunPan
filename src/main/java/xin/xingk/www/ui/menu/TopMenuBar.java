@@ -2,11 +2,13 @@ package xin.xingk.www.ui.menu;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.swing.DesktopUtil;
+import cn.hutool.core.thread.ThreadUtil;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.App;
 import xin.xingk.www.common.constant.CommonConstants;
+import xin.xingk.www.ui.Home;
 import xin.xingk.www.ui.Login;
 import xin.xingk.www.ui.dialog.About;
 import xin.xingk.www.util.*;
@@ -90,10 +92,10 @@ public class TopMenuBar extends JMenuBar {
         // Check for Updates
         JMenuItem checkForUpdatesItem = new JMenuItem();
         checkForUpdatesItem.setText("检查更新");
-        checkForUpdatesItem.addActionListener(e -> {
+        checkForUpdatesItem.addActionListener(e -> ThreadUtil.execute(() -> {
             boolean update = UpdateUtil.checkForUpdate();
             if (!update) JOptionPane.showMessageDialog(null, "暂无发现更新", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
-        });
+        }));
         aboutMenu.add(checkForUpdatesItem);
 
         JMenuItem problemItem = new JMenuItem();
@@ -111,7 +113,6 @@ public class TopMenuBar extends JMenuBar {
         topMenuBar.add(aboutMenu);
         UIManager.put("TitlePane.unifiedBackground", false);
     }
-
 
     /**
      * 初始化主题菜单

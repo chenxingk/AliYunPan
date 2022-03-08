@@ -37,7 +37,7 @@ public class App {
 
         ThreadUtil.execute(Login::initUpdate);
 
-        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.pack();
         mainFrame.setVisible(true);
         log.info("启动耗时："+timer.interval()+" ms");
@@ -49,6 +49,8 @@ public class App {
         ThreadUtil.execute(CronTasks::startTask);
         //开启目录检测
         ThreadUtil.execute(DirWatcher::startWatcher);
+        //系统托盘设置
+        UIUtil.miniTray();
     }
 
 

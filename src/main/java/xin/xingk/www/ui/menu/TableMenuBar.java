@@ -1,5 +1,6 @@
 package xin.xingk.www.ui.menu;
 
+import cn.hutool.core.thread.ThreadUtil;
 import xin.xingk.www.ui.Home;
 
 import javax.swing.*;
@@ -43,7 +44,7 @@ public class TableMenuBar extends JPopupMenu {
 
         //---- 开始备份 ----
         startBackUp.setText("开始备份");
-        startBackUp.addActionListener(e -> Home.backupTable());
+        startBackUp.addActionListener(e -> ThreadUtil.execute(Home::backupTable));
         tableMenuBar.add(startBackUp);
     }
 
