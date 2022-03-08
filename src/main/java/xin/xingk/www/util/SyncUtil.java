@@ -28,21 +28,15 @@ public class SyncUtil {
             UIUtil.console("Token已过期，请退出重新登录。。。");
             return;
         }
-        String key = CacheUtil.BACKUP_ID_KEY + id;
-        String cronKey = CacheUtil.CRON_TASK_ID_KEY + id;
         if (id == null){
             List<Backup> backupList = BackupContextHolder.getBackupList();
             for (Backup backup : backupList) {
                 SyncTask(backup);
-                CacheUtil.remove(key);
-                CacheUtil.remove(cronKey);
             }
             Home.getInstance().getStartButton().setEnabled(true);
         }else {
             Backup backup = BackupContextHolder.getBackupById(id);
             SyncTask(backup);
-            CacheUtil.remove(key);
-            CacheUtil.remove(cronKey);
         }
     }
 

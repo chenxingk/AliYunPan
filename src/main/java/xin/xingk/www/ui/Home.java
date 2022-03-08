@@ -1,22 +1,20 @@
 package xin.xingk.www.ui;
 
 import cn.hutool.core.thread.ThreadUtil;
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.cron.CronUtil;
 import com.formdev.flatlaf.ui.FlatUIUtils;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Data;
-import xin.xingk.www.common.constant.DictConstants;
 import xin.xingk.www.common.DirWatcher;
+import xin.xingk.www.common.constant.DictConstants;
 import xin.xingk.www.context.BackupContextHolder;
 import xin.xingk.www.entity.Backup;
 import xin.xingk.www.ui.dialog.Edit;
 import xin.xingk.www.ui.menu.TableMenuBar;
 import xin.xingk.www.util.BackupUtil;
 import xin.xingk.www.util.CacheUtil;
-import xin.xingk.www.util.UIUtil;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -224,6 +222,8 @@ public class Home {
                 CronUtil.remove(String.valueOf(id));
                 //删除目录检测
                 DirWatcher.removeWatcher(id);
+                //删除备份任务状态
+                CacheUtil.removeBackupStatus(id);
             }
         } else {
             JOptionPane.showMessageDialog(null, "请您先选中一行", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
@@ -241,8 +241,7 @@ public class Home {
         if (row > -1) {
             int id = (int) table.getValueAt(row, 0);
             if (checkBackupById(id)) return;
-            String key = CacheUtil.BACKUP_ID_KEY + id;
-            CacheUtil.set(key, id);
+            CacheUtil.setBackupStatus(id, DictConstants.STATUS_BACKUP_RUN);
             BackupUtil.startBackup(id);
         } else {
             JOptionPane.showMessageDialog(null, "请您先选中一行", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
@@ -251,19 +250,20 @@ public class Home {
 
     /**
      * 根据ID 检查当前是否在备份中
+     *
      * @return
      */
     private static boolean checkBackupById(int id) {
         Backup backup = BackupContextHolder.getBackupById(id);
-        Integer status = CacheUtil.getInt(CacheUtil.BACKUP_STATUS_KEY + backup.getId());
-        if (!Home.getInstance().getStartButton().getModel().isEnabled() || DictConstants.STATUS_BACKUP_RUN.equals(status)){
+        Integer status = CacheUtil.getBackupStatus(id);
+        if (!Home.getInstance().getStartButton().getModel().isEnabled() || DictConstants.STATUS_BACKUP_RUN.equals(status)) {
             JOptionPane.showMessageDialog(null, "此任务当前正在备份中。。。", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
             return true;
-        }else if (DictConstants.STATUS_SYNC_RUN.equals(status)){
+        } else if (DictConstants.STATUS_SYNC_RUN.equals(status)) {
             JOptionPane.showMessageDialog(null, "此任务当前正在同步中。。。", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
             return true;
-        }else if (DictConstants.STATUS_DISABLE.equals(backup.getStatus())){
-            UIUtil.console("本地目录：{}，已禁用，本次备份跳过。。。",backup.getLocalPath());
+        } else if (DictConstants.STATUS_DISABLE.equals(backup.getStatus())) {
+            JOptionPane.showMessageDialog(null, "此任务已被禁用。。。", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
             return true;
         }
         return false;

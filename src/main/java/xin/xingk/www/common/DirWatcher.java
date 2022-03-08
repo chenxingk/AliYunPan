@@ -10,7 +10,6 @@ import xin.xingk.www.context.BackupContextHolder;
 import xin.xingk.www.context.UploadRecordContextHolder;
 import xin.xingk.www.entity.Backup;
 import xin.xingk.www.entity.UploadRecord;
-import xin.xingk.www.ui.Home;
 import xin.xingk.www.util.*;
 
 import java.nio.file.Path;
@@ -113,6 +112,7 @@ public class DirWatcher extends SimpleWatcher {
                 String fileSuffix = FileUtil.getSuffix(fileName);//文件后缀
                 //备份方法不执行时候执行监听
                 if (fileSuffix.length()<=8 && !fileName.startsWith("~$") && !"tmp".equals(fileSuffix)){
+                    CacheUtil.setBackupStatus(this.getBackId(), DictConstants.STATUS_BACKUP_RUN);
                     UploadRecord uploadRecord = UploadRecordContextHolder.getUploadRecordByFilePath(filePath);
                     if (ObjectUtil.isNotEmpty(uploadRecord)){
                         UIUtil.console("{} 发生变化，删除后上传新版",filePath);

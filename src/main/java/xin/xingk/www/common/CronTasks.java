@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.cron.CronUtil;
+import xin.xingk.www.common.constant.DictConstants;
 import xin.xingk.www.context.BackupContextHolder;
 import xin.xingk.www.entity.Backup;
 import xin.xingk.www.util.*;
@@ -51,6 +52,7 @@ public class CronTasks {
      */
     public static void backFileList(int id){
         try {
+            CacheUtil.setBackupStatus(id, DictConstants.STATUS_BACKUP_RUN);
             //执行备份目录操作
             ThreadUtil.execute(() -> BackupUtil.startBackup(id));
         } catch (Exception e) {

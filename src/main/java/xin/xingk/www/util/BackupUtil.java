@@ -45,14 +45,14 @@ public class BackupUtil {
             for (Backup backup : backupList) {
                 if (checkBackupStatus(backup)) continue;
                 backupTask(backup);
-                removeBackupStatus(id);
+                CacheUtil.removeBackupStatus(id);
             }
             Home.getInstance().getStartButton().setEnabled(true);
         }else {
             Backup backup = BackupContextHolder.getBackupById(id);
             if (checkBackupStatus(backup)) return;
             backupTask(backup);
-            removeBackupStatus(id);
+            CacheUtil.removeBackupStatus(id);
         }
     }
 
@@ -62,7 +62,7 @@ public class BackupUtil {
      * @return
      */
     public static boolean checkBackupStatus(Backup backup) {
-        Integer status = CacheUtil.getInt(CacheUtil.BACKUP_STATUS_KEY + backup.getId());
+        Integer status = CacheUtil.getBackupStatus(backup.getId());
         if (!Home.getInstance().getStartButton().getModel().isEnabled() || DictConstants.STATUS_BACKUP_RUN.equals(status)){
             UIUtil.console("本地目录：{}，正在备份中，本次备份跳过。。。",backup.getLocalPath());
             return true;
@@ -76,13 +76,6 @@ public class BackupUtil {
         return false;
     }
 
-    /**
-     * 清除备份任务状态
-     * @param id 备份任务ID
-     */
-    public static void removeBackupStatus(Integer id) {
-        CacheUtil.remove(CacheUtil.BACKUP_STATUS_KEY + id);
-    }
 
     /**
      * 备份任务
@@ -94,7 +87,6 @@ public class BackupUtil {
         scanFolders(backup.getLocalPath(), fileId, backup.getBackupType(),backup);
         UIUtil.console("本次备份：{} 下所有文件成功！...", backup.getLocalPath());
     }
-
 
     /**
      * 扫描子目录
