@@ -241,7 +241,6 @@ public class Home {
         if (row > -1) {
             int id = (int) table.getValueAt(row, 0);
             if (checkBackupById(id)) return;
-            CacheUtil.setBackupStatus(id, DictConstants.STATUS_BACKUP_RUN);
             BackupUtil.startBackup(id);
         } else {
             JOptionPane.showMessageDialog(null, "请您先选中一行", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
@@ -254,16 +253,12 @@ public class Home {
      * @return
      */
     private static boolean checkBackupById(int id) {
-        Backup backup = BackupContextHolder.getBackupById(id);
         Integer status = CacheUtil.getBackupStatus(id);
         if (!Home.getInstance().getStartButton().getModel().isEnabled() || DictConstants.STATUS_BACKUP_RUN.equals(status)) {
             JOptionPane.showMessageDialog(null, "此任务当前正在备份中。。。", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
             return true;
         } else if (DictConstants.STATUS_SYNC_RUN.equals(status)) {
             JOptionPane.showMessageDialog(null, "此任务当前正在同步中。。。", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
-            return true;
-        } else if (DictConstants.STATUS_DISABLE.equals(backup.getStatus())) {
-            JOptionPane.showMessageDialog(null, "此任务已被禁用。。。", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
             return true;
         }
         return false;

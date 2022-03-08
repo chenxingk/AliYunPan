@@ -7,10 +7,11 @@ import cn.hutool.core.util.ObjectUtil;
 import lombok.Data;
 import xin.xingk.www.common.constant.DictConstants;
 import xin.xingk.www.context.BackupContextHolder;
-import xin.xingk.www.context.UploadRecordContextHolder;
 import xin.xingk.www.entity.Backup;
-import xin.xingk.www.entity.UploadRecord;
-import xin.xingk.www.util.*;
+import xin.xingk.www.util.BackupUtil;
+import xin.xingk.www.util.CacheUtil;
+import xin.xingk.www.util.FileUtil;
+import xin.xingk.www.util.UIUtil;
 
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
@@ -112,17 +113,9 @@ public class DirWatcher extends SimpleWatcher {
                 String fileSuffix = FileUtil.getSuffix(fileName);//文件后缀
                 //备份方法不执行时候执行监听
                 if (fileSuffix.length()<=8 && !fileName.startsWith("~$") && !"tmp".equals(fileSuffix)){
-                    CacheUtil.setBackupStatus(this.getBackId(), DictConstants.STATUS_BACKUP_RUN);
-                    UploadRecord uploadRecord = UploadRecordContextHolder.getUploadRecordByFilePath(filePath);
-                    if (ObjectUtil.isNotEmpty(uploadRecord)){
-                        UIUtil.console("{} 发生变化，删除后上传新版",filePath);
-                        //如果文件存在 先删除在重新上传
-                        AliYunUtil.deleteFile(uploadRecord.getFileId());
-                        //删除文件上传记录
-                        UploadRecordContextHolder.delUploadRecord(uploadRecord.getId());
-                    }
                     BackupUtil.monitorUpload(path,fileName,backup);
                 }
+                CacheUtil.removeBackupStatus(this.getBackId());
         }
     }
 }

@@ -22,7 +22,6 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import xin.xingk.www.common.constant.CommonConstants;
 import xin.xingk.www.mybatis.mapper.BackupMapper;
-import xin.xingk.www.mybatis.mapper.UploadRecordMapper;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -107,7 +106,6 @@ public class MybatisPlusConfig {
         configuration.addInterceptor(initInterceptor());
         //扫描mapper接口所在包
 //        configuration.addMappers("xin.xingk.www.mybatis.mapper");
-        configuration.addMapper(UploadRecordMapper.class);
         configuration.addMapper(BackupMapper.class);
         //配置日志实现
         configuration.setLogImpl(Slf4jImpl.class);
