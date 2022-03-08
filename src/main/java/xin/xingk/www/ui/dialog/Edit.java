@@ -234,6 +234,9 @@ public class Edit extends JDialog implements FocusListener {
             JOptionPane.showMessageDialog(null, "您没有输入云盘备份目录", "错误", JOptionPane.ERROR_MESSAGE);
             return false;
         }
+        if (cloudText.getText().startsWith("\\")) {
+            cloudText.setText(cloudText.getText().substring(1));
+        }
         if (!FileUtil.isDirectory(localText.getText())) {
             JOptionPane.showMessageDialog(null, "请选择正确的目录", "错误", JOptionPane.ERROR_MESSAGE);
             return false;
