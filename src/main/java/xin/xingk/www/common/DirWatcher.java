@@ -110,6 +110,7 @@ public class DirWatcher extends SimpleWatcher {
             if (FileUtil.isFile(filePath)){
                 Backup backup = BackupContextHolder.getBackupById(this.getBackId());
                 if (BackupUtil.checkBackupStatus(backup)) return;
+                CacheUtil.setBackupStatus(backup.getId(), DictConstants.STATUS_BACKUP_RUN);
                 String fileSuffix = FileUtil.getSuffix(fileName);//文件后缀
                 //备份方法不执行时候执行监听
                 if (fileSuffix.length()<=8 && !fileName.startsWith("~$") && !"tmp".equals(fileSuffix)){

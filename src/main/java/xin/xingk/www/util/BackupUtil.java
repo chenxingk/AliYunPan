@@ -41,17 +41,27 @@ public class BackupUtil {
         if (id == null){
             List<Backup> backupList = BackupContextHolder.getBackupList();
             for (Backup backup : backupList) {
-                if (checkBackupStatus(backup)) continue;
                 backupTask(backup);
-                CacheUtil.removeBackupStatus(backup.getId());
             }
             Home.getInstance().getStartButton().setEnabled(true);
         }else {
             Backup backup = BackupContextHolder.getBackupById(id);
-            if (checkBackupStatus(backup)) return;
             backupTask(backup);
-            CacheUtil.removeBackupStatus(id);
         }
+    }
+
+    /**
+     * 备份任务
+     * @param backup 备份任务
+     */
+    public static void backupTask(Backup backup) {
+        if (checkBackupStatus(backup)) return;
+        CacheUtil.setBackupStatus(backup.getId(), DictConstants.STATUS_BACKUP_RUN);
+        //备份目录ID
+        String fileId = AliYunUtil.getFileIdByArr(CommonConstants.ROOT,backup.getCloudPath().split("\\\\"));
+        scanFolders(backup.getLocalPath(), fileId, backup.getBackupType(),backup);
+        UIUtil.console("本次备份：{} 下所有文件成功！...", backup.getLocalPath());
+        CacheUtil.removeBackupStatus(backup.getId());
     }
 
     /**
@@ -61,6 +71,7 @@ public class BackupUtil {
      */
     public static boolean checkBackupStatus(Backup backup) {
         Integer status = CacheUtil.getBackupStatus(backup.getId());
+        if (ObjectUtil.isEmpty(status)) return false;
         if (DictConstants.STATUS_BACKUP_RUN.equals(status)){
             UIUtil.console("本地目录：{}，正在备份中，本次备份跳过。。。",backup.getLocalPath());
             return true;
@@ -68,20 +79,7 @@ public class BackupUtil {
             UIUtil.console("本地目录：{}，正在同步中，本次备份跳过。。。",backup.getLocalPath());
             return true;
         }
-        CacheUtil.setBackupStatus(backup.getId(), DictConstants.STATUS_BACKUP_RUN);
         return false;
-    }
-
-
-    /**
-     * 备份任务
-     * @param backup 备份任务
-     */
-    public static void backupTask(Backup backup) {
-        //备份目录ID
-        String fileId = AliYunUtil.getFileIdByArr(CommonConstants.ROOT,backup.getCloudPath().split("\\\\"));
-        scanFolders(backup.getLocalPath(), fileId, backup.getBackupType(),backup);
-        UIUtil.console("本次备份：{} 下所有文件成功！...", backup.getLocalPath());
     }
 
     /**
@@ -159,7 +157,7 @@ public class BackupUtil {
      * @param fileInfo 文件信息
      */
     public static void doUploadFile(String fileId,FileInfo fileInfo){
-        if (!getFileExistCloud(fileInfo,fileId)){
+        if (!getCloudFileExist(fileInfo,fileId)){
             UIUtil.console("开始上传：{}",fileInfo.getPath());
             JSONObject uploadFile = AliYunUtil.uploadFile(fileId,fileInfo);
             String upFileId = uploadFile.getStr("file_id");//文件id
@@ -206,7 +204,7 @@ public class BackupUtil {
      * @param fileId 云盘目录ID
      * @return true 存在
      */
-    private static boolean getFileExistCloud(FileInfo fileInfo,String fileId) {
+    private static boolean getCloudFileExist(FileInfo fileInfo, String fileId) {
         List<CloudFile> cloudFileList = AliYunUtil.search(fileId, fileInfo.getName(), DictConstants.FILE_TYPE_FILE);
         //搜索云盘无此文件
         if(ObjectUtil.isEmpty(cloudFileList)){

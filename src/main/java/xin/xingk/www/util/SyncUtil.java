@@ -7,6 +7,7 @@ import xin.xingk.www.common.constant.DictConstants;
 import xin.xingk.www.context.BackupContextHolder;
 import xin.xingk.www.entity.Backup;
 import xin.xingk.www.entity.aliyun.CloudFile;
+import xin.xingk.www.entity.aliyun.FileInfo;
 import xin.xingk.www.ui.Home;
 
 import java.util.List;
@@ -45,12 +46,14 @@ public class SyncUtil {
      * @param backup 同步任务
      */
     public static void SyncTask(Backup backup) {
+        if (BackupUtil.checkBackupStatus(backup)) return;
+        CacheUtil.setBackupStatus(backup.getId(), DictConstants.STATUS_SYNC_RUN);
         //同步目录ID
         String fileId = AliYunUtil.getFileIdByArr(CommonConstants.ROOT,backup.getCloudPath().split("\\\\"));
         downloadCloudFolder(backup.getLocalPath(),fileId,fileId);
         UIUtil.console("本次同步：{} 下所有文件成功！...", backup.getLocalPath());
+        CacheUtil.removeBackupStatus(backup.getId());
     }
-
 
     /**
      * 下载云盘目录文件到本地
@@ -66,7 +69,15 @@ public class SyncUtil {
         //处理云端文件和云端目录
         for (CloudFile cloudFile : cloudFileList) {
             if (DictConstants.FILE_TYPE_FILE.equals(cloudFile.getType())){
-                //先判断本地存不存在 不存在在执行下载 存在则跳过本次循环
+                String filePath = path + FileUtil.FILE_SEPARATOR + cloudFile.getName();
+                if (FileUtil.isFile(filePath)){
+                    //本地存在此文件
+                    FileInfo fileInfo = FileUtil.getFileInfo(filePath);
+                    if (fileInfo.getContentHash().equals(cloudFile.getContentHash())){
+                        //本地文件与云端文件一致
+                        continue;
+                    }
+                }
                 AliYunUtil.downloadCloudFile(cloudFile.getFileId(),path);
             }else {
                 downloadCloudFolder(localPath,pathId,cloudFile.getFileId());

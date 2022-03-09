@@ -38,7 +38,7 @@ public class OkHttpUtil {
      * @return
      * @throws Exception
      */
-    public static JSONObject doPost(String url, JSONObject data){
+    public synchronized static JSONObject doPost(String url, JSONObject data){
         try {
             OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(5, TimeUnit.MINUTES).build();
             MediaType mediaType = MediaType.parse("application/json");
@@ -84,7 +84,7 @@ public class OkHttpUtil {
      * @return netstat -anp|grep 61617
      * @throws Exception
      */
-    public static JSONObject doFilePost(String url,JSONObject data){
+    public synchronized static JSONObject doFilePost(String url,JSONObject data){
         try {
             OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(5, TimeUnit.MINUTES).build();
             MediaType mediaType = MediaType.parse("text/plain");
@@ -118,7 +118,7 @@ public class OkHttpUtil {
      * @param data
      * @return
      */
-    public static void deleteFile(JSONObject data){
+    public synchronized static void deleteFile(JSONObject data){
         HttpRequest request = HttpRequest.post(CommonConstants.DELETE_FILE_URL);
         request.body(data.toString());
         request.header("Content-Type", "application/json");
@@ -133,7 +133,7 @@ public class OkHttpUtil {
      * @return
      * @throws Exception
      */
-    public static int uploadFileBytes(String url, byte[] fileBytes){
+    public synchronized static int uploadFileBytes(String url, byte[] fileBytes){
         try {
             OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(5, TimeUnit.MINUTES).build();
             RequestBody body = RequestBody.create(fileBytes);
