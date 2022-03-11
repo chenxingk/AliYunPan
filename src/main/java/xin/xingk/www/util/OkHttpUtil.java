@@ -40,6 +40,7 @@ public class OkHttpUtil {
      */
     public synchronized static JSONObject doPost(String url, JSONObject data){
         try {
+            ThreadUtil.sleep(1000);
             OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(5, TimeUnit.MINUTES).build();
             MediaType mediaType = MediaType.parse("application/json");
             RequestBody body = RequestBody.create(mediaType,data.toString());

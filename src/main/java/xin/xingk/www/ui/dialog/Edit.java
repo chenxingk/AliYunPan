@@ -316,9 +316,11 @@ public class Edit extends JDialog implements FocusListener {
         syncLabel.setText("目录同步");
         editPanel.add(syncLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         syncOpenRadio = new JRadioButton();
+        syncOpenRadio.setEnabled(false);
         syncOpenRadio.setText("开启");
         editPanel.add(syncOpenRadio, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         syncCloseRadio = new JRadioButton();
+        syncCloseRadio.setEnabled(false);
         syncCloseRadio.setText("关闭");
         editPanel.add(syncCloseRadio, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
