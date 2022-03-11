@@ -1,5 +1,6 @@
 package xin.xingk.www.ui;
 
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.qrcode.QrCodeUtil;
@@ -9,6 +10,8 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Data;
 import xin.xingk.www.App;
+import xin.xingk.www.common.CronTasks;
+import xin.xingk.www.common.DirWatcher;
 import xin.xingk.www.common.constant.CommonConstants;
 import xin.xingk.www.util.*;
 
@@ -70,6 +73,11 @@ public class Login {
             login.getQrCodeLabel().setText("加载二维码……");
             App.mainFrame.initLogin();
         }
+
+        //开启定时任务
+        ThreadUtil.execute(CronTasks::startTask);
+        //开启目录检测
+        ThreadUtil.execute(DirWatcher::startWatcher);
     }
 
 

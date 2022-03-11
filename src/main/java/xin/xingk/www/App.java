@@ -42,13 +42,6 @@ public class App {
         mainFrame.setVisible(true);
         log.info("启动耗时："+timer.interval()+" ms");
 
-        /**
-         * 需要改为登录成功开启...
-         */
-        //开启定时任务
-        ThreadUtil.execute(CronTasks::startTask);
-        //开启目录检测
-        ThreadUtil.execute(DirWatcher::startWatcher);
         //系统托盘设置
         UIUtil.miniTray();
     }
