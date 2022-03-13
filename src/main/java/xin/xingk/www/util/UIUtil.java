@@ -124,7 +124,7 @@ public class UIUtil {
                 tray.add(trayIcon);
             } catch (AWTException e) {
                 e.printStackTrace();
-                log.error(ExceptionUtil.getMessage(e));
+                log.error(ExceptionUtil.stacktraceToString(e));
             }
         }
     }

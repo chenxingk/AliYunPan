@@ -172,7 +172,7 @@ public class TopMenuBar extends JMenuBar {
             about.pack();
             about.setVisible(true);
         } catch (Exception e) {
-            log.error(ExceptionUtil.getMessage(e));
+            log.error(ExceptionUtil.stacktraceToString(e));
         }
     }
 

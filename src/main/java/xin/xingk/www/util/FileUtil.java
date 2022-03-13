@@ -199,7 +199,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
                 Thread.sleep(1L);
             }
         }catch (Exception e){
-            throw new IORuntimeException("读取文件流，发生异常...请联系作者..."+ ExceptionUtil.getMessage(e));
+            throw new IORuntimeException("读取文件流，发生异常...请联系作者..."+ ExceptionUtil.stacktraceToString(e));
         }
         return block.array();
     }

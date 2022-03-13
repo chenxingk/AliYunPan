@@ -127,7 +127,7 @@ public class BackupUtil {
                     doUploadFile(fileId,fileInfo);
                 }
             } catch (Exception e) {
-                UIUtil.console("遇到异常情况：{}",ExceptionUtil.getMessage(e));
+                UIUtil.console("遇到异常情况：{}",ExceptionUtil.stacktraceToString(e));
             }
         }
     }
@@ -213,16 +213,17 @@ public class BackupUtil {
         Optional<CloudFile> cloudFile = cloudFileList.stream().filter(f ->
                 DictConstants.FILE_TYPE_FILE.equals(f.getType())
                         && f.getName().equals(fileInfo.getName())
-                        && fileInfo.getContentHash().equals(f.getContentHash()
-                )).findFirst();
+        ).findFirst();
         if (cloudFile.isPresent()){
-            //Hash一致 上传过
-            return true;
-        }else {
+            if (fileInfo.getContentHash().equals(cloudFile.get().getContentHash())){
+                //Hash一致 上传过
+                return true;
+            }
             //并且Hash不一致 先删除在重新上传
             AliYunUtil.deleteFile(cloudFile.get().getFileId());
             return false;
         }
+        return false;
     }
 
 }
