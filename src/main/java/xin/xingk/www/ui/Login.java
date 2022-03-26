@@ -58,9 +58,11 @@ public class Login {
     public static void initUpdate() {
         login = getInstance();
         login.getInfoLabel().setText("");
-        login.getQrCodeLabel().setText("检测程序是否有更新……");
+        login.getQrCodeLabel().setText("检测程序DB是否正常……");
         //检查是否有更新
-        if (UpdateUtil.checkForUpdate()) return;
+        if (ConfigUtil.getStartupUpdate()) {
+            if (UpdateUtil.checkForUpdate()) UpdateUtil.doUpdateDialog();
+        }
         //检查更新程序DB
         UpdateUtil.updateDb();
         //登录

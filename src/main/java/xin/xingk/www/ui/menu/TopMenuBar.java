@@ -8,7 +8,7 @@ import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.App;
 import xin.xingk.www.common.constant.CommonConstants;
-import xin.xingk.www.ui.Home;
+import xin.xingk.www.common.constant.DictConstants;
 import xin.xingk.www.ui.Login;
 import xin.xingk.www.ui.dialog.About;
 import xin.xingk.www.util.*;
@@ -83,6 +83,13 @@ public class TopMenuBar extends JMenuBar {
         startup.addActionListener(e -> updateStartup(startup));
         setUp.add(startup);
 
+        //---------启动时检查更新
+        JCheckBoxMenuItem startCheckUpdate = new JCheckBoxMenuItem();
+        startCheckUpdate.setSelected(ConfigUtil.getStartupUpdate());
+        startCheckUpdate.setText("启动时检查更新");
+        startCheckUpdate.addActionListener(e -> updateStartCheck(startCheckUpdate));
+        setUp.add(startCheckUpdate);
+
         topMenuBar.add(setUp);
 
         // ---------帮助
@@ -94,7 +101,11 @@ public class TopMenuBar extends JMenuBar {
         checkForUpdatesItem.setText("检查更新");
         checkForUpdatesItem.addActionListener(e -> ThreadUtil.execute(() -> {
             boolean update = UpdateUtil.checkForUpdate();
-            if (!update) JOptionPane.showMessageDialog(null, "暂无发现更新", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
+            if (!update) {
+                JOptionPane.showMessageDialog(null, "暂无发现更新", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
+            }else {
+                UpdateUtil.doUpdateDialog();
+            }
         }));
         aboutMenu.add(checkForUpdatesItem);
 
@@ -178,19 +189,33 @@ public class TopMenuBar extends JMenuBar {
 
     /**
      * 更新开机启动
-     * @param startup
+     * @param boxMenuItem 开机启动
      */
-    private void updateStartup(JCheckBoxMenuItem startup) {
+    private void updateStartup(JCheckBoxMenuItem boxMenuItem) {
         if (!FileUtil.isWindows() || !FileUtil.isDirectory(ShortCutUtil.startup)){
             JOptionPane.showMessageDialog(null, "您的系统暂不支持开机启动，请联系作者", "温馨提示", JOptionPane.INFORMATION_MESSAGE);
         }else {
             if (ConfigUtil.getStartup()){
-                startup.setSelected(false);
+                boxMenuItem.setSelected(false);
                 ShortCutUtil.cancelStartup();
             }else {
                 boolean setStartup = ShortCutUtil.setStartup();
-                startup.setSelected(setStartup);
+                boxMenuItem.setSelected(setStartup);
             }
+        }
+    }
+
+    /**
+     * 更新启动时检查更新
+     * @param boxMenuItem 开启时检测更新
+     */
+    private void updateStartCheck(JCheckBoxMenuItem boxMenuItem) {
+        if (ConfigUtil.getStartupUpdate()){
+            boxMenuItem.setSelected(false);
+            ConfigUtil.setStartupUpdate(DictConstants.OFF);
+        }else {
+            boxMenuItem.setSelected(true);
+            ConfigUtil.setStartupUpdate(DictConstants.ON);
         }
     }
 

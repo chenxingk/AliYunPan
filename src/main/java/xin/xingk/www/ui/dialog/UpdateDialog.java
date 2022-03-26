@@ -10,7 +10,6 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import xin.xingk.www.App;
 import xin.xingk.www.util.ComponentUtil;
-import xin.xingk.www.util.UpdateUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -129,7 +128,7 @@ public class UpdateDialog extends JDialog {
         // add your code here if necessary
         dispose();
         //强更新
-        if (UpdateUtil.updateType == 1) System.exit(0);
+        //if (UpdateUtil.updateType == 1) System.exit(0);
     }
 
     {

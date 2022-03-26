@@ -20,10 +20,12 @@ public class ConfigUtil {
     private static final String token_key = "token";
     //主题名称
     private static final String theme_key = "theme";
-    //主题名称
+    //数据库版本
     private static final String dbVersion_key = "dbVersion";
-    //主题名称
+    //开机启动
     private static final String startup_key = "startup";
+    //启动检测
+    private static final String startup_update_key = "startup_update";
 
     /**
      * 设置值
@@ -96,12 +98,23 @@ public class ConfigUtil {
     /**
      * 获取当前开机启动设置
      * 0启动 1不启动
-     * @return
+     * @return 是否开机启动
      */
     public static boolean getStartup(){
         Integer startup = getInt(startup_key);
         if (startup == null) return false;
         return startup == 0;
+    }
+
+    /**
+     * 获取用户启动时检查更新
+     * 0更新 1不更新
+     * @return 是否启动时检查更新
+     */
+    public static boolean getStartupUpdate(){
+        Integer update = getInt(startup_update_key);
+        if (update == null) return false;
+        return update == 0;
     }
 
     /**
@@ -147,10 +160,18 @@ public class ConfigUtil {
 
     /**
      * 更新用户开机启动
-     * @param startup startup
+     * @param startup 0启动 1不启动
      */
     public static void setStartup(Integer startup){
         set(startup_key,startup+"");
+    }
+
+    /**
+     * 更新用户启动时检查更新
+     * @param update 0更新 1不更新
+     */
+    public static void setStartupUpdate(Integer update){
+        set(startup_update_key,update+"");
     }
 
 }

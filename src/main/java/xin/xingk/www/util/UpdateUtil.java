@@ -1,11 +1,10 @@
 package xin.xingk.www.util;
 
 import cn.hutool.core.comparator.VersionComparator;
-import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.http.HttpUtil;
+import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -25,40 +24,63 @@ import java.sql.SQLException;
 @Slf4j
 public class UpdateUtil {
 
-    //更新模式 1为强更新
-    public static int updateType = 0;
 
     /**
-     * 检查更新
+     * 获取版本信息
+     * @return 版本信息
+     */
+    public static JSONObject getVersionInfo(){
+        //获取
+        String result;
+        try {
+            result = HttpRequest.get("https://gitee.com/xingk-code/AliYunPan/raw/master/src/main/resources/version.json")
+                    .header("Referer", "https://gitee.com/xingk-code/AliYunPan/blob/master/src/main/resources/version.json")
+                    .timeout(5000)
+                    .execute().body();
+        } catch (Exception e) {
+            log.error(">>> 检测更新，从gitee获取版本信息失败，返回不更新...");
+            return null;
+        }
+        //版本信息
+        return JSONUtil.parseObj(result);
+    }
+
+    /**
+     * 检查是否有更新
      */
     public static boolean checkForUpdate() {
-        String result = HttpUtil.get("https://gitee.com/xingk-code/AliYunPan/raw/master/src/main/resources/version.json");
-        //版本信息
-        JSONObject versionJson = JSONUtil.parseObj(result);
-        //下载地址
-        String url = versionJson.getStr("url");
-        //版本描述
-        String desc = versionJson.getStr("desc");
+        JSONObject versionInfo = getVersionInfo();
+        if (ObjectUtil.isEmpty(versionInfo)) return false;
         //服务端版本号
-        String newVersion = versionJson.getStr("version");
-        //更新模式 1为强更新
-        updateType = versionJson.getInt("updateType");
+        String newVersion = versionInfo.getStr("version");
         //判断是否有新版
-        if (VersionComparator.INSTANCE.compare(newVersion,CommonConstants.VERSION)>0){
+        return VersionComparator.INSTANCE.compare(newVersion, CommonConstants.VERSION) > 0;
+    }
+
+    /**
+     * 更新对话框
+     */
+    public static void doUpdateDialog(){
+        JSONObject versionInfo = getVersionInfo();
+        if (ObjectUtil.isNotEmpty(versionInfo)){
+            //下载地址
+            String url = versionInfo.getStr("url");
+            //版本描述
+            String desc = versionInfo.getStr("desc");
+            //更新模式 1为强更新
+            //updateType = versionInfo.getInt("updateType");
             int button = JOptionPane.showConfirmDialog(null, desc, "检测到有新版，是否更新？", JOptionPane.YES_NO_OPTION);
             if (button==0){//选择是打开浏览器
-//                DesktopUtil.browse(url);
-//                if (updateType == 1) System.exit(0);
+                /*DesktopUtil.browse(url);
+                if (updateType == 1) System.exit(0);*/
                 UpdateDialog updateDialog = new UpdateDialog();
                 updateDialog.pack();
-                updateDialog.downLoad(newVersion);
+                updateDialog.downLoad(url);
                 updateDialog.setVisible(true);
-                return true;
             }
             //强更新
-            if (updateType == 1) System.exit(0);
+            //if (updateType == 1) System.exit(0);
         }
-        return false;
     }
 
     /**
