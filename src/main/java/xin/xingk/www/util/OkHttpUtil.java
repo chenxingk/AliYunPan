@@ -55,7 +55,7 @@ public class OkHttpUtil {
             if (!urlDict.contains("文件搜索")) UIUtil.console("{}，请求状态码：{}", urlDict, response.code());
             if (429==response.code()){
                 UIUtil.console("请求频繁了，休息一下。。。。正在准备重试中。。。");
-                ThreadUtil.sleep(3000);
+                ThreadUtil.sleep(5000);
                 return doPost(url,data);
             }
             JSONObject json = JSONUtil.parseObj(result);
