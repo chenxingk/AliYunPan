@@ -1,12 +1,16 @@
 <a href="https://gitee.com/xingk-code/AliYunPan">
  <img alt="AliYunPan-Logo" src="https://images.gitee.com/uploads/images/2022/0228/182550_33a29e1b_4873209.png">
 </a>
+
+
   
 # 备份助手 
 > 一款可以定时备份本地目录到阿里云盘的小工具
 
 [![码云Gitee](https://gitee.com/xingk-code/AliYunPan/badge/star.svg?theme=blue)](https://gitee.com/xingk-code/AliYunPan)
-
+[![GitHub stars](https://img.shields.io/github/stars/chenxingk/AliYunPan.svg?style=social)](https://github.com/chenxingk/AliYunPan)
+[![GitHub release](https://img.shields.io/github/v/release/chenxingk/AliYunPan)](https://github.com/chenxingk/AliYunPan/releases)
+[![GitHub license](https://img.shields.io/github/license/chenxingk/AliYunPan)](https://github.com/chenxingk/AliYunPan/blob/master/LICENSE)
 
 ## 支持的平台
 Windows • Linux • macOS
