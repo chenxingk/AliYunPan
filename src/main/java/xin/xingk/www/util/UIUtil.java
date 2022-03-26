@@ -6,6 +6,7 @@ import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.util.StrUtil;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.util.SystemInfo;
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.App;
 import xin.xingk.www.common.constant.CommonConstants;
@@ -84,7 +85,12 @@ public class UIUtil {
             popupMenu.add(openItem);
             popupMenu.add(exitItem);
 
-            ImageIcon trayImg = new ImageIcon(ResourceUtil.getResource("icons/logo.png"));//托盘图标
+            ImageIcon trayImg = null;
+            if (SystemInfo.isMacOS){
+                trayImg = new ImageIcon(ResourceUtil.getResource("icons/logo_mac.png"));//托盘图标
+            }else {
+                trayImg = new ImageIcon(ResourceUtil.getResource("icons/logo.png"));//托盘图标
+            }
             TrayIcon trayIcon = new TrayIcon(trayImg.getImage(), CommonConstants.TITLE,popupMenu);
             trayIcon.setImageAutoSize(true);
 

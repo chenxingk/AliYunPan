@@ -7,7 +7,6 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.system.SystemUtil;
 import com.formdev.flatlaf.extras.FlatDesktop;
 import com.formdev.flatlaf.util.SystemInfo;
-import com.sun.deploy.ui.AboutDialog;
 import lombok.extern.slf4j.Slf4j;
 import xin.xingk.www.ui.Home;
 import xin.xingk.www.ui.Login;
