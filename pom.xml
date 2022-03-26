@@ -6,7 +6,7 @@
 
   <groupId>xin.xingk.www</groupId>
   <artifactId>AliYunPan</artifactId>
-  <version>2.2</version>
+  <version>2.3</version>
 
   <name>AliYunPan</name>
   <!-- FIXME change it to the project's website -->
@@ -58,14 +58,14 @@
     <dependency>
       <groupId>com.formdev</groupId>
       <artifactId>flatlaf</artifactId>
-      <version>2.0.1</version>
+      <version>2.0.2</version>
     </dependency>
 
     <!--flatlaf-->
     <dependency>
       <groupId>com.formdev</groupId>
       <artifactId>flatlaf-extras</artifactId>
-      <version>2.0.1</version>
+      <version>2.0.2</version>
     </dependency>
 
     <!--logback-->
