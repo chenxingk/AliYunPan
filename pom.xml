@@ -170,7 +170,7 @@
                 <generateMsm>false</generateMsm>
                 <!-- setup generation properties -->
                 <!--安装程序安装模式：是否需要管理权限-->
-                <setupMode>installForAllUsers</setupMode>
+                <!--<setupMode>installForAllUsers</setupMode>-->
                 <!--如果设置为true，安装程序将不会要求创建桌面图标。-->
                 <createDesktopIconTask>true</createDesktopIconTask>
                 <!--如果将其设置为true，安装程序将不会显示“选择目标位置”向导页面。-->
@@ -186,7 +186,7 @@
             </configuration>
           </execution>
 
-          <execution>
+          <!--<execution>
               <id>bundling-for-linux</id>
               <phase>package</phase>
               <goals>
@@ -199,7 +199,7 @@
                   <generateDeb>true</generateDeb>
                   <generateRpm>true</generateRpm>
                 </linuxConfig>
-              <!-- <jdkPath>X:\\path\to\linux\jdk</jdkPath>-->
+              &lt;!&ndash; <jdkPath>X:\\path\to\linux\jdk</jdkPath>&ndash;&gt;
               </configuration>
           </execution>
           <execution>
@@ -211,13 +211,13 @@
               <configuration>
                   <platform>mac</platform>
                   <createTarball>true</createTarball>
-                  <!--<macConfig>-->
-                  <!--<generateDmg>true</generateDmg>-->
-                  <!--<generatePkg>true</generatePkg>-->
-                  <!--</macConfig>-->
-                  <!--<jdkPath>X:\\path\to\mac\jdk</jdkPath>-->
+                  &lt;!&ndash;<macConfig>&ndash;&gt;
+                  &lt;!&ndash;<generateDmg>true</generateDmg>&ndash;&gt;
+                  &lt;!&ndash;<generatePkg>true</generatePkg>&ndash;&gt;
+                  &lt;!&ndash;</macConfig>&ndash;&gt;
+                  &lt;!&ndash;<jdkPath>X:\\path\to\mac\jdk</jdkPath>&ndash;&gt;
               </configuration>
-          </execution>
+          </execution>-->
 
         </executions>
       </plugin>

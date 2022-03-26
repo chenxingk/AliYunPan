@@ -2,6 +2,7 @@ package xin.xingk.www.util;
 
 import cn.hutool.core.comparator.VersionComparator;
 import cn.hutool.core.io.resource.ResourceUtil;
+import cn.hutool.core.swing.DesktopUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpRequest;
@@ -70,13 +71,15 @@ public class UpdateUtil {
             //更新模式 1为强更新
             //updateType = versionInfo.getInt("updateType");
             int button = JOptionPane.showConfirmDialog(null, desc, "检测到有新版，是否更新？", JOptionPane.YES_NO_OPTION);
-            if (button==0){//选择是打开浏览器
-                /*DesktopUtil.browse(url);
-                if (updateType == 1) System.exit(0);*/
-                UpdateDialog updateDialog = new UpdateDialog();
-                updateDialog.pack();
-                updateDialog.downLoad(url);
-                updateDialog.setVisible(true);
+            if (button==0){
+                if (FileUtil.isWindows()){//win系统自动升级
+                    UpdateDialog updateDialog = new UpdateDialog();
+                    updateDialog.pack();
+                    updateDialog.downLoad(url);
+                    updateDialog.setVisible(true);
+                }else {//其它系统手动升级
+                    DesktopUtil.browse("https://gitee.com/xingk-code/AliYunPan/releases");
+                }
             }
             //强更新
             //if (updateType == 1) System.exit(0);

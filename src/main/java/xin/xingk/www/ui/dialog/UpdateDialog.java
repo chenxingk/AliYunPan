@@ -67,16 +67,14 @@ public class UpdateDialog extends JDialog {
         });
     }
 
-    public void downLoad(String newVersion) {
+    public void downLoad(String downLoadUrl) {
         buttonOK.setEnabled(false);
         ThreadUtil.execute(
                 () -> {
-//                    String fileUrl = "http://download.zhoubochina.com/exe/WePush-" + newVersion + "-x64-Setup.exe";
-                    String fileUrl = "http://yunpan.xingk.xin/备份助手/备份助手安装包v1.2.exe";
-                    String fileName = FileUtil.getName(fileUrl);
+                    String fileName = FileUtil.getName(downLoadUrl);
                     URL url;
                     try {
-                        url = new URL(fileUrl);
+                        url = new URL(downLoadUrl);
                         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                         //获取相应的文件长度
                         int fileLength = urlConnection.getContentLength();
@@ -91,7 +89,7 @@ public class UpdateDialog extends JDialog {
                     }
                     FileUtil.clean(tempDir);
                     downLoadFile = FileUtil.file(tempDir + File.separator + fileName);
-                    HttpUtil.downloadFile(fileUrl, FileUtil.touch(downLoadFile), new StreamProgress() {
+                    HttpUtil.downloadFile(downLoadUrl, FileUtil.touch(downLoadFile), new StreamProgress() {
 
                         @Override
                         public void start() {
