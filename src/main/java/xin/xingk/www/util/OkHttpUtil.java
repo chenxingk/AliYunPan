@@ -40,7 +40,7 @@ public class OkHttpUtil {
      */
     public synchronized static JSONObject doPost(String url, JSONObject data){
         try {
-            ThreadUtil.sleep(1000);
+            //ThreadUtil.sleep(1000);
             OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(5, TimeUnit.MINUTES).build();
             MediaType mediaType = MediaType.parse("application/json");
             RequestBody body = RequestBody.create(mediaType,data.toString());
@@ -51,7 +51,8 @@ public class OkHttpUtil {
                     .addHeader("Content-Type", "application/json").build();
             Response response = client.newCall(request).execute();
             String result = response.body().string();
-            UIUtil.console("{}，请求状态码：{}", DictConstants.URI_DICT.get(url),response.code());
+            String urlDict = DictConstants.URI_DICT.get(url);
+            if (!urlDict.contains("文件搜索")) UIUtil.console("{}，请求状态码：{}", urlDict, response.code());
             if (429==response.code()){
                 UIUtil.console("请求频繁了，休息一下。。。。正在准备重试中。。。");
                 ThreadUtil.sleep(3000);

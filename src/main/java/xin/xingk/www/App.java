@@ -2,14 +2,17 @@ package xin.xingk.www;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.TimeInterval;
+import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.system.SystemUtil;
+import com.formdev.flatlaf.extras.FlatDesktop;
+import com.formdev.flatlaf.util.SystemInfo;
+import com.sun.deploy.ui.AboutDialog;
 import lombok.extern.slf4j.Slf4j;
-import xin.xingk.www.common.CronTasks;
-import xin.xingk.www.common.DirWatcher;
 import xin.xingk.www.ui.Home;
 import xin.xingk.www.ui.Login;
 import xin.xingk.www.ui.MainFrame;
+import xin.xingk.www.ui.dialog.About;
 import xin.xingk.www.util.UIUtil;
 
 import javax.swing.*;
@@ -23,6 +26,23 @@ public class App {
     public static MainFrame mainFrame;
 
     public static void main( String[] args ) {
+        if (SystemInfo.isMacOS) {
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            System.setProperty("apple.awt.application.name", "备份助手");
+            System.setProperty("com.apple.mrj.application.apple.menu.about.name", "备份助手");
+            System.setProperty("apple.awt.application.appearance", "system");
+
+            FlatDesktop.setAboutHandler(() -> {
+                try {
+                    About about = new About();
+                    about.pack();
+                    about.setVisible(true);
+                } catch (Exception e2) {
+                    log.error(ExceptionUtil.stacktraceToString(e2));
+                }
+            });
+            FlatDesktop.setQuitHandler(FlatDesktop.QuitResponse::performQuit);
+        }
         UIUtil.initTheme();
         String version = SystemUtil.getJavaSpecInfo().getVersion();
         if (!"1.8".equals(version)){
