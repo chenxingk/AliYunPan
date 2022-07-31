@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Description: 阿里云盘备份工具类
@@ -113,13 +115,33 @@ public class BackupUtil {
      */
     public static void uploadFileList(List<String> fileList, String pathId,int backupType){
         if (ObjectUtil.isEmpty(fileList)) return;
+        List<CloudFile> cloudFileList = AliYunUtil.getCloudFileList(pathId);
+        Map<String, CloudFile> cloudFileMaps = cloudFileList.stream().collect(Collectors.toMap(CloudFile::getName, Function.identity(), (key1, key2) -> key2));
         for (String filePath :  fileList) {
-            String fileSuffix = FileUtil.getSuffix(filePath);//文件后缀
-            if (FileUtil.getPrefix(filePath).startsWith("~$") || fileSuffix.length()>=8){
-                continue;
+            if (CommonConstants.stopUpload){
+                CommonConstants.stopUpload = false;
+                List<Backup> backupList = BackupContextHolder.getBackupList();
+                for (Backup backup : backupList) {
+                    CacheUtil.removeBackupStatus(backup.getId());
+                }
+                Home.getInstance().getStartButton().setEnabled(true);
+                Integer a = null;
+                System.out.println(backupType + a);
             }
+            String fileSuffix = FileUtil.getSuffix(filePath);//文件后缀
+            if (FileUtil.getPrefix(filePath).startsWith("~$") || fileSuffix.length()>=8) continue;
             try {
+                //获取本地文件信息
                 FileInfo fileInfo = FileUtil.getFileInfo(filePath);
+                //获取云文件信息
+                CloudFile cloudFile = cloudFileMaps.get(fileInfo.getName());
+                if(ObjectUtil.isNotEmpty(cloudFile)){
+                    //Hash一致 上传过
+                    if (fileInfo.getContentHash().equals(cloudFile.getContentHash())){
+                        UIUtil.console("{} 云盘已存在 跳过",fileInfo.getPath());
+                        return;
+                    }
+                }
                 if (backupType==0){//普通备份
                     doUploadFile(pathId,fileInfo);
                 }else {
@@ -157,7 +179,7 @@ public class BackupUtil {
      * @param fileInfo 文件信息
      */
     public static void doUploadFile(String fileId,FileInfo fileInfo){
-        if (!getCloudFileExist(fileInfo,fileId)){
+        //if (!getCloudFileExist(fileInfo,fileId)){
             UIUtil.console("开始上传：{}",fileInfo.getPath());
             JSONObject uploadFile = AliYunUtil.uploadFile(fileId,fileInfo);
             String upFileId = uploadFile.getStr("file_id");//文件id
@@ -193,9 +215,9 @@ public class BackupUtil {
                     }
                 }
             }
-        }else {
+        /*}else {
             UIUtil.console("{} 云盘已存在 跳过",fileInfo.getPath());
-        }
+        }*/
     }
 
     /**

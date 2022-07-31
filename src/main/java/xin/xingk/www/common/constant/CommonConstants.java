@@ -11,7 +11,7 @@ import java.io.File;
 public class CommonConstants {
 
     //软件版本
-    public static final String VERSION = "V2.2.20220326";
+    public static final String VERSION = "V2.4.20220731";
     //软件标题
     public static final String TITLE = "备份助手"+VERSION;
     //用户目录
@@ -56,6 +56,8 @@ public class CommonConstants {
     public final static String ROOT="root";
     //登录状态
     public static boolean LOGIN_STATUS = false;
+    //暂停上传
+    public static boolean stopUpload = false;
 
     //默认大小
     public static final Integer DEFAULT_SIZE = 10480000;

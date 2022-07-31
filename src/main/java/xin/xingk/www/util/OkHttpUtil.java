@@ -229,7 +229,8 @@ public class OkHttpUtil {
                 .addHeader("cookie", cookie)
                 .build();
         Response response = client.newCall(request).execute();
-        String code = JSONUtil.parseObj(response.body().string()).getStr("goto");
+        String result = response.body().string();
+        String code = JSONUtil.parseObj(result).getStr("goto");
         code = StrUtil.subBetween(URLUtil.decode(code), "code=", "&");
         return code;
     }
@@ -245,13 +246,14 @@ public class OkHttpUtil {
         MediaType mediaType = MediaType.parse("application/json; charset=UTF-8");
         RequestBody body = RequestBody.create(mediaType, "{\"code\":\""+ code +"\"}");
         Request request = new Request.Builder()
-                .url("https://websv.aliyundrive.com/token/get")
+                .url("https://api.aliyundrive.com/token/get")
                 .method("POST", body)
                 .addHeader("content-type", "application/json; charset=UTF-8")
                 .addHeader("accept", "*/*")
                 .build();
         Response response = client.newCall(request).execute();
-        return JSONUtil.parseObj(response.body().string());
+        String result = response.body().string();
+        return JSONUtil.parseObj(result);
     }
 
     /**
@@ -301,7 +303,7 @@ public class OkHttpUtil {
         try {
             OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(5, TimeUnit.MINUTES).build();
             Request request = new Request.Builder()
-                    .url("https://passport.aliyundrive.com/newlogin/qrcode/generate.do?appName=aliyun_drive")
+                    .url("https://passport.aliyundrive.com/newlogin/qrcode/generate.do?appName=aliyun_drive&fromSite=52&appName=aliyun_drive&appEntrance=web")
                     .method("GET", null)
                     .build();
             Response response = client.newCall(request).execute();

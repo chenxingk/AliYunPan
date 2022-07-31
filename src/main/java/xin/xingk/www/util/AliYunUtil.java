@@ -134,9 +134,9 @@ public class AliYunUtil {
         data.set("type", "file");
         //data.set("check_name_mode", "refuse");
         //覆盖
-        //data.set("check_name_mode", "overwrite");
+        data.set("check_name_mode", "overwrite");
         //保留两者
-        data.set("check_name_mode", "auto_rename");
+        //data.set("check_name_mode", "auto_rename");
         data.set("size",fileInfo.getSize());
         data.set("content_hash", fileInfo.getContentHash());
         data.set("content_hash_name", "sha1");

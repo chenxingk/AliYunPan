@@ -114,8 +114,10 @@ public class UpdateUtil {
                         log.info(">>> 更新索引为【{}】版本对应的sql完毕", i);
                     } catch (SQLException e) {
                         log.error(">>> 索引为【{}】版本对应的SQL执行器发生异常：{}",i,e.getMessage());
+                        //清除本地文件夹
+                        FileUtil.clean(CommonConstants.CONFIG_HOME);
                         Login.getInstance().getQrCodeLabel().setIcon(null);
-                        Login.getInstance().getQrCodeLabel().setText("更新程序DB出现异常……请联系作者");
+                        Login.getInstance().getQrCodeLabel().setText("更新程序DB出现异常……请重启本软件完成DB重置");
                         ThreadUtil.sleep(600000);
                         System.exit(0);
                     }

@@ -8,6 +8,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Data;
 import xin.xingk.www.common.DirWatcher;
+import xin.xingk.www.common.constant.CommonConstants;
 import xin.xingk.www.common.constant.DictConstants;
 import xin.xingk.www.context.BackupContextHolder;
 import xin.xingk.www.entity.Backup;
@@ -15,6 +16,7 @@ import xin.xingk.www.ui.dialog.Edit;
 import xin.xingk.www.ui.menu.TableMenuBar;
 import xin.xingk.www.util.BackupUtil;
 import xin.xingk.www.util.CacheUtil;
+import xin.xingk.www.util.UIUtil;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -44,6 +46,7 @@ public class Home {
     private JLabel logTitle;
     private JTextArea logTextArea;
     private JScrollPane logPane;
+    private JButton stopButton;
 
     //表头
 //    private static final String[] TABLE_HEAD = {"ID", "本地目录", "云盘备份目录", "备份模式", "目录检测", "自动备份时间", "状态", "备份数量"};
@@ -112,6 +115,21 @@ public class Home {
             JButton startButton = home.getStartButton();
             startButton.setEnabled(false);
             ThreadUtil.execute(() -> BackupUtil.startBackup(null));
+        });
+
+        //停止备份
+        home.getStopButton().addActionListener(e -> {
+            List<Backup> backupList = BackupContextHolder.getBackupList();
+            for (Backup backup : backupList) {
+                Integer status = CacheUtil.getBackupStatus(backup.getId());
+                if (!Home.getInstance().getStartButton().getModel().isEnabled() || DictConstants.STATUS_BACKUP_RUN.equals(status)) {
+                    CommonConstants.stopUpload = true;
+                    UIUtil.console("正在停止备份...");
+                    return;
+                }
+            }
+            CommonConstants.stopUpload = false;
+            UIUtil.console("当前没有可以停止的备份...");
         });
     }
 
@@ -282,7 +300,7 @@ public class Home {
         homePanel = new JPanel();
         homePanel.setLayout(new GridLayoutManager(5, 1, new Insets(10, 10, 10, 10), -1, -1));
         btnPanel = new JPanel();
-        btnPanel.setLayout(new GridLayoutManager(1, 5, new Insets(0, 0, 0, 0), -1, -1));
+        btnPanel.setLayout(new GridLayoutManager(1, 6, new Insets(0, 0, 0, 0), -1, -1));
         homePanel.add(btnPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         addButton = new JButton();
         addButton.setText("新增");
@@ -297,7 +315,10 @@ public class Home {
         startButton.setText("开始备份");
         btnPanel.add(startButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
-        btnPanel.add(spacer1, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        btnPanel.add(spacer1, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        stopButton = new JButton();
+        stopButton.setText("停止备份");
+        btnPanel.add(stopButton, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         tableTitlePanel = new JPanel();
         tableTitlePanel.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         homePanel.add(tableTitlePanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
